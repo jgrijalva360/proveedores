@@ -1,0 +1,182 @@
+<div class="center">
+  <img class="background" src="../../../assets/logos/background.png" alt="" />
+  <div class="contenedor">
+    <img
+      class="logo img-fluid"
+      src="assets/logos/logoenconexion.png"
+      alt="Logo"
+    />
+
+    <div *ngIf="!access">
+      <p class="descript">
+        Bienvenido a
+        <span class="span">ENCONEXION.ONLINE</span>
+      </p>
+
+      <form #formLogin="ngForm" (submit)="onLogin()" class="main-form">
+        <div class="form-group my-2">
+          <div class="input-group">
+            <input
+              name="user"
+              type="email"
+              class="form-control"
+              id="user"
+              placeholder="Email"
+              [(ngModel)]="email"
+              required
+            />
+            <small class="invalid-feedback">Ingresa un usuario válido</small>
+          </div>
+        </div>
+        <div class="form-group my-2">
+          <input
+            name="pass"
+            type="password"
+            class="form-control"
+            id="password"
+            [(ngModel)]="password"
+            placeholder="Contraseña"
+            required
+          />
+          <small class="invalid-feedback">Ingresa una contraseña válida </small>
+          <button
+            type="button"
+            class="btn btn-link resetPass"
+            (click)="openModalReset()"
+          >
+            ¿Olvidaste tu contraseña?
+          </button>
+        </div>
+        <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+        <button type="submit" class="btn-enconexion">Iniciar sesión</button>
+        <div class="mt-3">
+          <p class="text-muted">
+            ¿No tienes una cuenta?
+            <span class="select" (click)="access = !access">Crea una.</span>
+          </p>
+        </div>
+      </form>
+    </div>
+
+    <div *ngIf="access">
+      <p class="descript">
+        Registro de usuario <span class="span">ENCONEXIÓN</span>
+      </p>
+      <form id="formAddUser" (ngSubmit)="onSignIn()">
+        <div class="form-group my-2">
+          <input
+            type="text"
+            class="form-control"
+            name="nombre"
+            id="nombre"
+            placeholder="Nombre o Razón Social"
+            [(ngModel)]="addUser.nombre"
+          />
+        </div>
+        <div class="form-group my-2">
+          <input
+            type="text"
+            class="form-control"
+            name="rfc"
+            id="rfc"
+            placeholder="RFC"
+            [(ngModel)]="addUser.rfc"
+            maxlength="13"
+          />
+        </div>
+        <div class="form-group my-2">
+          <input
+            type="text"
+            class="form-control"
+            name="email"
+            id="email"
+            placeholder="Email"
+            [(ngModel)]="addUser.email"
+          />
+        </div>
+        <div class="form-group my-2">
+          <input
+            type="password"
+            class="form-control"
+            name="pass"
+            id="pass"
+            placeholder="Contraseña"
+            [(ngModel)]="addUser.password"
+          />
+        </div>
+        <div class="form-group my-2">
+          <input
+            type="password"
+            class="form-control"
+            name="pass2"
+            id="pass2"
+            placeholder="Confirmar contraseña"
+            [(ngModel)]="addUser.confirmPass"
+          />
+        </div>
+        <button type="submit" class="btn-enconexion">Registrarme</button>
+      </form>
+      <div class="mt-3">
+        <p class="text-muted">
+          <span class="select" (click)="access = !access">Iniciar sesión</span>
+        </p>
+      </div>
+    </div>
+  </div>
+  <!-- <label class="desarrollado">
+      &copy; Copyright <span>{{ fecha }}</span>
+      | Desarrollado por
+      <a href="https://jbdevelopers.com.mx/" class="link" target="_blank">
+        <span class="font-weight-bold">JBDEVELOPERS</span></a
+      >
+    </label> -->
+</div>
+
+<!-- Modal reset pass-->
+<div
+  class="modal fade"
+  id="restartPass"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="modelTitleId"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Restablecer contraseña</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="resetEmail">Direccion de correo electronico</label>
+          <input
+            type="email"
+            class="form-control"
+            name="resetEmail"
+            id="resetEmail"
+            aria-describedby="helpId"
+            placeholder="Email"
+            [(ngModel)]="emailReset"
+          />
+          <!-- <small id="helpId" class="form-text text-muted">Help text</small> -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-primary" (click)="resetPass()">
+          Enviar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

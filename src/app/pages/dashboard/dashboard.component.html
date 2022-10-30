@@ -1,0 +1,46 @@
+<!-- <div class="container-fluid" *ngIf="sinProyectos">
+  <div class="row box">
+    <div class="col-12 text-center">
+      <h2>Proyectos</h2>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid" *ngIf="sinProyectos; else welcome">
+  <div class="row justify-content-center box">
+    <div class="col-12 text-center">
+      <a [routerLink]="[ruta + '/task']">
+        <button type="button" class="btn btn-warning">
+          <i class="fas fa-tasks"></i>&nbsp;Tareas Pendientes
+        </button>
+      </a>
+    </div>
+    <div class="col-auto text-center" *ngFor="let proyecto of proyectos">
+      <a [routerLink]="['project/' + proyecto.id + '/welcome']">
+        <div class="card 1">
+          <div class="card_image">
+            <img
+              [src]="proyecto.image || '../../../assets/logos/Generica.jpg'"
+            />
+          </div>
+          <div class="card_title title-white">
+            <p>{{ proyecto.name }}</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+  <ng-template #welcome>
+    <div class="pantalla">
+      <div class="text-center">
+        <img src="../../../assets/logos/enconexion.gif" class="widthLogo" />
+        <h1>Bienvenido</h1>
+        <p class="pWelcome animated fadeIn">
+          No tienes proyectos asignados, espera que te asignen proyectos.
+        </p>
+      </div>
+    </div>
+  </ng-template>
+</div> -->

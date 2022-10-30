@@ -1,0 +1,162 @@
+<!-- <div class="container-fluid">
+  <div class="row box justify-content-center">
+    <div class="col-auto text-center">
+      <h3>Importador</h3>
+    </div>
+  </div>
+  <div class="row box align-items-end">
+    <div class="col-auto" *ngIf="!isProject">
+      <div class="form-group">
+        <label for="rfcReceptor">RFC del receptor</label>
+        <input
+          type="text"
+          class="form-control"
+          name="rfcReceptor"
+          id="rfcReceptor"
+          placeholder="RFC"
+          [(ngModel)]="rfcReceptor"
+          maxlength="13"
+        />
+      </div>
+    </div>
+    <div class="col-auto overflow-hidden">
+      <label for="inputFiles">Selecciona los archivos XML</label>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroupFileAddon01">XML</span>
+        </div>
+        <div class="custom-file">
+          <input
+            type="file"
+            class="custom-file-input"
+            id="inputFiles"
+            aria-describedby="inputGroupFileAddon01"
+            (change)="onFileChange($event)"
+            multiple
+            accept=".XML"
+          />
+          <label class="custom-file-label" for="inputFiles">Choose file</label>
+        </div>
+      </div>
+    </div>
+    <div class="col-auto overflow-hidden">
+      <label for="inputFilesPdf">Selecciona los archivos PDF</label>
+      <div class="input-group">
+        <div class="input-group-prepend mb-3">
+          <span class="input-group-text" id="inputGroupFileAddon01">PDF</span>
+        </div>
+        <div class="custom-file">
+          <input
+            type="file"
+            class="custom-file-input"
+            id="inputGroupFile01"
+            aria-describedby="inputGroupFileAddon01"
+            (change)="uploadFile($event)"
+            accept=".pdf"
+            multiple
+          />
+          <label id="labelFile" class="custom-file-label" for="inputGroupFile01"
+            >Seleccionar</label
+          >
+        </div>
+      </div>
+    </div>
+    <div class="col-auto" *ngIf="isProject">
+      <button type="button" class="btn btn-primary mb-3" (click)="saveXML()">
+        Guardar XML / PDF
+      </button>
+    </div>
+  </div>
+  <div class="row box" *ngIf="arrXML.length">
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th>Proveedor</th>
+            <th>RFC</th>
+            <th>Regimen</th>
+            <th>Concepto</th>
+            <th>Folio</th>
+            <th>Fecha</th>
+            <th>Importe</th>
+            <th>Descuento</th>
+            <th>IVA</th>
+            <th>Subtotal</th>
+            <th>Ret IVA</th>
+            <th>Ret ISR</th>
+            <th>Total</th>
+            <th>Clave unidad</th>
+            <th>Clave Prod/Serv</th>
+            <th>Tipo</th>
+            <th>Metodo de pago</th>
+            <th>Forma de pago</th>
+            <th>Moneda</th>
+            <th>RFC Receptor</th>
+            <th>Asociado</th>
+            <th class="text-center">PDF</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let item of arrXML"
+            [ngClass]="{
+              noReceptor: item.rfcReceptor !== rfcReceptor
+            }"
+            (click)="selectXML(item)"
+          >
+            <td>{{ item.proveedor }}</td>
+            <td>{{ item.rfc }}</td>
+            <td class="text-center">{{ item.regimen }}</td>
+            <td>{{ item.concepto | slice: 0:80 }}</td>
+            <td>{{ item.folioComprobante }}</td>
+            <td>{{ item.fecha | date: 'shortDate' }}</td>
+            <td>{{ item.subtotal | number: '1.2-3' }}</td>
+            <td>{{ item.descuento }}</td>
+            <td>{{ (item.iva | number: '1.2-3') || (0 | number: '1.2-3') }}</td>
+            <td>
+              {{
+                (item.subtotal + item.iva | number: '1.2-3') ||
+                  (0 | number: '1.2-3')
+              }}
+            </td>
+            <td>
+              {{ (item.retIVA | number: '1.2-3') || (0 | number: '1.2-3') }}
+            </td>
+            <td>
+              {{ (item.retISR | number: '1.2-3') || (0 | number: '1.2-3') }}
+            </td>
+            <td>{{ item.total | number: '1.2-3' }}</td>
+            <td class="text-center">{{ item.claveUnidad }}</td>
+            <td class="text-center">{{ item.claveProdServ }}</td>
+            <td class="text-center">{{ item.tipoComprobante }}</td>
+            <td class="text-center">{{ item.metodoPago }}</td>
+            <td class="text-center">{{ item.formaPago }}</td>
+            <td class="text-center">{{ item.moneda }}</td>
+            <td>
+              {{ item.rfcReceptor }}
+            </td>
+            <td>
+              {{ item.asociado }}
+            </td>
+            <td
+              [ngClass]="{ sinPDF: !item.path }"
+              class="text-center font-weight-bold"
+            >
+              <ng-container *ngIf="item.path; else sinPDF">
+                <button
+                  type="button"
+                  class="btn btn-link"
+                  style="font-size: 12px; padding: 0"
+                  (click)="downloadPDF(item)"
+                >
+                  Descargar PDF
+                </button>
+              </ng-container>
+              <ng-template #sinPDF> Sin PDF </ng-template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div> -->

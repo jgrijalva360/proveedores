@@ -1,0 +1,58 @@
+.center {
+  text-align: center;
+  background: #f2f2f2;
+  height: 100vh;
+  min-height: 600px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+.background {
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  min-height: 600px;
+  object-fit: cover;
+  z-index: 1;
+}
+.contenedor {
+  max-width: 325px;
+  padding: 25px;
+  background: #fff;
+  border-radius: 10px;
+  margin: 10px;
+  border: 1px solid #dfdfdf;
+  z-index: 2;
+}
+.logo {
+  max-width: 90px;
+}
+.descript {
+  margin: 25px;
+}
+.span {
+  font-weight: bold;
+  color: #006683;
+}
+.select {
+  cursor: pointer;
+  font-weight: bold;
+  color: #006683;
+}
+.resetPass {
+  font-size: 0.8em;
+}
+
+.desarrollado {
+  z-index: 2;
+  position: absolute;
+  bottom: 0;
+  font-size: 13px;
+  color: #66bbc6;
+}
+.desarrollado a {
+  text-decoration: none;
+  color: #66bbc6;
+}
