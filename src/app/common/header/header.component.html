@@ -1,1 +1,50 @@
-<div style="height: 80px; width: 100%; background-color: #000"></div>
+<header>
+  <div class="container-fluid">
+    <div class="row justify-content-between align-items-center">
+      <div class="col-6 col-sm-6 col-md-4 d-flex py-1">
+        <a [routerLink]="['./']">
+          <img
+            src="./assets/logos/headerLogo2.png"
+            class="logoHeader"
+            alt="logo"
+          />
+        </a>
+        <!-- <button type="button" id="sidebarCollapse" class="btn" title="Menu">
+          <i class="fas fa-bars bars"></i>
+        </button> -->
+      </div>
+      <div class="col-12 col-sm-12 col-md-4 order-md-5 order-12 text-center">
+        {{ dataUser.nombre }}
+        <br />
+        RFC: {{ dataUser.rfc }}
+      </div>
+      <div class="col-6 col-sm-6 col-md-4 text-end order-md-12 order-5">
+        <a
+          class="dropdown-toggle"
+          role="button"
+          id="dropdownMenuLink"
+          data-toggle="dropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <img
+            src="{{ urlImageDefault }}"
+            alt="photoProfile"
+            class="imgProfile rounded"
+            title="{{ dataUser.email }}"
+          />
+        </a>
+
+        <div
+          class="dropdown-menu dropdown-menu-right text-center"
+          aria-labelledby="dropdownMenuLink"
+        >
+          <label class="dropdown-header">{{ dataUser.email }}</label>
+          <label class="dropdown-item" (click)="onLogout()"
+            >Cerrar sesión</label
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

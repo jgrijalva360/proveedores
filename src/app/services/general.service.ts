@@ -17,4 +17,10 @@ export class GeneralService {
       .doc(RFC)
       .valueChanges();
   }
+
+  getUserDB(uid: string) {
+    return this.afs
+      .collection('proveedoresExternos', (ref) => ref.where('uid', '==', uid))
+      .valueChanges();
+  }
 }

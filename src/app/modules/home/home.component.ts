@@ -11,4 +11,8 @@ export class HomeComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {}
+
+  regresar() {
+    window.history.go(-1);
+  }
 }

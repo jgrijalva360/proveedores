@@ -1,2 +1,26 @@
 <app-header></app-header>
+
+<div style="height: 66px"></div>
+
+<!-- Navigate -->
+
+<div class="container-fluid">
+  <div class="box">
+    <button type="button" class="btn-enconexion" (click)="regresar()">
+      <i class="fa-solid fa-arrow-left"></i> Regresar
+    </button>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row box justify-content-center">
+    <div class="col-auto my-3">
+      <button type="button" class="buttonMenu" [routerLink]="['users']">
+        <i class="fas fa-users icon"></i>
+        <div>Mis datos</div>
+      </button>
+    </div>
+  </div>
+</div>
+
 <router-outlet></router-outlet>

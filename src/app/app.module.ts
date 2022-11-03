@@ -11,8 +11,9 @@ import { environment } from 'src/environments/environment';
 // firebase
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
+
+// Components
 import { LoginComponent } from './pages/login/login.component';
-import { HomeModule } from './modules/home/home.module';
 import { ProviderComponent } from './pages/provider/provider.component';
 
 @NgModule({
@@ -21,7 +22,6 @@ import { ProviderComponent } from './pages/provider/provider.component';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HomeModule,
     AngularFireStorageModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
   ],
