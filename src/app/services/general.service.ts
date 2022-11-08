@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +22,19 @@ export class GeneralService {
   getUserDB(uid: string) {
     return this.afs
       .collection('proveedoresExternos', (ref) => ref.where('uid', '==', uid))
-      .valueChanges();
+      .snapshotChanges()
+    .pipe(
+      map((actions) => {
+        return actions.map((a) => {
+          const data = a.payload.doc.data() as any;
+          data.id = a.payload.doc.id;
+          return data;
+        });
+      })
+    );
+  }
+
+  saveUserDB(objUser: any) {
+    return this.afs.collection('proveedoresExternos').doc(objUser.id).update(objUser);
   }
 }

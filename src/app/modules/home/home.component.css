@@ -24,6 +24,11 @@ p {
   .buttonMenu:hover {
     transform: scale(1.1);
   }
+
+  .buttonMenuActivate {
+    transform: scale(1.1);
+    background-color: #01818a;
+  }
   
   .icon {
     font-size: 2.5em;

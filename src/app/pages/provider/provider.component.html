@@ -1,1 +1,326 @@
-<p>provider works!</p>
+<div class="container-fluid">
+  <div class="row text-center box">
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+      <div class="form-group">
+        <label for="">Nombre o Razón Social</label>
+        <input
+          type="text"
+          class="form-control"
+          name="nombre"
+          id="nombre"
+          aria-describedby="helpId"
+          placeholder=""
+          required
+          [(ngModel)]="provider.nombre"
+        />
+        <small id="helpId" class="form-text text-muted text-left"
+          >*Obligatorio</small
+        >
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+      <div class="form-group">
+        <label for="">Persona</label>
+        <select
+          class="form-control"
+          name="persona"
+          id="persona"
+          required
+          [(ngModel)]="provider.persona"
+        >
+          <option>Física</option>
+          <option>Moral</option>
+        </select>
+        <small id="helpId" class="form-text text-muted text-left"
+          >*Obligatorio</small
+        >
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+      <div class="form-group">
+        <label for="">RFC</label>
+        <input
+          type="text"
+          class="form-control"
+          name="rfc"
+          id="rfc"
+          aria-describedby="helpId"
+          placeholder=""
+          maxlength="13"
+          required
+          [(ngModel)]="provider.rfc"
+        />
+        <small id="helpId" class="form-text text-muted text-left"
+          >*Obligatorio</small
+        >
+      </div>
+    </div>
+  </div>
+  <!-- domicilio fiscal -->
+  <div class="row text-center box">
+    <div class="col-12">
+      <h5>Domicilio Fiscal</h5>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+      <div class="form-group">
+        <label for="">Calle</label>
+        <input
+          type="text"
+          class="form-control"
+          name="calle"
+          id="calle"
+          aria-describedby="helpId"
+          placeholder=""
+          [(ngModel)]="provider.calle"
+        />
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+      <div class="form-group">
+        <label for="">Número Exterior</label>
+        <input
+          type="text"
+          class="form-control"
+          name="numExt"
+          id="numExt"
+          aria-describedby="helpId"
+          placeholder=""
+          [(ngModel)]="provider.numExt"
+        />
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+      <div class="form-group">
+        <label for="">Número Interior</label>
+        <input
+          type="text"
+          class="form-control"
+          name="numInt"
+          id="numInt"
+          aria-describedby="helpId"
+          placeholder=""
+          [(ngModel)]="provider.numInt"
+        />
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+      <div class="form-group">
+        <label for="">Estado</label>
+        <input
+          type="text"
+          class="form-control"
+          name="estado"
+          id="estado"
+          placeholder=""
+          [(ngModel)]="provider.estado"
+        />
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+      <div class="form-group">
+        <label for="">Ciudad</label>
+        <input
+          type="text"
+          class="form-control"
+          name="ciudad"
+          id="ciudad"
+          aria-describedby="helpId"
+          placeholder=""
+          [(ngModel)]="provider.ciudad"
+        />
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+      <div class="form-group">
+        <label for="">Colonia</label>
+        <input
+          type="text"
+          class="form-control"
+          name="localidad"
+          id="localidad"
+          placeholder=""
+          [(ngModel)]="provider.localidad"
+        />
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+      <div class="form-group">
+        <label for="">Código postal</label>
+        <input
+          type="text"
+          class="form-control"
+          name="cp"
+          id="cp"
+          placeholder=""
+          required
+          [(ngModel)]="provider.cp"
+        />
+        <small id="helpId" class="form-text text-muted text-left"
+          >*Obligatorio</small
+        >
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+      <div class="form-group">
+        <label for="regFiscal">Régimen Fiscal</label>
+        <select
+          class="form-control"
+          name="regFiscal"
+          id="regFiscal"
+          [(ngModel)]="provider.regimen"
+          required
+        >
+          <option value="601">601 - General de ley persona moral</option>
+          <option value="606">606 - Arrendamiento</option>
+          <option value="611">611 - Ingresos por dividendos</option>
+          <option value="612">
+            612 - Personas físicas con actividades empresariales y profesionales
+          </option>
+          <option value="621">621 - Incorporacion Fiscal</option>
+          <option value="626">626 - RESICO</option>
+          <option value="0">0 - Otro</option>
+        </select>
+        <small id="helpId" class="form-text text-muted text-left"
+          >*Obligatorio</small
+        >
+      </div>
+    </div>
+  </div>
+  <div class="row text-center box">
+    <div class="col-12">
+      <h5>Datos de Contacto</h5>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+      <div class="form-group">
+        <label for="">Teléfono Fijo</label>
+        <input
+          type="text"
+          class="form-control"
+          name="telefono"
+          id="telefono"
+          aria-describedby="helpId"
+          placeholder=""
+          [(ngModel)]="provider.telefono"
+        />
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+      <div class="form-group">
+        <label for="">Teléfono Móvil</label>
+        <input
+          type="text"
+          class="form-control"
+          name="movil"
+          id="movil"
+          aria-describedby="helpId"
+          placeholder=""
+          [(ngModel)]="provider.movil"
+        />
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+      <div class="form-group">
+        <label for="">Email</label>
+        <input
+          type="text"
+          class="form-control"
+          name="Email"
+          id="Email"
+          aria-describedby="helpId"
+          placeholder=""
+          [(ngModel)]="provider.email"
+        />
+      </div>
+    </div>
+  </div>
+  <div class="row box">
+    <div class="col-12 text-center">
+      <h5>Datos Bancarios</h5>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Banco</th>
+            <th>Cuenta</th>
+            <th>Cuenta CLABE</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="provider.banks.length === 0">
+            <td colspan="4" class="text-center">
+              <label class="text-muted">
+                Agregar datos <i class="fas fa-plus"></i>
+              </label>
+            </td>
+          </tr>
+          <tr *ngFor="let bank of provider.banks; let i = index">
+            <td>{{ bank.nombre }}</td>
+            <td>{{ bank.cuenta }}</td>
+            <td>{{ bank.clabe }}</td>
+            <td class="text-center">
+              <button
+                type="button"
+                class="btn btn-danger btn-sm"
+                (click)="deleteBank(i)"
+              >
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>
+              <input
+                type="text"
+                class="form-control"
+                name="nombre"
+                id=""
+                placeholder="Nombre"
+                [(ngModel)]="banco.nombre"
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                class="form-control"
+                name="cuenta"
+                id=""
+                placeholder="Cuenta"
+                [(ngModel)]="banco.cuenta"
+                maxlength="18"
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                class="form-control"
+                name="clabe"
+                id=""
+                placeholder="CLABE"
+                [(ngModel)]="banco.clabe"
+                maxlength="18"
+              />
+            </td>
+            <td class="text-center">
+              <button
+                type="button"
+                class="btn btn-success btn-sm"
+                (click)="addBank()"
+              >
+                <i class="fas fa-plus-circle"></i>
+              </button>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+  <div class="row box">
+    <div class="col-12 text-center">
+      <button type="button" class="btn-enconexion" (click)="saveData()">Guardar</button>
+    </div>
+  </div>
+</div>

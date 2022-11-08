@@ -6,7 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 // environments
-import { environment } from 'src/environments/environment';
+import { environment } from '../environments/environment';
 
 // firebase
 import { AngularFireModule } from '@angular/fire/compat';
@@ -14,10 +14,9 @@ import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 
 // Components
 import { LoginComponent } from './pages/login/login.component';
-import { ProviderComponent } from './pages/provider/provider.component';
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, ProviderComponent],
+  declarations: [AppComponent, LoginComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
