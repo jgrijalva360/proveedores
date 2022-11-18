@@ -27,7 +27,7 @@ body::-webkit-scrollbar-thumb {
 }
 .container .box {
   border-radius: 5px;
-  background: #fff;
+  background: #ececec;
   padding: 20px;
   margin: 20px 0;
   border: 1px solid #dfdfdf;
@@ -36,7 +36,7 @@ body::-webkit-scrollbar-thumb {
 }
 .container-fluid .box {
   border-radius: 5px;
-  background: #fff;
+  background: #ececec;
   padding: 20px;
   margin: 20px 10px;
   border: 1px solid #dfdfdf;
