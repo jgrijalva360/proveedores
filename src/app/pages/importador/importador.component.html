@@ -1,4 +1,4 @@
-<!-- <div class="container-fluid">
+<div class="container-fluid">
   <div class="row box justify-content-center">
     <div class="col-auto text-center">
       <h3>Importador</h3>
@@ -102,30 +102,29 @@
             [ngClass]="{
               noReceptor: item.rfcReceptor !== rfcReceptor
             }"
-            (click)="selectXML(item)"
           >
             <td>{{ item.proveedor }}</td>
             <td>{{ item.rfc }}</td>
             <td class="text-center">{{ item.regimen }}</td>
             <td>{{ item.concepto | slice: 0:80 }}</td>
             <td>{{ item.folioComprobante }}</td>
-            <td>{{ item.fecha | date: 'shortDate' }}</td>
-            <td>{{ item.subtotal | number: '1.2-3' }}</td>
+            <td>{{ item.fecha | date: "shortDate" }}</td>
+            <td>{{ item.subtotal | number: "1.2-3" }}</td>
             <td>{{ item.descuento }}</td>
-            <td>{{ (item.iva | number: '1.2-3') || (0 | number: '1.2-3') }}</td>
+            <td>{{ (item.iva | number: "1.2-3") || (0 | number: "1.2-3") }}</td>
             <td>
               {{
-                (item.subtotal + item.iva | number: '1.2-3') ||
-                  (0 | number: '1.2-3')
+                (item.subtotal + item.iva | number: "1.2-3") ||
+                  (0 | number: "1.2-3")
               }}
             </td>
             <td>
-              {{ (item.retIVA | number: '1.2-3') || (0 | number: '1.2-3') }}
+              {{ (item.retIVA | number: "1.2-3") || (0 | number: "1.2-3") }}
             </td>
             <td>
-              {{ (item.retISR | number: '1.2-3') || (0 | number: '1.2-3') }}
+              {{ (item.retISR | number: "1.2-3") || (0 | number: "1.2-3") }}
             </td>
-            <td>{{ item.total | number: '1.2-3' }}</td>
+            <td>{{ item.total | number: "1.2-3" }}</td>
             <td class="text-center">{{ item.claveUnidad }}</td>
             <td class="text-center">{{ item.claveProdServ }}</td>
             <td class="text-center">{{ item.tipoComprobante }}</td>
@@ -147,7 +146,6 @@
                   type="button"
                   class="btn btn-link"
                   style="font-size: 12px; padding: 0"
-                  (click)="downloadPDF(item)"
                 >
                   Descargar PDF
                 </button>
@@ -159,4 +157,4 @@
       </table>
     </div>
   </div>
-</div> -->
+</div>

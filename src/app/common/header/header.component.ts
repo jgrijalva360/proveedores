@@ -33,6 +33,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.subscribeUserDB = this.generalService
       .getUserDB(uid)
       .subscribe((res: any) => {
+        console.log(res);
         this.dataUser = res[0];
       });
   }

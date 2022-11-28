@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Router } from '@angular/router';
+import { Event, Router } from '@angular/router';
 // import { AngularFireStorage } from '@angular/fire/storage';
 // import { NgxXml2jsonService } from 'ngx-xml2json';
 // import Notiflix from 'notiflix-angular';
@@ -57,69 +57,69 @@ export class ImportadorComponent implements OnInit, OnDestroy {
     // }
   }
 
-  // getCompany() {
-  //   this.getCompanySubscription = this.empresaService
-  //     .getCompanyActual(this.idCompany)
-  //     .subscribe((res: any) => {
-  //       // console.log(res);
-  //       this.rfcReceptor = res.rfc.toUpperCase();
-  //     });
-  // }
+  getCompany() {
+    // this.getCompanySubscription = this.empresaService
+    //   .getCompanyActual(this.idCompany)
+    //   .subscribe((res: any) => {
+    //     // console.log(res);
+    //     this.rfcReceptor = res.rfc.toUpperCase();
+    //   });
+  }
 
-  // getProject() {
-  //   this.subscriberGetProject = this.empresaService
-  //     .getProjectSpecific(this.idCompany, this.idProject)
-  //     .subscribe(res => {
-  //       // console.log(res);
-  //       this.project = res;
-  //     });
-  // }
+  getProject() {
+    // this.subscriberGetProject = this.empresaService
+    //   .getProjectSpecific(this.idCompany, this.idProject)
+    //   .subscribe((res) => {
+    //     // console.log(res);
+    //     this.project = res;
+    //   });
+  }
 
-  // getXML() {
-  //   this.getXMLSubscription = this.generalService
-  //     .getXML(this.idCompany, this.idProject)
-  //     .subscribe((res: any) => {
-  //       console.log(res);
-  //       if (res !== undefined) {
-  //         this.arrXML = res.arrXML;
-  //       }
-  //     });
-  // }
+  getXML() {
+    // this.getXMLSubscription = this.generalService
+    //   .getXML(this.idCompany, this.idProject)
+    //   .subscribe((res: any) => {
+    //     console.log(res);
+    //     if (res !== undefined) {
+    //       this.arrXML = res.arrXML;
+    //     }
+    //   });
+  }
 
-  // saveXML() {
-  //   const obj = { arrXML: this.arrXML };
-  //   this.projectService
-  //     .saveXML(this.idCompany, this.idProject, obj)
-  //     .then(res => {
-  //       Notiflix.Notify.Success('Se guardo exitosamente');
-  //     });
-  // }
+  saveXML() {
+    // const obj = { arrXML: this.arrXML };
+    // this.projectService
+    //   .saveXML(this.idCompany, this.idProject, obj)
+    //   .then((res) => {
+    //     Notiflix.Notify.Success('Se guardo exitosamente');
+    //   });
+  }
 
-  // onFileChange(ev) {
-  //   for (let index = 0; index < ev.target.files.length; index++) {
-  //     const archivo = ev.target.files[index];
-  //     if (archivo.type === 'text/xml') {
-  //       const lector = new FileReader();
-  //       lector.onload = e => {
-  //         this.xmlToJson(e);
-  //       };
-  //       lector.readAsText(archivo);
-  //     } else {
-  //       Notiflix.Notify.Failure(
-  //         `El archivo ${archivo.name} no es un archivo XML`
-  //       );
-  //     }
-  //   }
-  //   (<any>document.getElementById('inputFiles')).value = '';
-  // }
+  onFileChange(ev: any) {
+    for (let index = 0; index < ev.target.files.length; index++) {
+      const archivo = ev.target.files[index];
+      if (archivo.type === 'text/xml') {
+        const lector = new FileReader();
+        lector.onload = (e) => {
+          this.xmlToJson(e);
+        };
+        lector.readAsText(archivo);
+      } else {
+        // Notiflix.Notify.Failure(
+        //   `El archivo ${archivo.name} no es un archivo XML`
+        // );
+      }
+    }
+    (<any>document.getElementById('inputFiles')).value = '';
+  }
 
-  // xmlToJson(lector) {
-  //   const res = lector.target.result;
-  //   const parser = new DOMParser();
-  //   const xml = parser.parseFromString(res, 'text/xml');
-  //   const obj = this.ngxXml2jsonService.xmlToJson(xml);
-  //   this.validarSiExiste(obj);
-  // }
+  xmlToJson(lector: any) {
+    const res = lector.target.result;
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(res, 'text/xml');
+    // const obj = this.ngxXml2jsonService.xmlToJson(xml);
+    // this.validarSiExiste(obj);
+  }
 
   // validarSiExiste(obj) {
   //   console.log(obj);
@@ -128,7 +128,7 @@ export class ImportadorComponent implements OnInit, OnDestroy {
   //       '@attributes'
   //     ].UUID;
   //   const validacion = this.arrXML.findIndex(
-  //     element => element.folioComprobante === folio
+  //     (element) => element.folioComprobante === folio
   //   );
   //   if (validacion === -1) {
   //     if (
@@ -147,7 +147,7 @@ export class ImportadorComponent implements OnInit, OnDestroy {
   //       this.isProject
   //     ) {
   //       if (this.project.filmadoras) {
-  //         this.project.filmadoras.forEach(element => {
+  //         this.project.filmadoras.forEach((element) => {
   //           if (
   //             obj['cfdi:Comprobante']['cfdi:Receptor'][
   //               '@attributes'
@@ -164,187 +164,187 @@ export class ImportadorComponent implements OnInit, OnDestroy {
   //   }
   // }
 
-  // assignData(obj: any) {
-  //   console.log(obj);
-  //   if (obj['cfdi:Comprobante']) {
-  //     console.log(obj);
-  //     try {
-  //       this.xml.asociado = false;
-  //       this.xml.proveedor =
-  //         obj['cfdi:Comprobante']['cfdi:Emisor']['@attributes'].Nombre;
+  assignData(obj: any) {
+    console.log(obj);
+    if (obj['cfdi:Comprobante']) {
+      console.log(obj);
+      try {
+        this.xml.asociado = false;
+        this.xml.proveedor =
+          obj['cfdi:Comprobante']['cfdi:Emisor']['@attributes'].Nombre;
 
-  //       this.xml.rfc =
-  //         obj['cfdi:Comprobante']['cfdi:Emisor']['@attributes'].Rfc;
+        this.xml.rfc =
+          obj['cfdi:Comprobante']['cfdi:Emisor']['@attributes'].Rfc;
 
-  //       this.xml.regimen =
-  //         obj['cfdi:Comprobante']['cfdi:Emisor']['@attributes'].RegimenFiscal;
+        this.xml.regimen =
+          obj['cfdi:Comprobante']['cfdi:Emisor']['@attributes'].RegimenFiscal;
 
-  //       this.xml.rfcReceptor =
-  //         obj['cfdi:Comprobante']['cfdi:Receptor']['@attributes'].Rfc;
+        this.xml.rfcReceptor =
+          obj['cfdi:Comprobante']['cfdi:Receptor']['@attributes'].Rfc;
 
-  //       // Valido si es array o un objeto
-  //       if (
-  //         Array.isArray(
-  //           obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto']
-  //         )
-  //       ) {
-  //         this.xml.concepto =
-  //           obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][0 || 1][
-  //             '@attributes'
-  //           ].Descripcion;
+        // Valido si es array o un objeto
+        if (
+          Array.isArray(
+            obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto']
+          )
+        ) {
+          this.xml.concepto =
+            obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][0 || 1][
+              '@attributes'
+            ].Descripcion;
 
-  //         this.xml.claveProdServ =
-  //           obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][0 || 1][
-  //             '@attributes'
-  //           ].ClaveProdServ;
+          this.xml.claveProdServ =
+            obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][0 || 1][
+              '@attributes'
+            ].ClaveProdServ;
 
-  //         this.xml.claveUnidad =
-  //           obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][0 || 1][
-  //             '@attributes'
-  //           ].ClaveUnidad;
-  //       } else {
-  //         this.xml.concepto =
-  //           obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][
-  //             '@attributes'
-  //           ].Descripcion;
+          this.xml.claveUnidad =
+            obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][0 || 1][
+              '@attributes'
+            ].ClaveUnidad;
+        } else {
+          this.xml.concepto =
+            obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][
+              '@attributes'
+            ].Descripcion;
 
-  //         this.xml.claveProdServ =
-  //           obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][
-  //             '@attributes'
-  //           ].ClaveProdServ;
+          this.xml.claveProdServ =
+            obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][
+              '@attributes'
+            ].ClaveProdServ;
 
-  //         this.xml.claveUnidad =
-  //           obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][
-  //             '@attributes'
-  //           ].ClaveUnidad;
-  //       }
-  //       // -------------------------------------
+          this.xml.claveUnidad =
+            obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][
+              '@attributes'
+            ].ClaveUnidad;
+        }
+        // -------------------------------------
 
-  //       this.xml.folioComprobante =
-  //         obj['cfdi:Comprobante']['cfdi:Complemento'][
-  //           'tfd:TimbreFiscalDigital'
-  //         ]['@attributes'].UUID;
+        this.xml.folioComprobante =
+          obj['cfdi:Comprobante']['cfdi:Complemento'][
+            'tfd:TimbreFiscalDigital'
+          ]['@attributes'].UUID;
 
-  //       this.xml.fecha = obj['cfdi:Comprobante']['@attributes'].Fecha;
+        this.xml.fecha = obj['cfdi:Comprobante']['@attributes'].Fecha;
 
-  //       this.xml.subtotal = parseFloat(
-  //         obj['cfdi:Comprobante']['@attributes'].SubTotal
-  //       );
-  //       this.xml.descuento =
-  //         parseFloat(obj['cfdi:Comprobante']['@attributes'].Descuento) || 0;
+        this.xml.subtotal = parseFloat(
+          obj['cfdi:Comprobante']['@attributes'].SubTotal
+        );
+        this.xml.descuento =
+          parseFloat(obj['cfdi:Comprobante']['@attributes'].Descuento) || 0;
 
-  //       this.xml.tipoComprobante =
-  //         obj['cfdi:Comprobante']['@attributes'].TipoDeComprobante;
+        this.xml.tipoComprobante =
+          obj['cfdi:Comprobante']['@attributes'].TipoDeComprobante;
 
-  //       this.xml.metodoPago =
-  //         obj['cfdi:Comprobante']['@attributes'].MetodoPago || '';
+        this.xml.metodoPago =
+          obj['cfdi:Comprobante']['@attributes'].MetodoPago || '';
 
-  //       this.xml.formaPago =
-  //         obj['cfdi:Comprobante']['@attributes'].FormaPago || '';
+        this.xml.formaPago =
+          obj['cfdi:Comprobante']['@attributes'].FormaPago || '';
 
-  //       this.xml.moneda = obj['cfdi:Comprobante']['@attributes'].Moneda;
+        this.xml.moneda = obj['cfdi:Comprobante']['@attributes'].Moneda;
 
-  //       this.xml.total = parseFloat(
-  //         obj['cfdi:Comprobante']['@attributes'].Total
-  //       );
+        this.xml.total = parseFloat(
+          obj['cfdi:Comprobante']['@attributes'].Total
+        );
 
-  //       // Validacion si tiene impuestos
-  //       if (obj['cfdi:Comprobante']['cfdi:Impuestos']) {
-  //         // impuestos trasladados
-  //         if (obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Traslados']) {
-  //           this.xml.iva = parseFloat(
-  //             obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Traslados'][
-  //               'cfdi:Traslado'
-  //             ]['@attributes'].Importe
-  //           );
-  //         }
+        // Validacion si tiene impuestos
+        if (obj['cfdi:Comprobante']['cfdi:Impuestos']) {
+          // impuestos trasladados
+          if (obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Traslados']) {
+            this.xml.iva = parseFloat(
+              obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Traslados'][
+                'cfdi:Traslado'
+              ]['@attributes'].Importe
+            );
+          }
 
-  //         // retenciones
-  //         if (obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Retenciones']) {
-  //           const retenciones =
-  //             obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Retenciones'][
-  //               'cfdi:Retencion'
-  //             ];
-  //           const esArrayRetenciones = Array.isArray(retenciones);
-  //           if (esArrayRetenciones) {
-  //             retenciones.forEach(element => {
-  //               if (element['@attributes'].Impuesto === '002') {
-  //                 this.xml.retIVA = parseFloat(element['@attributes'].Importe);
-  //               } else if (element['@attributes'].Impuesto === '001') {
-  //                 this.xml.retISR = parseFloat(element['@attributes'].Importe);
-  //               }
-  //             });
-  //           } else {
-  //             if (retenciones['@attributes'].Impuesto === '002') {
-  //               this.xml.retIVA = parseFloat(
-  //                 retenciones['@attributes'].Importe
-  //               );
-  //             } else if (retenciones['@attributes'].Impuesto === '001') {
-  //               this.xml.retISR = parseFloat(
-  //                 retenciones['@attributes'].Importe
-  //               );
-  //             }
-  //           }
-  //         }
-  //       }
-  //       this.arrXML.push(this.xml);
-  //       this.xml = {};
-  //     } catch (error) {
-  //       console.error('Ocurrio un error');
-  //     }
-  //   }
-  // }
+          // retenciones
+          if (obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Retenciones']) {
+            const retenciones =
+              obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Retenciones'][
+                'cfdi:Retencion'
+              ];
+            const esArrayRetenciones = Array.isArray(retenciones);
+            if (esArrayRetenciones) {
+              retenciones.forEach((element) => {
+                if (element['@attributes'].Impuesto === '002') {
+                  this.xml.retIVA = parseFloat(element['@attributes'].Importe);
+                } else if (element['@attributes'].Impuesto === '001') {
+                  this.xml.retISR = parseFloat(element['@attributes'].Importe);
+                }
+              });
+            } else {
+              if (retenciones['@attributes'].Impuesto === '002') {
+                this.xml.retIVA = parseFloat(
+                  retenciones['@attributes'].Importe
+                );
+              } else if (retenciones['@attributes'].Impuesto === '001') {
+                this.xml.retISR = parseFloat(
+                  retenciones['@attributes'].Importe
+                );
+              }
+            }
+          }
+        }
+        this.arrXML.push(this.xml);
+        this.xml = {};
+      } catch (error) {
+        console.error('Ocurrio un error');
+      }
+    }
+  }
 
-  // async uploadFile(event) {
-  //   const files = Object.assign([], event.target.files);
+  async uploadFile(event: any) {
+    const files = Object.assign([], event.target.files);
 
-  //   for (let index = 0; index < event.target.files.length; index++) {
-  //     const element = event.target.files[index];
-  //     const fileInput = element;
-  //     const fileType = fileInput.type;
-  //     const fileSize = fileInput.size;
-  //     const allowedExtensions = /(.pdf)$/i;
-  //     if (!allowedExtensions.exec(fileType) || fileSize >= 1000000) {
-  //       alert(
-  //         'Por favor agrega unicamente archivos con extension .pdf y tamaño maximo de 1MB '
-  //       );
-  //       // document.getElementById('labelFile').innerHTML = 'Seleccionar';
-  //       (<any>document.getElementById('inputGroupFile01')).value = '';
-  //     } else {
-  //       const XMLEncontrado = this.arrXML.find(
-  //         XML => XML.folioComprobante === element.name.split('.')[0]
-  //       );
-  //       if (XMLEncontrado) {
-  //         const filePath = `CFDIs/PDF/${element.name}`;
-  //         const path: any = {};
-  //         path.pathImageProfile = filePath;
-  //         XMLEncontrado.path = filePath;
-  //         // const ref = this.storage.ref(filePath);
-  //         // console.log(ref);
-  //         const task = this.storage.upload(filePath, element);
-  //         // task.snapshotChanges().subscribe(res => {
-  //         //   console.log(res.bytesTransferred);
-  //         //   Notiflix.Notify.Success('Se guardo correctamente el PDF');
-  //         // });
-  //         // task.then(res => {
-  //         //   console.log(res);
-  //         //   Notiflix.Notify.Success('Se guardo correctamente el PDF');
-  //         // });
-  //       }
-  //     }
-  //   }
-  //   this.saveXML();
-  // }
+    for (let index = 0; index < event.target.files.length; index++) {
+      const element = event.target.files[index];
+      const fileInput = element;
+      const fileType = fileInput.type;
+      const fileSize = fileInput.size;
+      const allowedExtensions = /(.pdf)$/i;
+      if (!allowedExtensions.exec(fileType) || fileSize >= 1000000) {
+        alert(
+          'Por favor agrega unicamente archivos con extension .pdf y tamaño maximo de 1MB '
+        );
+        // document.getElementById('labelFile').innerHTML = 'Seleccionar';
+        (<any>document.getElementById('inputGroupFile01')).value = '';
+      } else {
+        const XMLEncontrado = this.arrXML.find(
+          (XML: any) => XML.folioComprobante === element.name.split('.')[0]
+        );
+        if (XMLEncontrado) {
+          const filePath = `CFDIs/PDF/${element.name}`;
+          const path: any = {};
+          path.pathImageProfile = filePath;
+          XMLEncontrado.path = filePath;
+          // const ref = this.storage.ref(filePath);
+          // console.log(ref);
+          // // const task = this.storage.upload(filePath, element);
+          // task.snapshotChanges().subscribe(res => {
+          //   console.log(res.bytesTransferred);
+          //   Notiflix.Notify.Success('Se guardo correctamente el PDF');
+          // });
+          // task.then(res => {
+          //   console.log(res);
+          //   Notiflix.Notify.Success('Se guardo correctamente el PDF');
+          // });
+        }
+      }
+    }
+    this.saveXML();
+  }
 
   // downloadPDF(element) {
   //   if (element.path) {
   //     const ref = this.storage.ref(element.path);
   //     const subscriptionURL = ref.getDownloadURL().subscribe(
-  //       res => {
+  //       (res) => {
   //         window.open(res, '_blank');
   //         subscriptionURL.unsubscribe();
   //       },
-  //       error => {
+  //       (error) => {
   //         console.error(error);
   //         switch (error.code) {
   //           case 'storage/object-not-found':
