@@ -48,20 +48,6 @@ export class AuthService {
       });
     });
   }
-  roleUser(uidUser: any) {
-    return this.afs
-      .collection('usuarios', (ref) => ref.where('uid', '==', uidUser))
-      .snapshotChanges()
-      .pipe(
-        map((actions: any) => {
-          return actions.map((a: any) => {
-            const data = a.payload.doc.data() as any;
-            data.id = a.payload.doc.id;
-            return data;
-          });
-        })
-      );
-  }
   logOutUser() {
     return this.afsAuth.signOut();
   }

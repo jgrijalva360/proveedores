@@ -1,4 +1,5 @@
 export interface Provider {
+  aprobado: boolean;
   id: string;
   numero?: number;
   rfc?: string;
@@ -20,12 +21,16 @@ export interface Provider {
   cuenta?: string;
   clabe?: string;
   taxId?: string;
-  banks?: Array<Bank> | undefined;
-  documentos?: Array<any>;
+  banks?: any;
+  empresas?: any;
+  archivos?: any;
+  archivosRepse?: any;
+  repse?: string;
 }
 
 export interface Bank {
   nombre?: string;
+  banco?: string;
   cuenta?: string;
   clabe?: string;
 }

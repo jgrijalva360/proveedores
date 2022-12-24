@@ -21,7 +21,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private generalService: GeneralService
+    private generalService: GeneralService,
+    private router: Router
   ) {}
   ngOnInit(): void {
     this.subscribeUser = this.authService.userData$?.subscribe((res) => {
@@ -33,13 +34,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.subscribeUserDB = this.generalService
       .getUserDB(uid)
       .subscribe((res: any) => {
-        console.log(res);
         this.dataUser = res[0];
       });
   }
 
   onLogout(): void {
-    this.authService.logOutUser();
+    this.authService.logOutUser().then(() => {
+      this.router.navigateByUrl('/');
+    });
   }
 
   ngOnDestroy() {

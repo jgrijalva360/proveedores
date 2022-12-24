@@ -1,0 +1,38 @@
+<div class="container-fluid">
+  <div class="row box justify-content-center">
+    <div class="col-auto my-3">
+      <button
+        type="button"
+        class="buttonMenu"
+        [routerLink]="['data']"
+        routerLinkActive="buttonActivate"
+      >
+        <i class="fas fa-cog icon"></i>
+        <div>Mis datos</div>
+      </button>
+    </div>
+    <div class="col-auto my-3">
+      <button
+        type="button"
+        class="buttonMenu"
+        [routerLink]="['files']"
+        routerLinkActive="buttonActivate"
+      >
+        <i class="fas fa-cog icon"></i>
+        <div>Archivos recurrentes</div>
+      </button>
+    </div>
+    <div class="col-auto my-3">
+      <button
+        type="button"
+        class="buttonMenu"
+        [routerLink]="['dealMemo']"
+        routerLinkActive="buttonActivate"
+      >
+        <i class="fas fa-cog icon"></i>
+        <div>Deal Memo</div>
+      </button>
+    </div>
+  </div>
+</div>
+<router-outlet></router-outlet>

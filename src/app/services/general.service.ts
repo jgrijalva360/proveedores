@@ -23,18 +23,27 @@ export class GeneralService {
     return this.afs
       .collection('proveedoresExternos', (ref) => ref.where('uid', '==', uid))
       .snapshotChanges()
-    .pipe(
-      map((actions) => {
-        return actions.map((a) => {
-          const data = a.payload.doc.data() as any;
-          data.id = a.payload.doc.id;
-          return data;
-        });
-      })
-    );
+      .pipe(
+        map((actions) => {
+          return actions.map((a) => {
+            const data = a.payload.doc.data() as any;
+            data.id = a.payload.doc.id;
+            return data;
+          });
+        })
+      );
   }
 
   saveUserDB(objUser: any) {
-    return this.afs.collection('proveedoresExternos').doc(objUser.id).update(objUser);
+    return this.afs
+      .collection('proveedoresExternos')
+      .doc(objUser.id)
+      .update(objUser);
+  }
+  updateFilesUserDB(objUser: any) {
+    return this.afs
+      .collection('proveedoresExternos')
+      .doc(objUser.id)
+      .update(objUser);
   }
 }

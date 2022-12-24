@@ -15,9 +15,17 @@ import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 // Components
 import { LoginComponent } from './pages/login/login.component';
 import { DealmemoComponent } from './pages/dealmemo/dealmemo.component';
+import { CompanyComponent } from './pages/company/company.component';
+import { FilesComponent } from './pages/files/files.component';
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, DealmemoComponent],
+  declarations: [
+    AppComponent,
+    LoginComponent,
+    DealmemoComponent,
+    CompanyComponent,
+    FilesComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,

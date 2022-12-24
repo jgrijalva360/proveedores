@@ -49,7 +49,7 @@ export class LoginComponent implements OnInit {
       .loginEmailUser(this.email, this.password)
       .then((res) => {
         console.log(res);
-        this.router.navigate(['./dashboard']);
+        this.router.navigate(['./home']);
       })
       .catch((err) => {
         if (err.code === 'auth/invalid-email') {
@@ -163,17 +163,59 @@ export class LoginComponent implements OnInit {
           this.authService.emailVerification();
           // guardo el uid en el objeto que voy a mandar al servicio
           const objUser = {} as any;
+          objUser.typeAcount = 'proveedor';
           objUser.uid = res.user.uid;
           objUser.userType = 'Usuario';
           objUser.email = res.user.email;
           objUser.nombre = this.addUser.nombre;
           objUser.rfc = this.addUser.rfc;
           objUser.persona = this.addUser.persona;
+          objUser.actualizado = true;
+          objUser.banks = [];
+          objUser.empresas = [];
+          objUser.archivos = [
+            {
+              name: 'Identificacion Oficial',
+              camelCase: 'identificacionOficial',
+              archivo: {},
+              status: 'Pendiente',
+              observacion: '',
+            },
+            {
+              name: 'Caratula Estado de Cuenta',
+              camelCase: 'edoCta',
+              archivo: {},
+              status: 'Pendiente',
+              observacion:
+                'antigüedad máxima de 3 meses, en donde aparezca el nombre y logo del banco, la cuenta CLABE, nombre y datos del cuentahabiente.',
+            },
+            {
+              name: 'Constancia de Situación Fiscal',
+              camelCase: 'constanciaSF',
+              archivo: {},
+              status: 'Pendiente',
+              observacion:
+                'Correspondiente al mes de su contratación, en donde se indique que la actividad o servicio es congruente con el objeto del contrato. Este documento tendrá que ser actualizado y enviado cada mes a contabilidad, para que proceda el pago.',
+            },
+            {
+              name: 'Opinión de cumplimiento 32D positiva',
+              camelCase: 'opinionCumplimiento',
+              archivo: {},
+              status: 'Pendiente',
+              observacion:
+                'Este documento tendrá que ser actualizado y enviado cada mes a contabilidad, para que proceda el pago.',
+            },
+            {
+              name: 'Comprobante de domicilio',
+              camelCase: 'comprobanteDomicilio',
+              archivo: {},
+              status: 'Pendiente',
+              observacion:
+                'No debe tener una antigüedad mayor a 3 meses (Luz, Agua, Teléfono, Predial.',
+            },
+          ];
           // envio el uid a la base de datos
           this.authService.addUserDB(objUser).then(() => {
-            const objCode = {
-              validado: true,
-            };
             this.passAcces = '';
             this.addUser = {} as any;
             this.access = false;
@@ -285,25 +327,5 @@ export class LoginComponent implements OnInit {
     } else {
       // Notiflix.Notify.Failure('El email es incorrecto');
     }
-  }
-
-  generatePass() {
-    const subscriptionCode = this.authService
-      .readCode(this.passAcces)
-      .subscribe((res: any) => {
-        if (res) {
-          if (res.validado === false) {
-            this.access = false;
-            this.register = true;
-          } else {
-            // Notiflix.Notify.Failure(
-            //   'El codigo ya fue usado contacta a un administrador'
-            // );
-          }
-        } else {
-          // Notiflix.Notify.Failure('Codigo Invalido');
-        }
-        subscriptionCode.unsubscribe();
-      });
   }
 }

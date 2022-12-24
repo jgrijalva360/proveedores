@@ -9,7 +9,7 @@ const routes: Routes = [
     component: LoginComponent,
   },
   {
-    path: '',
+    path: 'home',
     component: HomeComponent,
     loadChildren: () =>
       import('./modules/home/home.module').then((m) => m.HomeModule),

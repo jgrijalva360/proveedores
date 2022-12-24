@@ -19,47 +19,29 @@
         />
       </div>
     </div>
-    <div class="col-auto overflow-hidden">
-      <label for="inputFiles">Selecciona los archivos XML</label>
-      <div class="input-group mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroupFileAddon01">XML</span>
-        </div>
-        <div class="custom-file">
-          <input
-            type="file"
-            class="custom-file-input"
-            id="inputFiles"
-            aria-describedby="inputGroupFileAddon01"
-            (change)="onFileChange($event)"
-            multiple
-            accept=".XML"
-          />
-          <label class="custom-file-label" for="inputFiles">Choose file</label>
-        </div>
-      </div>
+    <div class="col-auto">
+      <label for="formFile" class="form-label"
+        >Selecciona los archivos XML</label
+      >
+      <input
+        class="form-control"
+        type="file"
+        id="formFile"
+        (change)="onFileChange($event)"
+        multiple
+      />
     </div>
     <div class="col-auto overflow-hidden">
-      <label for="inputFilesPdf">Selecciona los archivos PDF</label>
-      <div class="input-group">
-        <div class="input-group-prepend mb-3">
-          <span class="input-group-text" id="inputGroupFileAddon01">PDF</span>
-        </div>
-        <div class="custom-file">
-          <input
-            type="file"
-            class="custom-file-input"
-            id="inputGroupFile01"
-            aria-describedby="inputGroupFileAddon01"
-            (change)="uploadFile($event)"
-            accept=".pdf"
-            multiple
-          />
-          <label id="labelFile" class="custom-file-label" for="inputGroupFile01"
-            >Seleccionar</label
-          >
-        </div>
-      </div>
+      <label for="formFile" class="form-label"
+        >Selecciona los archivos PDF</label
+      >
+      <input
+        class="form-control"
+        type="file"
+        id="formFile"
+        (change)="uploadFile($event)"
+        multiple
+      />
     </div>
     <div class="col-auto" *ngIf="isProject">
       <button type="button" class="btn btn-primary mb-3" (click)="saveXML()">

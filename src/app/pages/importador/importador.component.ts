@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Event, Router } from '@angular/router';
 // import { AngularFireStorage } from '@angular/fire/storage';
-// import { NgxXml2jsonService } from 'ngx-xml2json';
+import { NgxXml2jsonService } from 'ngx-xml2json';
 // import Notiflix from 'notiflix-angular';
 import { AuthService } from 'src/app/services/auth.service';
 import { GeneralService } from 'src/app/services/general.service';
@@ -35,7 +35,8 @@ export class ImportadorComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private authService: AuthService, // private projectService: ProjectService, // private empresaService: EmpresasService, // public storage: AngularFireStorage, // private generalService: GeneralService
-    private generalService: GeneralService
+    private generalService: GeneralService,
+    private ngxXml2jsonService: NgxXml2jsonService
   ) {}
 
   ngOnInit(): void {
@@ -117,8 +118,10 @@ export class ImportadorComponent implements OnInit, OnDestroy {
     const res = lector.target.result;
     const parser = new DOMParser();
     const xml = parser.parseFromString(res, 'text/xml');
-    // const obj = this.ngxXml2jsonService.xmlToJson(xml);
+    const obj = this.ngxXml2jsonService.xmlToJson(xml);
     // this.validarSiExiste(obj);
+    console.log(obj);
+    this.assignData(obj);
   }
 
   // validarSiExiste(obj) {

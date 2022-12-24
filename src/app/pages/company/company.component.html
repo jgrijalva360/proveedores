@@ -1,0 +1,48 @@
+<div class="container-fluid">
+  <div
+    class="row box justify-content-center"
+    *ngIf="empresaSeleccionada.proyectos.length < 1"
+  >
+    <div class="col-auto text-center" *ngFor="let empresa of provider.empresas">
+      <a (click)="empresaSeleccionada = empresa">
+        <div class="card 1">
+          <div class="card_image">
+            <img
+              [src]="empresa.image || '../../../assets/logos/Generica.jpg'"
+            />
+          </div>
+          <div class="card_title title-white">
+            <p>{{ empresa.name }}</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div
+    class="row box justify-content-center"
+    *ngIf="empresaSeleccionada.proyectos.length > 0"
+  >
+    <div
+      class="col-auto text-center"
+      *ngFor="let proyecto of empresaSeleccionada.proyectos"
+    >
+      <a
+        [routerLink]="
+          './' + empresaSeleccionada.id + '/' + proyecto.id + '/dashboard'
+        "
+      >
+        <div class="card 1">
+          <div class="card_image">
+            <img
+              [src]="proyecto.image || '../../../assets/logos/Generica.jpg'"
+            />
+          </div>
+          <div class="card_title title-white">
+            <p>{{ proyecto.name }}</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>

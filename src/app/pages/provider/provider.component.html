@@ -1,4 +1,9 @@
 <div class="container-fluid">
+  <div class="row box">
+    <div class="col-12 text-center">
+      <h3>Completa tu informacion</h3>
+    </div>
+  </div>
   <div class="row text-center box justify-content-center">
     <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
       <div class="form-group">
@@ -12,6 +17,7 @@
           placeholder=""
           required
           [(ngModel)]="provider.nombre"
+          disabled
         />
         <small id="helpId" class="form-text text-muted text-left"
           >*Obligatorio</small
@@ -27,6 +33,7 @@
           id="persona"
           required
           [(ngModel)]="provider.persona"
+          disabled
         >
           <option>Física</option>
           <option>Moral</option>
@@ -49,6 +56,7 @@
           maxlength="13"
           required
           [(ngModel)]="provider.rfc"
+          disabled
         />
         <small id="helpId" class="form-text text-muted text-left"
           >*Obligatorio</small
@@ -72,6 +80,7 @@
           aria-describedby="helpId"
           placeholder=""
           [(ngModel)]="provider.calle"
+          [disabled]="provider.aprobado"
         />
       </div>
     </div>
@@ -86,6 +95,7 @@
           aria-describedby="helpId"
           placeholder=""
           [(ngModel)]="provider.numExt"
+          [disabled]="provider.aprobado"
         />
       </div>
     </div>
@@ -100,6 +110,7 @@
           aria-describedby="helpId"
           placeholder=""
           [(ngModel)]="provider.numInt"
+          [disabled]="provider.aprobado"
         />
       </div>
     </div>
@@ -113,6 +124,7 @@
           id="estado"
           placeholder=""
           [(ngModel)]="provider.estado"
+          [disabled]="provider.aprobado"
         />
       </div>
     </div>
@@ -127,6 +139,7 @@
           aria-describedby="helpId"
           placeholder=""
           [(ngModel)]="provider.ciudad"
+          [disabled]="provider.aprobado"
         />
       </div>
     </div>
@@ -140,6 +153,7 @@
           id="localidad"
           placeholder=""
           [(ngModel)]="provider.localidad"
+          [disabled]="provider.aprobado"
         />
       </div>
     </div>
@@ -154,6 +168,7 @@
           placeholder=""
           required
           [(ngModel)]="provider.cp"
+          [disabled]="provider.aprobado"
         />
         <small id="helpId" class="form-text text-muted text-left"
           >*Obligatorio</small
@@ -164,11 +179,12 @@
       <div class="form-group">
         <label for="regFiscal">Régimen Fiscal</label>
         <select
-          class="form-control"
+          class="form-select"
           name="regFiscal"
           id="regFiscal"
           [(ngModel)]="provider.regimen"
           required
+          [disabled]="provider.aprobado"
         >
           <option value="601">601 - General de ley persona moral</option>
           <option value="606">606 - Arrendamiento</option>
@@ -184,6 +200,20 @@
           >*Obligatorio</small
         >
       </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+      <label for="repse">REPSE</label>
+      <select
+        class="form-select"
+        name="repse"
+        id="repse"
+        [(ngModel)]="provider.repse"
+        (change)="addFileRepse()"
+        [disabled]="provider.aprobado"
+      >
+        <option>No</option>
+        <option>Si</option>
+      </select>
     </div>
   </div>
   <div class="row text-center box">
@@ -201,6 +231,7 @@
           aria-describedby="helpId"
           placeholder=""
           [(ngModel)]="provider.telefono"
+          [disabled]="provider.aprobado"
         />
       </div>
     </div>
@@ -215,6 +246,7 @@
           aria-describedby="helpId"
           placeholder=""
           [(ngModel)]="provider.movil"
+          [disabled]="provider.aprobado"
         />
       </div>
     </div>
@@ -229,6 +261,7 @@
           aria-describedby="helpId"
           placeholder=""
           [(ngModel)]="provider.email"
+          disabled
         />
       </div>
     </div>
@@ -241,9 +274,9 @@
       <table class="table table-bordered">
         <thead>
           <tr>
+            <th>Nombre del propietario la cuenta</th>
             <th>Banco</th>
-            <th>Cuenta</th>
-            <th>Cuenta CLABE</th>
+            <th>CLABE</th>
             <th>Acción</th>
           </tr>
         </thead>
@@ -257,7 +290,7 @@
           </tr>
           <tr *ngFor="let bank of provider.banks; let i = index">
             <td>{{ bank.nombre }}</td>
-            <td>{{ bank.cuenta }}</td>
+            <td>{{ bank.banco }}</td>
             <td>{{ bank.clabe }}</td>
             <td class="text-center">
               <button
@@ -278,19 +311,20 @@
                 class="form-control"
                 name="nombre"
                 id=""
-                placeholder="Nombre"
+                placeholder="Nombre del propietario la cuenta"
                 [(ngModel)]="banco.nombre"
+                [disabled]="provider.aprobado"
               />
             </td>
             <td>
               <input
                 type="text"
                 class="form-control"
-                name="cuenta"
+                name="banco"
                 id=""
-                placeholder="Cuenta"
-                [(ngModel)]="banco.cuenta"
-                maxlength="18"
+                placeholder="Banco"
+                [(ngModel)]="banco.banco"
+                [disabled]="provider.aprobado"
               />
             </td>
             <td>
@@ -302,6 +336,7 @@
                 placeholder="CLABE"
                 [(ngModel)]="banco.clabe"
                 maxlength="18"
+                [disabled]="provider.aprobado"
               />
             </td>
             <td class="text-center">
@@ -318,6 +353,104 @@
       </table>
     </div>
   </div>
+
+  <!-- Archivos -->
+  <div class="row box">
+    <div class="col-12 text-center">
+      <h5>Archivos</h5>
+    </div>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Tipo de archivo</th>
+            <th scope="col">Archivo</th>
+            <th scope="col">Estatus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="" *ngFor="let item of provider.archivos; let i = index">
+            <td>
+              {{ item.name }}
+              <i
+                *ngIf="item.observacion !== ''"
+                class="fas fa-info-circle"
+                [title]="item.observacion"
+              ></i>
+            </td>
+            <td>
+              <a
+                *ngIf="item.archivo.link"
+                [href]="item.archivo.link"
+                target="_blank"
+              >
+                {{ item.archivo.name }}
+              </a>
+              <input
+                [id]="item.camelCase + i"
+                [name]="item.camelCase + i"
+                class="form-control"
+                type="file"
+                id="formFile"
+                (change)="uploadFile($event, item, i)"
+                [disabled]="provider.aprobado"
+                *ngIf="!item.archivo.link"
+              />
+            </td>
+            <td
+              class="fw-bold"
+              [ngClass]="{
+                'text-primary': item.status === 'Pendiente',
+                'text-warning': item.status === 'En revision',
+                'text-success': item.status === 'Aprobado'
+              }"
+            >
+              {{ item.status }}
+            </td>
+          </tr>
+          <tr
+            class=""
+            *ngFor="let item of provider.archivosRepse; let i = index"
+          >
+            <td>
+              {{ item.name }}
+              <i class="fas fa-info-circle" [title]="item.observacion"></i>
+            </td>
+            <td>
+              <a
+                *ngIf="item.archivo.link"
+                [href]="item.archivo.link"
+                target="_blank"
+              >
+                {{ item.archivo.name }}
+              </a>
+              <input
+                [id]="item.camelCase + i"
+                [name]="item.camelCase + i"
+                class="form-control"
+                type="file"
+                id="formFile"
+                (change)="uploadFile($event, item, i)"
+                [disabled]="provider.aprobado"
+                *ngIf="!item.archivo.link"
+              />
+            </td>
+            <td
+              class="fw-bold"
+              [ngClass]="{
+                'text-primary': item.status === 'Pendiente',
+                'text-warning': item.status === 'En revision',
+                'text-success': item.status === 'Aprobado'
+              }"
+            >
+              {{ item.status }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="row box">
     <div class="col-12 text-center">
       <button type="button" class="btn-enconexion" (click)="saveData()">
