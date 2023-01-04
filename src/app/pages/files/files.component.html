@@ -1,31 +1,92 @@
 <div class="container-fluid">
+  <!-- Tabla Constancia de situacion Fiscal -->
   <div class="row box">
-    <div class="col-12">
-      <h3 class="text-center">Archivos recurrentes</h3>
+    <div class="col-12 text-center">
+      <h5>Constancia de situacion fiscal</h5>
     </div>
-  </div>
-  <div class="row box">
     <div class="table-responsive">
       <table class="table">
         <thead>
           <tr>
-            <th scope="col">Mes</th>
-            <th scope="col">Constancia de Situación Fiscal</th>
-            <th>Opinión de cumplimiento 32D positiva</th>
+            <th>Mes</th>
+            <th>Archivo</th>
+            <th>Estatus</th>
           </tr>
         </thead>
         <tbody>
-          <tr class="">
-            <td scope="row">R1C1</td>
-            <td>R1C2</td>
-            <td>R1C3</td>
-          </tr>
-          <tr class="">
-            <td scope="row">Item</td>
-            <td>Item</td>
-            <td>Item</td>
+          <tr class="" *ngFor="let item of provider.files?.constanciaSF">
+            <td>{{ item.mes }}</td>
+            <td>
+              <a [href]="item.link" target="blank">{{ item.name }}</a>
+            </td>
+            <td>{{ item.status }}</td>
           </tr>
         </tbody>
+        <tfoot>
+          <tr
+            *ngIf="
+              provider.files?.constanciaSF.at(-1).mes !== mesATexto(mesActual)
+            "
+          >
+            <td>{{ mesATexto(mesActual) }}</td>
+            <td>
+              <input
+                type="file"
+                class="form-control"
+                (change)="uploadFile($event, 'constanciaSF')"
+              />
+            </td>
+            <td>Pendiente</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tabla 32D -->
+  <div class="row box">
+    <div class="col-12 text-center">
+      <h5>Opinión de cumplimiento 32D positiva</h5>
+    </div>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Mes</th>
+            <th>Archivo</th>
+            <th>Estatus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class=""
+            *ngFor="let item of provider.files?.opinionCumplimiento32D"
+          >
+            <td>{{ item.mes }}</td>
+            <td>
+              <a [href]="item.link" target="blank">{{ item.name }}</a>
+            </td>
+            <td>{{ item.status }}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr
+            *ngIf="
+              provider.files?.opinionCumplimiento32D.at(-1).mes !==
+              mesATexto(mesActual)
+            "
+          >
+            <td>{{ mesATexto(mesActual) }}</td>
+            <td>
+              <input
+                type="file"
+                class="form-control"
+                (change)="uploadFile($event, 'opinionCumplimiento32D')"
+              />
+            </td>
+            <td></td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   </div>

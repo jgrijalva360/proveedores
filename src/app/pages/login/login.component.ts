@@ -171,6 +171,8 @@ export class LoginComponent implements OnInit {
           objUser.rfc = this.addUser.rfc;
           objUser.persona = this.addUser.persona;
           objUser.actualizado = true;
+          objUser.fechaRegistro = new Date();
+          objUser.files = {};
           objUser.banks = [];
           objUser.empresas = [];
           objUser.archivos = [
@@ -199,7 +201,7 @@ export class LoginComponent implements OnInit {
             },
             {
               name: 'Opinión de cumplimiento 32D positiva',
-              camelCase: 'opinionCumplimiento',
+              camelCase: 'opinionCumplimiento32D',
               archivo: {},
               status: 'Pendiente',
               observacion:

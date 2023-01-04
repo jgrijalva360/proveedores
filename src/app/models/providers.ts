@@ -26,6 +26,8 @@ export interface Provider {
   archivos?: any;
   archivosRepse?: any;
   repse?: string;
+  fechaRegistro: any;
+  files: any;
 }
 
 export interface Bank {
