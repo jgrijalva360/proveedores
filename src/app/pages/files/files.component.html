@@ -72,7 +72,7 @@
         <tfoot>
           <tr
             *ngIf="
-              provider.files?.opinionCumplimiento32D.at(-1).mes !==
+              provider.files?.opinionCumplimiento32D?.length(-1).mes !==
               mesATexto(mesActual)
             "
           >
