@@ -1,0 +1,7 @@
+.puntero {
+    cursor: pointer;
+}
+th,
+td {
+  white-space: nowrap;
+}

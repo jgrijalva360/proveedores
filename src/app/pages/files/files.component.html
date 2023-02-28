@@ -19,7 +19,15 @@
             <td>
               <a [href]="item.link" target="blank">{{ item.name }}</a>
             </td>
-            <td>{{ item.status }}</td>
+            <td
+              [ngClass]="{
+                'text-primary': item.status === 'Pendiente',
+                'text-warning': item.status === 'En revisión',
+                'text-success': item.status === 'Aprobado'
+              }"
+            >
+              {{ item.status }}
+            </td>
           </tr>
         </tbody>
         <tfoot>
@@ -66,13 +74,21 @@
             <td>
               <a [href]="item.link" target="blank">{{ item.name }}</a>
             </td>
-            <td>{{ item.status }}</td>
+            <td
+              [ngClass]="{
+                'text-primary': item.status === 'Pendiente',
+                'text-warning': item.status === 'En revisión',
+                'text-success': item.status === 'Aprobado'
+              }"
+            >
+              {{ item.status }}
+            </td>
           </tr>
         </tbody>
         <tfoot>
           <tr
             *ngIf="
-              provider.files?.opinionCumplimiento32D?.length(-1).mes !==
+              provider.files?.opinionCumplimiento32D?.at(-1).mes !==
               mesATexto(mesActual)
             "
           >

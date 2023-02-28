@@ -28,6 +28,7 @@ export interface Provider {
   repse?: string;
   fechaRegistro: any;
   files: any;
+  dealMemos: any[];
 }
 
 export interface Bank {

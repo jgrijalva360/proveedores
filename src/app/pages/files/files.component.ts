@@ -154,7 +154,7 @@ export class FilesComponent implements OnInit, OnDestroy {
             link: resultado,
             path: filePath,
             name: fileInput.name,
-            status: 'En revision',
+            status: 'En revisión',
           };
 
           if (!this.provider.files[nameFile]) {

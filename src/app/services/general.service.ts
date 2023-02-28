@@ -46,4 +46,8 @@ export class GeneralService {
       .doc(objUser.id)
       .update(objUser);
   }
+
+  updateUserDB(id: string, obj: any) {
+    return this.afs.collection('proveedoresExternos').doc(id).update(obj);
+  }
 }
