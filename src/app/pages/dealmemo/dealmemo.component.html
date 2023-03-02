@@ -17,7 +17,7 @@
         <tbody>
           <tr
             *ngFor="let item of provider.dealMemos; let i = index"
-            (click)="seleccionPago(i)"
+            (click)="seleccionDeal(i)"
             class="puntero"
           >
             <td>{{ item.descripcionActividad }}</td>
@@ -52,7 +52,7 @@
             <td>{{ item.importe | number : "1.2-3" }}</td>
             <td style="min-width: 250px">
               <ng-container *ngIf="item.xml">
-                <a [href]="item.xml.file.link" target="_blank">{{
+                <a [href]="item.xml?.file?.link" target="_blank">{{
                   item.xml.folioComprobante
                 }}</a>
               </ng-container>

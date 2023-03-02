@@ -15,10 +15,11 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 })
 export class DealmemoComponent implements OnInit {
   provider = {} as Provider;
-  dealSeleccionado: any;
   xml = {} as any;
   idCompany: any;
   idProject: string | undefined;
+  dealSeleccionado: any;
+  indexDealSeleccionado: any;
   indexPagoSeleccionado: any;
   archivoPDF = {} as any;
 
@@ -67,8 +68,9 @@ export class DealmemoComponent implements OnInit {
     });
   }
 
-  seleccionPago(index: number) {
+  seleccionDeal(index: number) {
     this.dealSeleccionado = this.provider.dealMemos[index];
+    this.indexDealSeleccionado = index;
     console.log(this.dealSeleccionado);
   }
 
@@ -77,7 +79,6 @@ export class DealmemoComponent implements OnInit {
     this.archivoPDF = ev;
 
     const archivo = ev.target.files[0];
-    console.log(archivo);
     if (archivo.type === 'text/xml') {
       const lector = new FileReader();
       lector.onload = (e) => {
@@ -98,16 +99,14 @@ export class DealmemoComponent implements OnInit {
     const xml = parser.parseFromString(res, 'text/xml');
     const obj = this.ngxXml2jsonService.xmlToJson(xml);
     // this.validarSiExiste(obj);
-    // console.log(obj);
+
     this.assignData(obj);
   }
 
   assignData(obj: any) {
-    // console.log(obj);
     if (obj['cfdi:Comprobante']) {
-      // console.log(obj);
       try {
-        this.xml.asociado = false;
+        this.xml.asociado = true;
         this.xml.proveedor =
           obj['cfdi:Comprobante']['cfdi:Emisor']['@attributes'].Nombre;
 
@@ -236,12 +235,40 @@ export class DealmemoComponent implements OnInit {
   validation() {
     let pagoActual = this.dealSeleccionado.pagos[this.indexPagoSeleccionado];
 
-    if (pagoActual.importe === this.xml.subtotal) {
+    let validacionFolio = false;
+    // Validar que no exista un XML con el mismo folio fiscal
+    for (let index = 0; index < this.provider.dealMemos.length; index++) {
+      const dealMemo = this.provider.dealMemos[index];
+      for (let indexDeal = 0; indexDeal < dealMemo.pagos.length; indexDeal++) {
+        const pago = dealMemo.pagos[indexDeal];
+        if (pago.xml) {
+          if (pago.xml.folioComprobante === pago.xml.folioComprobante) {
+            validacionFolio = true;
+            break;
+          }
+        }
+      }
+    }
+    // ----------->
+
+    let save = () => {
       this.dealSeleccionado.pagos[this.indexPagoSeleccionado].xml = this.xml; // Aqui guardo el XML al pago
       this.uploadFileXML(this.archivoPDF, this.indexPagoSeleccionado);
       this.xml = {};
+    };
+
+    if (this.provider.rfc === this.xml.rfc) {
+      if (pagoActual.importe === this.xml.subtotal) {
+        if (validacionFolio) {
+          Notiflix.Notify.failure('El Folio ya se encuentra registrado');
+        } else {
+          save();
+        }
+      } else {
+        Notiflix.Notify.failure('El importe no corresponde');
+      }
     } else {
-      Notiflix.Notify.failure('El importe no corresponde');
+      Notiflix.Notify.failure('El RFC no corresponde al proveedor');
     }
   }
 
@@ -256,7 +283,9 @@ export class DealmemoComponent implements OnInit {
         'Por favor agrega unicamente archivos con extension .xml y tamaño maximo de 1MB'
       );
     } else {
-      const filePath = `proveedoresExtra/${this.provider.rfc}/${fileInput.name}`;
+      const filePath = `proveedoresExtra/${this.provider.rfc}/dealMemo ${
+        this.indexDealSeleccionado + 1
+      }/pago ${this.indexPagoSeleccionado + 1}/${fileInput.name}`;
       const path: any = {};
       path.pathImageProfile = filePath;
       const ref = this.storage.ref(filePath);
@@ -269,7 +298,6 @@ export class DealmemoComponent implements OnInit {
             path: filePath,
             name: fileInput.name,
           };
-          console.log(xml);
           this.dealSeleccionado.pagos[this.indexPagoSeleccionado].xml.file =
             xml;
           this.generalService
@@ -289,7 +317,6 @@ export class DealmemoComponent implements OnInit {
   uploadFilePDF(event: any, index: any) {
     this.indexPagoSeleccionado = index;
     const element = event.target.files[0];
-    console.log(element);
     const fileInput = element;
     const fileType = fileInput.type;
     const fileSize = fileInput.size;
@@ -301,13 +328,14 @@ export class DealmemoComponent implements OnInit {
       // document.getElementById('labelFile').innerHTML = 'Seleccionar';
       // (<any>document.getElementById('inputGroupFile01')).value = '';
     } else {
-      console.log(fileInput.name);
       if (
         fileInput.name.split('.')[0] ===
         this.dealSeleccionado.pagos[this.indexPagoSeleccionado].xml
           .folioComprobante
       ) {
-        const filePath = `proveedoresExtra/${this.provider.rfc}/${fileInput.name}`;
+        const filePath = `proveedoresExtra/${this.provider.rfc}/dealMemo ${
+          this.indexDealSeleccionado + 1
+        }/pago ${this.indexPagoSeleccionado + 1}/${fileInput.name}`;
         const path: any = {};
         path.pathImageProfile = filePath;
         const ref = this.storage.ref(filePath);
@@ -320,7 +348,6 @@ export class DealmemoComponent implements OnInit {
               path: filePath,
               name: fileInput.name,
             };
-            console.log(pdf);
             this.dealSeleccionado.pagos[this.indexPagoSeleccionado].pdf = pdf;
             this.dealSeleccionado.pagos[this.indexPagoSeleccionado].status =
               'En revisión';
