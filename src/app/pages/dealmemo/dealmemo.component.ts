@@ -37,7 +37,6 @@ export class DealmemoComponent implements OnInit {
 
   ngOnInit(): void {
     const url = this.router.parseUrl(this.router.url);
-    console.log(url);
     this.idCompany = url.root.children.primary.segments[1].path;
     this.idProject = url.root.children.primary.segments[2].path;
 
@@ -53,7 +52,6 @@ export class DealmemoComponent implements OnInit {
       .getUserDB(uid)
       .subscribe((res: any) => {
         this.provider = res[0];
-        console.log(this.provider);
         this.dealSeleccionado = undefined;
         this.dealsFiltrados = this.filterDeals();
         this.sumaValores();
@@ -79,7 +77,6 @@ export class DealmemoComponent implements OnInit {
   seleccionDeal(index: number) {
     this.dealSeleccionado = this.provider.dealMemos[index];
     this.indexDealSeleccionado = index;
-    console.log(this.dealSeleccionado);
   }
 
   onFileChange(ev: any, index: number) {
@@ -234,7 +231,6 @@ export class DealmemoComponent implements OnInit {
             }
           }
         }
-        console.log(this.xml);
         this.validation();
       } catch (error) {
         console.error('Ocurrio un error: ', error);
@@ -382,10 +378,34 @@ export class DealmemoComponent implements OnInit {
   }
 
   deleteFilePDF(item: any) {
-    console.log(item);
     const pathPDF = item.pdf.path;
-    console.log(pathPDF);
-
-    // this.generalService.deleteFile()
+    this.generalService
+      .deleteFile(pathPDF)
+      .subscribe((res) => {})
+      .unsubscribe();
+    delete item.pdf;
+    this.generalService
+      .updateUserDB(this.provider.id, {
+        dealMemos: this.provider.dealMemos,
+      })
+      .then((res) => {
+        Notiflix.Notify.success('Se actualizo correctamente la base de datos');
+      });
+  }
+  deleteFileXML(item: any) {
+    const pathXML = item.xml.file.path;
+    this.generalService
+      .deleteFile(pathXML)
+      .subscribe((res) => {})
+      .unsubscribe();
+    delete item.xml;
+    item.status = 'Pendiente';
+    this.generalService
+      .updateUserDB(this.provider.id, {
+        dealMemos: this.provider.dealMemos,
+      })
+      .then(() => {
+        Notiflix.Notify.success('Se actualizo correctamente la base de datos');
+      });
   }
 }

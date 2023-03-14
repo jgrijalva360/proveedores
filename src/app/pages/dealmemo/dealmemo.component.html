@@ -58,10 +58,12 @@
                   item.xml.folioComprobante
                 }}</a>
                 &nbsp;
-                <i
-                  class="fa-solid fa-xmark iconDelete"
-                  *ngIf="item.status === 'En revisión' && !item.pdf"
-                ></i>
+                <button (click)="deleteFileXML(item)">
+                  <i
+                    class="fa-solid fa-xmark iconDelete"
+                    *ngIf="item.status === 'En revisión' && !item.pdf"
+                  ></i>
+                </button>
               </ng-container>
               <input
                 class="form-control form-control-sm"
