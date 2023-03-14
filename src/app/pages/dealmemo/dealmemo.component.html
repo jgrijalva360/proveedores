@@ -61,7 +61,11 @@
                 <button (click)="deleteFileXML(item)">
                   <i
                     class="fa-solid fa-xmark iconDelete"
-                    *ngIf="item.status === 'En revisión' && !item.pdf"
+                    *ngIf="
+                      (item.status === 'En revisión' ||
+                        item.status === 'Pendiente') &&
+                      !item.pdf
+                    "
                   ></i>
                 </button>
               </ng-container>

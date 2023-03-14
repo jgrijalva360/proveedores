@@ -360,6 +360,18 @@ export class DealmemoComponent implements OnInit {
             this.dealSeleccionado.pagos[this.indexPagoSeleccionado].pdf = pdf;
             this.dealSeleccionado.pagos[this.indexPagoSeleccionado].status =
               'En revisión';
+            this.dealSeleccionado.pagos[
+              this.indexPagoSeleccionado
+            ].actualizado = true;
+
+            this.generalService.updateUserDB(this.provider.id, {
+              actualizado: true,
+            });
+
+            this.dealSeleccionado.pagos[
+              this.indexPagoSeleccionado
+            ].fechaSubida = new Date();
+
             this.generalService
               .updateUserDB(this.provider.id, {
                 dealMemos: this.provider.dealMemos,
