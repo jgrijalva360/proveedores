@@ -5,3 +5,9 @@ th,
 td {
   white-space: nowrap;
 }
+.iconDelete {
+color: red;
+}
+.iconDelete:hover {
+  color: #b90000;
+}

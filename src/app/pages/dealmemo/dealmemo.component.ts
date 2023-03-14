@@ -22,6 +22,7 @@ export class DealmemoComponent implements OnInit {
   indexDealSeleccionado: any;
   indexPagoSeleccionado: any;
   archivoPDF = {} as any;
+  dealsFiltrados = [] as any;
 
   userSubscription: Subscription | undefined;
   providerSubscription: Subscription | undefined;
@@ -54,8 +55,15 @@ export class DealmemoComponent implements OnInit {
         this.provider = res[0];
         console.log(this.provider);
         this.dealSeleccionado = undefined;
+        this.dealsFiltrados = this.filterDeals();
         this.sumaValores();
       });
+  }
+
+  filterDeals() {
+    return this.provider.dealMemos.filter(
+      (element: any) => element.idProject === this.idProject
+    );
   }
 
   sumaValores() {
@@ -89,8 +97,10 @@ export class DealmemoComponent implements OnInit {
       Notiflix.Notify.failure(
         `El archivo ${archivo.name} no es un archivo XML`
       );
+      (<any>(
+        document.getElementById('XMLFile' + this.indexPagoSeleccionado)
+      )).value = '';
     }
-    // (<any>document.getElementById('inputFiles')).value = '';
   }
 
   xmlToJson(lector: any) {
@@ -242,7 +252,7 @@ export class DealmemoComponent implements OnInit {
       for (let indexDeal = 0; indexDeal < dealMemo.pagos.length; indexDeal++) {
         const pago = dealMemo.pagos[indexDeal];
         if (pago.xml) {
-          if (pago.xml.folioComprobante === pago.xml.folioComprobante) {
+          if (this.xml.folioComprobante === pago.xml.folioComprobante) {
             validacionFolio = true;
             break;
           }
@@ -269,6 +279,9 @@ export class DealmemoComponent implements OnInit {
       }
     } else {
       Notiflix.Notify.failure('El RFC no corresponde al proveedor');
+      (<any>(
+        document.getElementById('XMLFile' + this.indexPagoSeleccionado)
+      )).value = '';
     }
   }
 
@@ -366,5 +379,13 @@ export class DealmemoComponent implements OnInit {
         Notiflix.Notify.failure('El nombre no corresponde al folio del XML');
       }
     }
+  }
+
+  deleteFilePDF(item: any) {
+    console.log(item);
+    const pathPDF = item.pdf.path;
+    console.log(pathPDF);
+
+    // this.generalService.deleteFile()
   }
 }
