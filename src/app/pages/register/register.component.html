@@ -1,0 +1,73 @@
+<div class="center">
+  <img class="background" src="../../../assets/logos/background.png" alt="" />
+  <div class="contenedor">
+    <img
+      class="logo img-fluid"
+      src="assets/logos/logoenconexion.png"
+      alt="Logo"
+    />
+
+    <div>
+      <p class="descript">
+        Registro de usuario <span class="span">ENCONEXIÓN</span>
+      </p>
+      <form id="formAddUser" (ngSubmit)="onSignIn()">
+        <div class="form-group my-2">
+          <input
+            type="text"
+            class="form-control"
+            name="nombre"
+            id="nombre"
+            placeholder="Nombre o Razón Social"
+            [(ngModel)]="provider.nombre"
+            disabled
+          />
+        </div>
+        <div class="form-group my-2">
+          <input
+            type="text"
+            class="form-control"
+            name="rfc"
+            id="rfc"
+            placeholder="RFC"
+            [(ngModel)]="provider.rfc"
+            maxlength="13"
+            disabled
+          />
+        </div>
+        <div class="form-group my-2">
+          <input
+            type="text"
+            class="form-control"
+            name="email"
+            id="email"
+            placeholder="Email"
+            [(ngModel)]="provider.email"
+            disabled
+          />
+        </div>
+        <div class="form-group my-2">
+          <input
+            type="password"
+            class="form-control"
+            name="pass"
+            id="pass"
+            placeholder="Contraseña"
+            [(ngModel)]="provider.password"
+          />
+        </div>
+        <div class="form-group my-2">
+          <input
+            type="password"
+            class="form-control"
+            name="pass2"
+            id="pass2"
+            placeholder="Confirmar contraseña"
+            [(ngModel)]="provider.confirmPass"
+          />
+        </div>
+        <button type="submit" class="btn-enconexion">Registrarme</button>
+      </form>
+    </div>
+  </div>
+</div>

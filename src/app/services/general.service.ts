@@ -19,6 +19,10 @@ export class GeneralService {
       .valueChanges();
   }
 
+  getUserId(id: string) {
+    return this.afs.collection('proveedoresExternos').doc(id).valueChanges();
+  }
+
   getUserDB(uid: string) {
     return this.afs
       .collection('proveedoresExternos', (ref) => ref.where('uid', '==', uid))

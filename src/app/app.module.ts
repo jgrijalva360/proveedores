@@ -17,6 +17,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { DealmemoComponent } from './pages/dealmemo/dealmemo.component';
 import { CompanyComponent } from './pages/company/company.component';
 import { FilesComponent } from './pages/files/files.component';
+import { RegisterComponent } from './pages/register/register.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { FilesComponent } from './pages/files/files.component';
     DealmemoComponent,
     CompanyComponent,
     FilesComponent,
+    RegisterComponent,
   ],
   imports: [
     BrowserModule,
