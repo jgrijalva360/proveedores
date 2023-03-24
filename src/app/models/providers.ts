@@ -29,6 +29,7 @@ export interface Provider {
   fechaRegistro: any;
   files: any;
   dealMemos: any[];
+  actualizado?: boolean;
 }
 
 export interface Bank {

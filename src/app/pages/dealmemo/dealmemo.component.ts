@@ -22,6 +22,7 @@ export class DealmemoComponent implements OnInit {
   indexDealSeleccionado: any;
   indexPagoSeleccionado: any;
   archivoPDF = {} as any;
+  dealsFiltrados = [] as any;
 
   userSubscription: Subscription | undefined;
   providerSubscription: Subscription | undefined;
@@ -36,7 +37,6 @@ export class DealmemoComponent implements OnInit {
 
   ngOnInit(): void {
     const url = this.router.parseUrl(this.router.url);
-    console.log(url);
     this.idCompany = url.root.children.primary.segments[1].path;
     this.idProject = url.root.children.primary.segments[2].path;
 
@@ -52,10 +52,16 @@ export class DealmemoComponent implements OnInit {
       .getUserDB(uid)
       .subscribe((res: any) => {
         this.provider = res[0];
-        console.log(this.provider);
         this.dealSeleccionado = undefined;
+        this.dealsFiltrados = this.filterDeals();
         this.sumaValores();
       });
+  }
+
+  filterDeals() {
+    return this.provider.dealMemos.filter(
+      (element: any) => element.idProject === this.idProject
+    );
   }
 
   sumaValores() {
@@ -71,7 +77,6 @@ export class DealmemoComponent implements OnInit {
   seleccionDeal(index: number) {
     this.dealSeleccionado = this.provider.dealMemos[index];
     this.indexDealSeleccionado = index;
-    console.log(this.dealSeleccionado);
   }
 
   onFileChange(ev: any, index: number) {
@@ -89,8 +94,10 @@ export class DealmemoComponent implements OnInit {
       Notiflix.Notify.failure(
         `El archivo ${archivo.name} no es un archivo XML`
       );
+      (<any>(
+        document.getElementById('XMLFile' + this.indexPagoSeleccionado)
+      )).value = '';
     }
-    // (<any>document.getElementById('inputFiles')).value = '';
   }
 
   xmlToJson(lector: any) {
@@ -224,7 +231,6 @@ export class DealmemoComponent implements OnInit {
             }
           }
         }
-        console.log(this.xml);
         this.validation();
       } catch (error) {
         console.error('Ocurrio un error: ', error);
@@ -242,7 +248,7 @@ export class DealmemoComponent implements OnInit {
       for (let indexDeal = 0; indexDeal < dealMemo.pagos.length; indexDeal++) {
         const pago = dealMemo.pagos[indexDeal];
         if (pago.xml) {
-          if (pago.xml.folioComprobante === pago.xml.folioComprobante) {
+          if (this.xml.folioComprobante === pago.xml.folioComprobante) {
             validacionFolio = true;
             break;
           }
@@ -269,6 +275,9 @@ export class DealmemoComponent implements OnInit {
       }
     } else {
       Notiflix.Notify.failure('El RFC no corresponde al proveedor');
+      (<any>(
+        document.getElementById('XMLFile' + this.indexPagoSeleccionado)
+      )).value = '';
     }
   }
 
@@ -351,6 +360,18 @@ export class DealmemoComponent implements OnInit {
             this.dealSeleccionado.pagos[this.indexPagoSeleccionado].pdf = pdf;
             this.dealSeleccionado.pagos[this.indexPagoSeleccionado].status =
               'En revisión';
+            this.dealSeleccionado.pagos[
+              this.indexPagoSeleccionado
+            ].actualizado = true;
+
+            this.generalService.updateUserDB(this.provider.id, {
+              actualizado: true,
+            });
+
+            this.dealSeleccionado.pagos[
+              this.indexPagoSeleccionado
+            ].fechaSubida = new Date();
+
             this.generalService
               .updateUserDB(this.provider.id, {
                 dealMemos: this.provider.dealMemos,
@@ -366,5 +387,37 @@ export class DealmemoComponent implements OnInit {
         Notiflix.Notify.failure('El nombre no corresponde al folio del XML');
       }
     }
+  }
+
+  deleteFilePDF(item: any) {
+    const pathPDF = item.pdf.path;
+    this.generalService
+      .deleteFile(pathPDF)
+      .subscribe((res) => {})
+      .unsubscribe();
+    delete item.pdf;
+    this.generalService
+      .updateUserDB(this.provider.id, {
+        dealMemos: this.provider.dealMemos,
+      })
+      .then((res) => {
+        Notiflix.Notify.success('Se actualizo correctamente la base de datos');
+      });
+  }
+  deleteFileXML(item: any) {
+    const pathXML = item.xml.file.path;
+    this.generalService
+      .deleteFile(pathXML)
+      .subscribe((res) => {})
+      .unsubscribe();
+    delete item.xml;
+    item.status = 'Pendiente';
+    this.generalService
+      .updateUserDB(this.provider.id, {
+        dealMemos: this.provider.dealMemos,
+      })
+      .then(() => {
+        Notiflix.Notify.success('Se actualizo correctamente la base de datos');
+      });
   }
 }

@@ -15,15 +15,17 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            *ngFor="let item of provider.dealMemos; let i = index"
-            (click)="seleccionDeal(i)"
-            class="puntero"
-          >
-            <td>{{ item.descripcionActividad }}</td>
-            <td class="text-center">{{ item.pagos.length }}</td>
-            <td>{{ item.valor | number : "1.2-3" }}</td>
-          </tr>
+          <ng-container *ngFor="let item of provider.dealMemos; let i = index">
+            <tr
+              (click)="seleccionDeal(i)"
+              class="puntero"
+              *ngIf="item.idProject === idProject"
+            >
+              <td>{{ item.descripcionActividad }}</td>
+              <td class="text-center">{{ item.pagos.length }}</td>
+              <td>{{ item.valor | number : "1.2-3" }}</td>
+            </tr>
+          </ng-container>
         </tbody>
       </table>
     </div>
@@ -55,6 +57,17 @@
                 <a [href]="item.xml?.file?.link" target="_blank">{{
                   item.xml.folioComprobante
                 }}</a>
+                &nbsp;
+                <button (click)="deleteFileXML(item)">
+                  <i
+                    class="fa-solid fa-xmark iconDelete"
+                    *ngIf="
+                      (item.status === 'En revisión' ||
+                        item.status === 'Pendiente') &&
+                      !item.pdf
+                    "
+                  ></i>
+                </button>
               </ng-container>
               <input
                 class="form-control form-control-sm"
@@ -67,7 +80,13 @@
             </td>
             <td style="min-width: 250px">
               <ng-container *ngIf="item.pdf">
-                <a [href]="item.pdf.link" target="_blank">Descargar</a>
+                <a [href]="item.pdf.link" target="_blank">Descargar</a> &nbsp;
+                <button (click)="deleteFilePDF(item)">
+                  <i
+                    class="fa-solid fa-xmark iconDelete"
+                    *ngIf="item.status === 'En revisión' && item.pdf"
+                  ></i>
+                </button>
               </ng-container>
               <input
                 class="form-control form-control-sm"
@@ -79,15 +98,16 @@
                 [disabled]="!item.xml"
               />
             </td>
-            <td
+            <th
               [ngClass]="{
                 'text-primary': item.status === 'Pendiente',
                 'text-warning': item.status === 'En revisión',
-                'text-success': item.status === 'Aprobado'
+                'text-success': item.status === 'Aprobado',
+                'text-danger': item.status === 'Rechazado'
               }"
             >
               {{ item.status }}
-            </td>
+            </th>
           </tr>
         </tbody>
       </table>

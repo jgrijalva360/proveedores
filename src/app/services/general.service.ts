@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GeneralService {
-  constructor(private afs: AngularFirestore) {}
+  constructor(
+    private afs: AngularFirestore,
+    public storage: AngularFireStorage
+  ) {}
 
   getXMLPublic(idCompany: string, idProject: string, RFC: string) {
     return this.afs
@@ -49,6 +53,10 @@ export class GeneralService {
       .collection('proveedoresExternos')
       .doc(objUser.id)
       .update(objUser);
+  }
+
+  deleteFile(path: any) {
+    return this.storage.ref(path).delete();
   }
 
   updateUserDB(id: string, obj: any) {
