@@ -12,8 +12,9 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
   styleUrls: ['./provider.component.css'],
 })
 export class ProviderComponent implements OnInit, OnDestroy {
-  provider = { banks: [] } as Provider;
+  provider = {} as any;
   banco = {} as Bank;
+  idUser: any;
   arrRepse = [
     {
       name: 'Registro validado ante la secretaria del Trabajo y Previsión Social.',
@@ -56,18 +57,15 @@ export class ProviderComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.userSubscription = this.authService.userData$?.subscribe(
-      (res: any) => {
-        this.getUserDB(res.uid);
-      }
-    );
+    this.idUser = window.sessionStorage.getItem('id') || '';
+    this.getUserDB();
   }
 
-  getUserDB(uid: any) {
+  getUserDB() {
     this.providerSubscription = this.generalService
-      .getUserDB(uid)
+      .getUserDB(this.idUser)
       .subscribe((res: any) => {
-        this.provider = res[0];
+        this.provider = res;
         if (this.provider.banks === undefined) {
           this.provider.banks = [];
         }
@@ -91,7 +89,7 @@ export class ProviderComponent implements OnInit, OnDestroy {
   }
 
   saveData() {
-    this.generalService.saveUserDB(this.provider).then(() => {
+    this.generalService.saveUserDB(this.provider, this.idUser).then(() => {
       console.log('Se guardo correctamente');
       Notify.success('Tus datos se actualizaron correctamente');
     });

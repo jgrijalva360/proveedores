@@ -13,6 +13,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   title = 'Home';
   provider = {} as any;
   empresaSeleccionada = { proyectos: [] } as any;
+  idUser: any;
 
   user: Subscription | undefined;
   providerSubscription: Subscription | undefined;
@@ -24,24 +25,20 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.user = this.authService.userData$?.subscribe((res: any) => {
-      this.getUserDB(res.uid);
-    });
-  }
-
-  getUserDB(uid: any) {
-    this.providerSubscription = this.generalService
-      .getUserDB(uid)
-      .subscribe((res: any) => {
-        this.provider = res[0];
-        if (this.provider.banks === undefined) {
-          this.provider.banks = [];
-        }
-        if (this.provider.aprobado) {
-        } else {
-          this.router.navigateByUrl('/home/datos');
-        }
-      });
+    const idUser = window.sessionStorage.getItem('id');
+    if (idUser) {
+      this.providerSubscription = this.generalService
+        .getUserDB(idUser)
+        .subscribe((res) => {
+          this.provider = res;
+          if (this.provider.aprobado) {
+          } else {
+            this.router.navigateByUrl('/home/datos');
+          }
+        });
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 
   ngOnDestroy(): void {

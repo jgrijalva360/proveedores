@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import * as Notiflix from 'notiflix';
 import { GeneralService } from 'src/app/services/general.service';
 
 @Component({
@@ -31,10 +32,20 @@ export class RegisterComponent implements OnInit {
   }
 
   onSignIn() {
+    console.log(this.provider.password);
+    console.log(this.confirmPassword);
+
     if (this.provider.password === this.confirmPassword) {
+      this.generalService
+        .updateUserDB(this.idProvider, {
+          password: window.btoa(this.provider.password),
+          registrado: true,
+          aprobado: false,
+        })
+        .then(() => {
+          Notiflix.Notify.success('Registrado correctamente');
+          this.router.navigate(['/']);
+        });
     }
-    this.generalService.updateUserDB(this.idProvider, {
-      password: window.btoa(this.provider.password),
-    }); // No traer los datos del password al volver a consultar la liga
   }
 }

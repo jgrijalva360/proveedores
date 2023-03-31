@@ -42,11 +42,7 @@ export class FilesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.userSubscription = this.authService.userData$?.subscribe(
-      (res: any) => {
-        this.getUserDB(res.uid);
-      }
-    );
+    this.getUserDB(this.authService.idUser);
   }
 
   getUserDB(uid: any) {

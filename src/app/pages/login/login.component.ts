@@ -46,199 +46,41 @@ export class LoginComponent implements OnInit {
 
   onLogin() {
     this.authService
-      .loginEmailUser(this.email, this.password)
-      .then((res) => {
+      .getUser(this.email, window.btoa(this.password))
+      .subscribe((res) => {
         console.log(res);
-        this.router.navigate(['./home']);
-      })
-      .catch((err) => {
-        if (err.code === 'auth/invalid-email') {
-          this.errorMsg = 'Verifica el usuario';
-          document.getElementById('user')?.classList.add('is-invalid');
-          setTimeout(() => {
-            this.errorMsg = '';
-          }, 3000);
-        } else {
-          this.errorMsg = 'Verifica la contraseña';
-          document
-            .getElementById('user')
-            ?.classList.replace('is-invalid', 'is-valid');
-          document.getElementById('password')?.classList.add('is-invalid');
-          setTimeout(() => {
-            this.errorMsg = '';
-          }, 3000);
+        if (res.length > 0) {
+          this.authService.user = res[0];
+
+          window.sessionStorage.setItem('id', res[0].id);
+          this.router.navigate(['./home']);
         }
       });
-  }
 
-  onSignIn() {
-    let regCorrecto1 = false;
-    let regCorrecto2 = false;
-    let regCorrecto3 = false;
-    let regCorrecto4 = false;
-    let regCorrecto5 = false;
-    let regCorrecto6 = false;
-
-    if (this.addUser.nombre.trim() === '') {
-      document.getElementById('nombre')?.classList.add('is-invalid');
-      regCorrecto1 = false;
-    } else {
-      document
-        .getElementById('nombre')
-        ?.classList.replace('is-invalid', 'is-valid');
-      regCorrecto1 = true;
-    }
-
-    if (this.addUser.rfc.trim() === '') {
-      document.getElementById('rfc')?.classList.add('is-invalid');
-      regCorrecto2 = false;
-    } else {
-      document
-        .getElementById('rfc')
-        ?.classList.replace('is-invalid', 'is-valid');
-      regCorrecto2 = true;
-    }
-
-    if (this.rfcValido(this.addUser.rfc.toUpperCase())) {
-      document
-        .getElementById('rfc')
-        ?.classList.replace('is-invalid', 'is-valid');
-      regCorrecto3 = true;
-      this.addUser.rfc = this.addUser.rfc.toUpperCase();
-      if (this.addUser.rfc.length === 13) {
-        this.addUser.persona = 'Física';
-      } else if (this.addUser.rfc.length === 12) {
-        this.addUser.persona = 'Moral';
-      }
-    } else {
-      document.getElementById('rfc')?.classList.add('is-invalid');
-      regCorrecto3 = false;
-    }
-
-    if (this.addUser.email.trim() === '') {
-      document.getElementById('email')?.classList.add('is-invalid');
-      regCorrecto4 = false;
-    } else {
-      document
-        .getElementById('email')
-        ?.classList.replace('is-invalid', 'is-valid');
-      regCorrecto4 = true;
-    }
-
-    if (this.addUser.password.trim() === '') {
-      document.getElementById('pass')?.classList.add('is-invalid');
-      regCorrecto5 = false;
-    } else {
-      document
-        .getElementById('pass')
-        ?.classList.replace('is-invalid', 'is-valid');
-      regCorrecto5 = true;
-    }
-
-    if (
-      this.addUser.confirmPass.trim() === '' &&
-      this.addUser.password !== this.addUser.confirmPass
-    ) {
-      document.getElementById('pass2')?.classList.add('is-invalid');
-      regCorrecto6 = false;
-    } else {
-      document
-        .getElementById('pass2')
-        ?.classList.replace('is-invalid', 'is-valid');
-      regCorrecto6 = true;
-    }
-
-    if (
-      regCorrecto1 &&
-      regCorrecto2 &&
-      regCorrecto3 &&
-      regCorrecto4 &&
-      regCorrecto5 &&
-      regCorrecto6
-    ) {
-      // Envio los datos al servicio y me regresa el uid del usuario
-      this.authService
-        .addUser(this.addUser.email, this.addUser.password)
-        .then((res: any) => {
-          this.authService.emailVerification();
-          // guardo el uid en el objeto que voy a mandar al servicio
-          const objUser = {} as any;
-          objUser.typeAcount = 'proveedor';
-          objUser.uid = res.user.uid;
-          objUser.userType = 'Usuario';
-          objUser.email = res.user.email;
-          objUser.nombre = this.addUser.nombre;
-          objUser.rfc = this.addUser.rfc;
-          objUser.persona = this.addUser.persona;
-          objUser.actualizado = true;
-          objUser.fechaRegistro = new Date();
-          objUser.files = {};
-          objUser.banks = [];
-          objUser.empresas = [];
-          objUser.archivos = [
-            {
-              name: 'Identificacion Oficial',
-              camelCase: 'identificacionOficial',
-              archivo: {},
-              status: 'Pendiente',
-              observacion: '',
-            },
-            {
-              name: 'Caratula Estado de Cuenta',
-              camelCase: 'edoCta',
-              archivo: {},
-              status: 'Pendiente',
-              observacion:
-                'antigüedad máxima de 3 meses, en donde aparezca el nombre y logo del banco, la cuenta CLABE, nombre y datos del cuentahabiente.',
-            },
-            {
-              name: 'Constancia de Situación Fiscal',
-              camelCase: 'constanciaSF',
-              archivo: {},
-              status: 'Pendiente',
-              observacion:
-                'Correspondiente al mes de su contratación, en donde se indique que la actividad o servicio es congruente con el objeto del contrato. Este documento tendrá que ser actualizado y enviado cada mes a contabilidad, para que proceda el pago.',
-            },
-            {
-              name: 'Opinión de cumplimiento 32D positiva',
-              camelCase: 'opinionCumplimiento32D',
-              archivo: {},
-              status: 'Pendiente',
-              observacion:
-                'Este documento tendrá que ser actualizado y enviado cada mes a contabilidad, para que proceda el pago.',
-            },
-            {
-              name: 'Comprobante de domicilio',
-              camelCase: 'comprobanteDomicilio',
-              archivo: {},
-              status: 'Pendiente',
-              observacion:
-                'No debe tener una antigüedad mayor a 3 meses (Luz, Agua, Teléfono, Predial.',
-            },
-          ];
-          // envio el uid a la base de datos
-          this.authService.addUserDB(objUser).then(() => {
-            this.passAcces = '';
-            this.addUser = {} as any;
-            this.access = false;
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-          if (error.code === 'auth/auth/email-already-in-use') {
-            document.getElementById('email')?.classList.add('is-invalid');
-            // Notiflix.Notify.Failure(
-            //   'El Email ya se encuentra registrado'
-            // );
-          } else if (error.code === 'auth/weak-password') {
-            // Notiflix.Notify.Failure(
-            //   'La contraseña debe contener minimo 6 caracteres'
-            // );
-          } else {
-            document.getElementById('email')?.classList.add('is-invalid');
-          }
-        });
-    }
+    // this.authService
+    //   .loginEmailUser(this.email, this.password)
+    //   .then((res) => {
+    //     console.log(res);
+    //     this.router.navigate(['./home']);
+    //   })
+    //   .catch((err) => {
+    //     if (err.code === 'auth/invalid-email') {
+    //       this.errorMsg = 'Verifica el usuario';
+    //       document.getElementById('user')?.classList.add('is-invalid');
+    //       setTimeout(() => {
+    //         this.errorMsg = '';
+    //       }, 3000);
+    //     } else {
+    //       this.errorMsg = 'Verifica la contraseña';
+    //       document
+    //         .getElementById('user')
+    //         ?.classList.replace('is-invalid', 'is-valid');
+    //       document.getElementById('password')?.classList.add('is-invalid');
+    //       setTimeout(() => {
+    //         this.errorMsg = '';
+    //       }, 3000);
+    //     }
+    //   });
   }
 
   rfcValido(rfc: any, aceptarGenerico = false) {
@@ -293,41 +135,5 @@ export class LoginComponent implements OnInit {
   openModalReset() {
     // $('#restartPass').modal('show');
     new bootstrap.Modal('#restartPass').show();
-  }
-
-  resetPass() {
-    // const myModal = new bootstrap.Modal(document.getElementById('myModal'));
-    // or
-
-    const validateEmail = () => {
-      // eslint-disable-next-line
-      const re =
-        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-      return re.test(String(this.emailReset).toLowerCase());
-    };
-    if (validateEmail()) {
-      this.authService
-        .resetPass(this.emailReset)
-        .then(() => {
-          // $('#restartPass').modal('hide');
-          // Notiflix.Report.Success(
-          //   'Se envio correctamente',
-          //   'Se te envio una liga de restablecimiento a tu correo electronico',
-          //   'Ok'
-          // );
-        })
-        .catch((err) => {
-          if (err.code === 'auth/user-not-found') {
-            // Notiflix.Report.Failure(
-            //   'Email incorrecto',
-            //   'El email no se encuentra registrado',
-            //   'Ok'
-            // );
-          }
-        });
-    } else {
-      // Notiflix.Notify.Failure('El email es incorrecto');
-    }
   }
 }

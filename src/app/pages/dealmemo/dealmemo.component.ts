@@ -39,12 +39,7 @@ export class DealmemoComponent implements OnInit {
     const url = this.router.parseUrl(this.router.url);
     this.idCompany = url.root.children.primary.segments[1].path;
     this.idProject = url.root.children.primary.segments[2].path;
-
-    this.userSubscription = this.authService.userData$?.subscribe(
-      (res: any) => {
-        this.getUserDB(res.uid);
-      }
-    );
+    this.getUserDB(this.authService.idUser);
   }
 
   getUserDB(uid: any) {

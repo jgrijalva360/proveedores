@@ -11,6 +11,7 @@ import { GeneralService } from 'src/app/services/general.service';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+  idUser = '';
   dataUser = {} as any;
   user = {} as any;
   userDB = {} as any;
@@ -25,23 +26,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private router: Router
   ) {}
   ngOnInit(): void {
-    this.subscribeUser = this.authService.userData$?.subscribe((res) => {
-      this.getUserDB(res.multiFactor.user.uid);
-    });
+    this.idUser = window.sessionStorage.getItem('id') as any;
+    this.getUserDB();
   }
 
-  getUserDB(uid: string): void {
+  getUserDB() {
     this.subscribeUserDB = this.generalService
-      .getUserDB(uid)
+      .getUserDB(this.idUser)
       .subscribe((res: any) => {
-        this.dataUser = res[0];
+        this.dataUser = res;
       });
   }
 
   onLogout(): void {
-    this.authService.logOutUser().then(() => {
-      this.router.navigateByUrl('/');
-    });
+    this.router.navigateByUrl('/');
   }
 
   ngOnDestroy() {

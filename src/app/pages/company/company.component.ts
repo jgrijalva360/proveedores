@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { GeneralService } from 'src/app/services/general.service';
@@ -8,32 +8,30 @@ import { GeneralService } from 'src/app/services/general.service';
   templateUrl: './company.component.html',
   styleUrls: ['./company.component.css'],
 })
-export class CompanyComponent {
+export class CompanyComponent implements OnInit, OnDestroy {
   empresaSeleccionada = { proyectos: [] } as any;
   title = 'Home';
   provider = {} as any;
+  idUser = window.sessionStorage.getItem('id');
 
   providerSubscription: Subscription | undefined;
 
-  constructor(
-    private authService: AuthService,
-    private generalService: GeneralService
-  ) {}
+  constructor(private generalService: GeneralService) {}
 
   ngOnInit() {
-    this.authService.userData$?.subscribe((res: any) => {
-      this.getUserDB(res.uid);
-    });
+    this.getUserDB();
   }
 
-  getUserDB(uid: any) {
+  getUserDB() {
     this.providerSubscription = this.generalService
-      .getUserDB(uid)
-      .subscribe((res: any) => {
-        this.provider = res[0];
-        if (this.provider.banks === undefined) {
-          this.provider.banks = [];
-        }
+      .getUserDB(this.idUser || '')
+      .subscribe((res) => {
+        console.log(res);
+        this.provider = res;
       });
+  }
+
+  ngOnDestroy() {
+    this.providerSubscription?.unsubscribe();
   }
 }

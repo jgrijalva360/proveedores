@@ -40,9 +40,6 @@ export class ImportadorComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.authService.userData$?.subscribe((res: any) => {
-      console.log(res);
-    });
     const url = this.router.parseUrl(this.router.url);
     console.log(url);
     // if (url.root.children.primary.segments.length > 1) {
