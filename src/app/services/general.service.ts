@@ -40,10 +40,10 @@ export class GeneralService {
       .doc(idUser)
       .update(objUser);
   }
-  updateFilesUserDB(objUser: any) {
+  updateFilesUserDB(idUser: any, objUser: any) {
     return this.afs
       .collection('proveedoresExternos')
-      .doc(objUser.id)
+      .doc(idUser)
       .update(objUser);
   }
 

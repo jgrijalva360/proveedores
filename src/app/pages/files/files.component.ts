@@ -29,6 +29,7 @@ export class FilesComponent implements OnInit, OnDestroy {
   };
 
   file: any;
+  idUser: any;
 
   mesActual = new Date().getMonth() + 1;
 
@@ -42,7 +43,7 @@ export class FilesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.getUserDB(this.authService.idUser);
+    this.idUser = window.sessionStorage.getItem('id') || '';
   }
 
   getUserDB(uid: any) {
@@ -166,9 +167,11 @@ export class FilesComponent implements OnInit, OnDestroy {
   }
 
   updateFiles() {
-    this.generalService.updateFilesUserDB(this.provider).then((res) => {
-      console.log(res);
-    });
+    this.generalService
+      .updateFilesUserDB(this.idUser, this.provider)
+      .then((res) => {
+        console.log(res);
+      });
   }
 
   ngOnDestroy(): void {}

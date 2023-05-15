@@ -58,6 +58,7 @@ export class ProviderComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.idUser = window.sessionStorage.getItem('id') || '';
+    console.log(this.idUser);
     this.getUserDB();
   }
 
@@ -140,9 +141,11 @@ export class ProviderComponent implements OnInit, OnDestroy {
   }
 
   updateFiles() {
-    this.generalService.updateFilesUserDB(this.provider).then((res) => {
-      console.log(res);
-    });
+    this.generalService
+      .updateFilesUserDB(this.idUser, this.provider)
+      .then((res) => {
+        console.log(res);
+      });
   }
 
   addFileRepse() {
