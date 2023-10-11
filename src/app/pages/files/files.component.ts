@@ -43,17 +43,16 @@ export class FilesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.idUser = window.sessionStorage.getItem('id') || '';
+    this.getProvider();
   }
 
-  getUserDB(uid: any) {
+  getProvider() {
+    this.idUser = window.sessionStorage.getItem('id') || '';
+    console.log(this.idUser);
     this.providerSubscription = this.generalService
-      .getUserDB(uid)
+      .getUserDB(this.idUser)
       .subscribe((res: any) => {
-        this.provider = res[0];
-        if (this.provider.banks === undefined) {
-          this.provider.banks = [];
-        }
+        this.provider = res;
         console.log(this.provider);
         this.files();
       });
@@ -115,7 +114,7 @@ export class FilesComponent implements OnInit, OnDestroy {
     console.log(prueba);
   }
 
-  uploadFile(event: any, nameFile: string) {
+  uploadFile(event: any, index: number) {
     const fileInput = event.target.files[0];
     const fileType = fileInput.type;
     const fileSize = fileInput.size;
@@ -138,7 +137,9 @@ export class FilesComponent implements OnInit, OnDestroy {
         (date.getMonth() + 1).toString().padStart(2, '0') +
         '-' +
         date.getFullYear();
-      const filePath = `proveedoresExtra/${this.provider.rfc}/${nameFile}/${fecha}`;
+      const filePath = `proveedoresExtra/${this.provider.rfc}/${
+        this.provider.files[index].typeFile
+      }/${this.mesATexto(this.mesActual)}/${fecha}`;
       const path: any = {};
       path.pathImageProfile = filePath;
       const ref = this.storage.ref(filePath);
@@ -154,10 +155,7 @@ export class FilesComponent implements OnInit, OnDestroy {
             status: 'En revisión',
           };
 
-          if (!this.provider.files[nameFile]) {
-            this.provider.files[nameFile] = [];
-          }
-          this.provider.files[nameFile].push(objFile);
+          this.provider.files[index].archivos.push(objFile);
           // Actualizar Proveedor
           this.updateFiles();
           console.log(this.provider);

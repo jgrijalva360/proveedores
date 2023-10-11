@@ -29,7 +29,9 @@
               "./node_modules/@fortawesome/fontawesome-free/js/all.min.js"
             ],
             "allowedCommonJsDependencies": [
-              "notiflix/build/notiflix-notify-aio"
+              "notiflix/build/notiflix-notify-aio",
+              "moment",
+              "notiflix"
             ]
           },
           "configurations": {

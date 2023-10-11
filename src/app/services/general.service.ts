@@ -54,4 +54,47 @@ export class GeneralService {
   updateUserDB(id: string, obj: any) {
     return this.afs.collection('proveedoresExternos').doc(id).update(obj);
   }
+
+  mesATexto(value: number) {
+    let letrasMes = '';
+    switch (value) {
+      case 1:
+        letrasMes = 'Enero';
+        break;
+      case 2:
+        letrasMes = 'Febrero';
+        break;
+      case 3:
+        letrasMes = 'Marzo';
+        break;
+      case 4:
+        letrasMes = 'Abril';
+        break;
+      case 5:
+        letrasMes = 'Mayo';
+        break;
+      case 6:
+        letrasMes = 'Junio';
+        break;
+      case 7:
+        letrasMes = 'Julio';
+        break;
+      case 8:
+        letrasMes = 'Agosto';
+        break;
+      case 9:
+        letrasMes = 'Septiembre';
+        break;
+      case 10:
+        letrasMes = 'Octubre';
+        break;
+      case 11:
+        letrasMes = 'Noviembre';
+        break;
+      case 12:
+        letrasMes = 'Diciembre';
+        break;
+    }
+    return letrasMes;
+  }
 }

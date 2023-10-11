@@ -1,17 +1,17 @@
 /* @import url('https://fonts.googleapis.com/css?family=Fredericka+the+Great&display=swap'); */
 p {
   font-size: 1.1rem;
+  margin: 0;
 }
 span {
   font-weight: bold;
-  color: #009fab;
+  font-size: 0.8rem;
 }
 
 .buttonMenu {
   font-size: 1em;
   width: 8.5em;
   height: 8.5em;
-  background-color: #039fab;
   /* background-color: #027c85; */
   /* background-color: #fff; */
   /* color: #039fab; */
@@ -27,7 +27,6 @@ span {
 
 .buttonActivate {
   transform: scale(1.1);
-  background-color: #007780;
 }
 
 .icon {
@@ -48,4 +47,14 @@ span {
   p {
     font-size: 0.9em;
   }
+}
+
+.colorGreen {
+  background-color: #3ab44a;
+}
+.colorRed {
+  background-color: #c20000;
+}
+.colorYellow {
+  background-color: #ddce00;
 }

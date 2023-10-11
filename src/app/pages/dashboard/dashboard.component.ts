@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { GeneralService } from 'src/app/services/general.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,76 +9,47 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent implements OnInit {
-  ngOnInit(): void {}
+  provider = {} as any;
+  mesActual: any;
 
-  // dataUser = {};
-  // proyectos = [];
-  // isAdmin: boolean | undefined;
-  // idCompany: undefined;
-  // ruta: undefined;
-  // imgProy = [];
-  // sinProyectos = false;
-  // userType: undefined;
-  // subscriberURL: Subscription | undefined;
-  // subscriberRoleUser: Subscription | undefined;
-  // subscriberGetProjects: Subscription | undefined;
-  // subscriberGetDashboard: Subscription | undefined;
-  // constructor(
-  //   private empresasService: EmpresasService,
-  //   private authService: AuthService,
-  //   private router: Router,
-  //   private route: ActivatedRoute
-  // ) {}
-  // ngOnInit() {
-  //   this.ruta = this.router.parseUrl(this.router.url);
-  //   this.subscriberURL = this.route.params.subscribe(params => {
-  //     this.idCompany = params['id'];
-  //   });
-  //   this.authService.isLogin().then(result => {
-  //     this.dataUser = result;
-  //     this.subscriberRoleUser = this.authService
-  //       .roleUser(this.dataUser.uid)
-  //       .subscribe(res => {
-  //         const idUser = res[0].id;
-  //         this.userType = res[0].userType;
-  //         if (this.userType === 'Administrador') {
-  //           this.subscriberGetProjects = this.empresasService
-  //             .getProject(this.idCompany)
-  //             .subscribe(proyectos => {
-  //               this.sinProyectos = true;
-  //               this.proyectos = proyectos;
-  //             });
-  //         } else {
-  //           this.subscriberGetDashboard = this.empresasService
-  //             .getProjectFil(this.idCompany, idUser)
-  //             .subscribe(proyectos => {
-  //               if (proyectos.length === 0) {
-  //                 this.sinProyectos = false;
-  //               } else {
-  //                 this.sinProyectos = true;
-  //                 this.proyectos = proyectos;
-  //               }
-  //             });
-  //         }
-  //       });
-  //   });
-  // }
-  // toggle() {
-  //   $('#sidebar').toggleClass('active');
-  //   $('.overlay').toggleClass('active');
-  // }
-  // ngOnDestroy() {
-  //   if (this.subscriberURL) {
-  //     this.subscriberURL.unsubscribe();
-  //   }
-  //   if (this.subscriberRoleUser) {
-  //     this.subscriberRoleUser.unsubscribe();
-  //   }
-  //   if (this.subscriberGetProjects) {
-  //     this.subscriberGetProjects.unsubscribe();
-  //   }
-  //   if (this.subscriberGetDashboard) {
-  //     this.subscriberGetDashboard.unsubscribe();
-  //   }
-  // }
+  providerSubscription: Subscription | undefined;
+
+  constructor(private generalService: GeneralService, private router: Router) {}
+  ngOnInit(): void {
+    this.getProvider();
+    this.mesActual = new Date().getMonth() + 1;
+  }
+
+  getProvider() {
+    const idUser = window.sessionStorage.getItem('id') || '';
+    console.log(idUser);
+    this.providerSubscription = this.generalService
+      .getUserDB(idUser)
+      .subscribe((res) => {
+        this.provider = res;
+        console.log(this.provider);
+        this.checkFiles();
+      });
+  }
+
+  checkFiles() {
+    this.provider.files.forEach((elementTypeFile: any) => {
+      elementTypeFile.archivos.forEach((elementFile: any) => {
+        if (elementFile.status === 'En revisión') {
+          this.provider.statusFiles = 'En revisión';
+        }
+      });
+      console.log(
+        elementTypeFile.archivos[elementTypeFile.archivos.lenght - 1]?.mes
+      );
+      if (
+        elementTypeFile.archivos[elementTypeFile.archivos.lenght - 1]?.mes ===
+        this.generalService.mesATexto(this.mesActual)
+      ) {
+        this.provider.statusFiles = 'En revisión';
+      }
+    });
+  }
+
+  ngOnDestroy() {}
 }

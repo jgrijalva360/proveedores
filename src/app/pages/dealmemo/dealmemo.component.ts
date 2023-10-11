@@ -5,6 +5,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { GeneralService } from 'src/app/services/general.service';
 import { NgxXml2jsonService } from 'ngx-xml2json';
 import * as Notiflix from 'notiflix';
+import * as moment from 'moment';
 import { Router } from '@angular/router';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 
@@ -14,6 +15,7 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
   styleUrls: ['./dealmemo.component.css'],
 })
 export class DealmemoComponent implements OnInit {
+  idUser: any;
   provider = {} as Provider;
   xml = {} as any;
   idCompany: any;
@@ -36,20 +38,26 @@ export class DealmemoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    moment.locale('es-MX');
     const url = this.router.parseUrl(this.router.url);
     this.idCompany = url.root.children.primary.segments[1].path;
     this.idProject = url.root.children.primary.segments[2].path;
-    this.getUserDB(this.authService.idUser);
+    this.idUser = window.sessionStorage.getItem('id') || '';
+    this.getUserDB();
   }
 
-  getUserDB(uid: any) {
+  getUserDB() {
     this.providerSubscription = this.generalService
-      .getUserDB(uid)
+      .getUserDB(this.idUser)
       .subscribe((res: any) => {
-        this.provider = res[0];
+        this.provider = res;
         this.dealSeleccionado = undefined;
-        this.dealsFiltrados = this.filterDeals();
-        this.sumaValores();
+        if (this.provider.dealMemos) {
+          this.dealsFiltrados = this.filterDeals();
+          this.sumaValores();
+        } else {
+          this.provider.dealMemos = [] as any;
+        }
       });
   }
 
@@ -258,6 +266,9 @@ export class DealmemoComponent implements OnInit {
       this.xml = {};
     };
 
+    console.log(this.provider.rfc);
+    console.log(this.xml.rfc);
+
     if (this.provider.rfc === this.xml.rfc) {
       if (pagoActual.importe === this.xml.subtotal) {
         if (validacionFolio) {
@@ -304,8 +315,9 @@ export class DealmemoComponent implements OnInit {
           };
           this.dealSeleccionado.pagos[this.indexPagoSeleccionado].xml.file =
             xml;
+          console.log(this.provider);
           this.generalService
-            .updateUserDB(this.provider.id, {
+            .updateUserDB(this.idUser, {
               dealMemos: this.provider.dealMemos,
             })
             .then(() => {
@@ -368,7 +380,7 @@ export class DealmemoComponent implements OnInit {
             ].fechaSubida = new Date();
 
             this.generalService
-              .updateUserDB(this.provider.id, {
+              .updateUserDB(this.idUser, {
                 dealMemos: this.provider.dealMemos,
               })
               .then(() => {
@@ -392,7 +404,7 @@ export class DealmemoComponent implements OnInit {
       .unsubscribe();
     delete item.pdf;
     this.generalService
-      .updateUserDB(this.provider.id, {
+      .updateUserDB(this.idUser, {
         dealMemos: this.provider.dealMemos,
       })
       .then((res) => {
@@ -408,7 +420,7 @@ export class DealmemoComponent implements OnInit {
     delete item.xml;
     item.status = 'Pendiente';
     this.generalService
-      .updateUserDB(this.provider.id, {
+      .updateUserDB(this.idUser, {
         dealMemos: this.provider.dealMemos,
       })
       .then(() => {

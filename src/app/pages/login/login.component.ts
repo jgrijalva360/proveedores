@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 // import { Router } from '@angular/router';
 // import { AuthService } from 'src/app/services/auth.service';
@@ -13,7 +14,7 @@ declare var bootstrap: any;
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   addUser = {
     nombre: '',
     rfc: '',
@@ -40,12 +41,14 @@ export class LoginComponent implements OnInit {
 
   fecha = new Date().getFullYear();
 
+  subscriptionLogin: Subscription | undefined;
+
   constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit() {}
 
   onLogin() {
-    this.authService
+    this.subscriptionLogin = this.authService
       .getUser(this.email, window.btoa(this.password))
       .subscribe((res) => {
         console.log(res);
@@ -135,5 +138,9 @@ export class LoginComponent implements OnInit {
   openModalReset() {
     // $('#restartPass').modal('show');
     new bootstrap.Modal('#restartPass').show();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptionLogin?.unsubscribe();
   }
 }

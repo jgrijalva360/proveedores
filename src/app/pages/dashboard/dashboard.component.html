@@ -4,33 +4,81 @@
       <button
         type="button"
         class="buttonMenu"
+        [ngClass]="{
+          colorRed: this.provider.status === 'Pendiente',
+          colorYellow: this.provider.status === 'En revisión',
+          colorGreen: this.provider.status === 'Aprobado'
+        }"
         [routerLink]="['data']"
         routerLinkActive="buttonActivate"
       >
         <i class="fas fa-cog icon"></i>
-        <div>Mis datos</div>
+        <p>Mis datos</p>
+        <div>
+          <span *ngIf="provider.status === 'Pendiente'">
+            <i class="fas fa-exclamation-triangle"></i> Pendiente</span
+          >
+          <span *ngIf="provider.status === 'En revisión'">
+            <i class="fas fa-spinner fa-spin"></i> En revisión</span
+          >
+          <span *ngIf="provider.status === 'Aprobado'">
+            <i class="fas fa-check"></i> Aprobado</span
+          >
+        </div>
       </button>
     </div>
     <div class="col-auto my-3">
       <button
         type="button"
         class="buttonMenu"
+        [ngClass]="{
+          colorRed: this.provider.status === 'Pendiente',
+          colorYellow: this.provider.status === 'En revisión',
+          colorGreen: this.provider.status === 'Aprobado'
+        }"
         [routerLink]="['files']"
         routerLinkActive="buttonActivate"
       >
-        <i class="fas fa-cog icon"></i>
-        <div>Archivos recurrentes</div>
+        <i class="fas fa-file-upload icon"></i>
+        <p>Carga de archivos</p>
+        <div>
+          <span *ngIf="provider.status === 'Pendiente'">
+            <i class="fas fa-exclamation-triangle"></i> Pendiente</span
+          >
+          <span *ngIf="provider.status === 'En revisión'">
+            <i class="fas fa-spinner fa-spin"></i> En revisión</span
+          >
+          <span *ngIf="provider.status === 'Aprobado'">
+            <i class="fas fa-check"></i> Aprobado</span
+          >
+        </div>
       </button>
     </div>
     <div class="col-auto my-3">
       <button
         type="button"
         class="buttonMenu"
+        [ngClass]="{
+          colorRed: this.provider.status === 'Pendiente',
+          colorYellow: this.provider.status === 'En revisión',
+          colorGreen: this.provider.status === 'Aprobado'
+        }"
         [routerLink]="['dealMemo']"
         routerLinkActive="buttonActivate"
       >
-        <i class="fas fa-cog icon"></i>
-        <div>Calendario de pagos</div>
+        <i class="fas fa-calendar-week icon"></i>
+        <p>Calendario de pagos</p>
+        <div>
+          <span *ngIf="provider.status === 'Pendiente'">
+            <i class="fas fa-exclamation-triangle"></i> Pendiente</span
+          >
+          <span *ngIf="provider.status === 'En revisión'">
+            <i class="fas fa-spinner fa-spin"></i> En revisión</span
+          >
+          <span *ngIf="provider.status === 'Aprobado'">
+            <i class="fas fa-check"></i> Aprobado</span
+          >
+        </div>
       </button>
     </div>
   </div>

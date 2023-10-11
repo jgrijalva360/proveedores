@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { GeneralService } from 'src/app/services/general.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'home-root',
@@ -22,21 +23,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     private router: Router,
     private authService: AuthService,
     private generalService: GeneralService
-  ) {}
+  ) {
+    moment.locale('es-MX');
+  }
 
   ngOnInit() {
     const idUser = window.sessionStorage.getItem('id');
-    if (idUser) {
-      this.providerSubscription = this.generalService
-        .getUserDB(idUser)
-        .subscribe((res) => {
-          this.provider = res;
-          if (this.provider.aprobado) {
-          } else {
-            this.router.navigateByUrl('/home/datos');
-          }
-        });
-    } else {
+    console.log(idUser);
+    if (!idUser) {
       this.router.navigate(['/']);
     }
   }

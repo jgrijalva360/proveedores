@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { AuthService } from 'src/app/services/auth.service';
 import { GeneralService } from 'src/app/services/general.service';
 
 @Component({
@@ -16,7 +16,7 @@ export class CompanyComponent implements OnInit, OnDestroy {
 
   providerSubscription: Subscription | undefined;
 
-  constructor(private generalService: GeneralService) {}
+  constructor(private generalService: GeneralService, private router: Router) {}
 
   ngOnInit() {
     this.getUserDB();
@@ -28,6 +28,9 @@ export class CompanyComponent implements OnInit, OnDestroy {
       .subscribe((res) => {
         console.log(res);
         this.provider = res;
+        if (this.provider.status !== 'Aprobado') {
+          this.router.navigateByUrl('/home/datos');
+        }
       });
   }
 

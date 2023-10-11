@@ -90,10 +90,35 @@ export class ProviderComponent implements OnInit, OnDestroy {
   }
 
   saveData() {
-    this.generalService.saveUserDB(this.provider, this.idUser).then(() => {
-      console.log('Se guardo correctamente');
-      Notify.success('Tus datos se actualizaron correctamente');
+    console.log(this.provider);
+
+    // Esto valida que los archivos no esten con status pendiente, de lo contrario es false.
+    let validationFile = true;
+    this.provider.archivos.forEach((element: any) => {
+      console.log(element.status);
+      if (element.status === 'Pendiente') {
+        validationFile = false;
+      }
     });
+    if (!validationFile) {
+      Notify.failure('Se requieren todos los archivos');
+    }
+    // --------------------------------------------------
+
+    // Esto valida que tenga almenos un banco agregado
+    let validationBanks = true;
+    if (this.provider.banks.length === 0) {
+      validationBanks = false;
+      Notify.failure('Agrega al menos un banco');
+    }
+    // ---------------------------------------------------
+
+    if (validationFile && validationBanks) {
+      this.generalService.saveUserDB(this.provider, this.idUser).then(() => {
+        console.log('Se guardo correctamente');
+        Notify.success('Tus datos se actualizaron correctamente');
+      });
+    }
   }
 
   uploadFile(event: any, archivo: any, index: number) {

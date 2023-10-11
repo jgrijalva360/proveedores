@@ -80,7 +80,9 @@
           aria-describedby="helpId"
           placeholder=""
           [(ngModel)]="provider.calle"
-          [disabled]="provider.aprobado"
+          [disabled]="
+            provider.status === 'En revision' || provider.status === 'Aprobado'
+          "
         />
       </div>
     </div>
@@ -95,7 +97,9 @@
           aria-describedby="helpId"
           placeholder=""
           [(ngModel)]="provider.numExt"
-          [disabled]="provider.aprobado"
+          [disabled]="
+            provider.status === 'En revision' || provider.status === 'Aprobado'
+          "
         />
       </div>
     </div>
@@ -110,7 +114,9 @@
           aria-describedby="helpId"
           placeholder=""
           [(ngModel)]="provider.numInt"
-          [disabled]="provider.aprobado"
+          [disabled]="
+            provider.status === 'En revision' || provider.status === 'Aprobado'
+          "
         />
       </div>
     </div>
@@ -124,7 +130,9 @@
           id="estado"
           placeholder=""
           [(ngModel)]="provider.estado"
-          [disabled]="provider.aprobado"
+          [disabled]="
+            provider.status === 'En revision' || provider.status === 'Aprobado'
+          "
         />
       </div>
     </div>
@@ -139,7 +147,9 @@
           aria-describedby="helpId"
           placeholder=""
           [(ngModel)]="provider.ciudad"
-          [disabled]="provider.aprobado"
+          [disabled]="
+            provider.status === 'En revision' || provider.status === 'Aprobado'
+          "
         />
       </div>
     </div>
@@ -153,7 +163,9 @@
           id="localidad"
           placeholder=""
           [(ngModel)]="provider.localidad"
-          [disabled]="provider.aprobado"
+          [disabled]="
+            provider.status === 'En revision' || provider.status === 'Aprobado'
+          "
         />
       </div>
     </div>
@@ -168,7 +180,9 @@
           placeholder=""
           required
           [(ngModel)]="provider.cp"
-          [disabled]="provider.aprobado"
+          [disabled]="
+            provider.status === 'En revision' || provider.status === 'Aprobado'
+          "
         />
         <small id="helpId" class="form-text text-muted text-left"
           >*Obligatorio</small
@@ -184,7 +198,9 @@
           id="regFiscal"
           [(ngModel)]="provider.regimen"
           required
-          [disabled]="provider.aprobado"
+          [disabled]="
+            provider.status === 'En revision' || provider.status === 'Aprobado'
+          "
         >
           <option value="601">601 - General de ley persona moral</option>
           <option value="606">606 - Arrendamiento</option>
@@ -209,7 +225,9 @@
         id="repse"
         [(ngModel)]="provider.repse"
         (change)="addFileRepse()"
-        [disabled]="provider.aprobado"
+        [disabled]="
+          provider.status === 'En revision' || provider.status === 'Aprobado'
+        "
       >
         <option>No</option>
         <option>Si</option>
@@ -231,7 +249,9 @@
           aria-describedby="helpId"
           placeholder=""
           [(ngModel)]="provider.telefono"
-          [disabled]="provider.aprobado"
+          [disabled]="
+            provider.status === 'En revision' || provider.status === 'Aprobado'
+          "
         />
       </div>
     </div>
@@ -246,7 +266,9 @@
           aria-describedby="helpId"
           placeholder=""
           [(ngModel)]="provider.movil"
-          [disabled]="provider.aprobado"
+          [disabled]="
+            provider.status === 'En revision' || provider.status === 'Aprobado'
+          "
         />
       </div>
     </div>
@@ -277,7 +299,7 @@
             <th>Nombre del propietario la cuenta</th>
             <th>Banco</th>
             <th>CLABE</th>
-            <th>Acción</th>
+            <th *ngIf="provider.status === 'Pendiente'">Acción</th>
           </tr>
         </thead>
         <tbody>
@@ -292,7 +314,7 @@
             <td>{{ bank.nombre }}</td>
             <td>{{ bank.banco }}</td>
             <td>{{ bank.clabe }}</td>
-            <td class="text-center">
+            <td class="text-center" *ngIf="provider.status === 'Pendiente'">
               <button
                 type="button"
                 class="btn btn-danger btn-sm"
@@ -313,7 +335,10 @@
                 id=""
                 placeholder="Nombre del propietario la cuenta"
                 [(ngModel)]="banco.nombre"
-                [disabled]="provider.aprobado"
+                [disabled]="
+                  provider.status === 'En revision' ||
+                  provider.status === 'Aprobado'
+                "
               />
             </td>
             <td>
@@ -324,7 +349,10 @@
                 id=""
                 placeholder="Banco"
                 [(ngModel)]="banco.banco"
-                [disabled]="provider.aprobado"
+                [disabled]="
+                  provider.status === 'En revision' ||
+                  provider.status === 'Aprobado'
+                "
               />
             </td>
             <td>
@@ -336,10 +364,13 @@
                 placeholder="CLABE"
                 [(ngModel)]="banco.clabe"
                 maxlength="18"
-                [disabled]="provider.aprobado"
+                [disabled]="
+                  provider.status === 'En revision' ||
+                  provider.status === 'Aprobado'
+                "
               />
             </td>
-            <td class="text-center">
+            <td class="text-center" *ngIf="provider.status === 'Pendiente'">
               <button
                 type="button"
                 class="btn btn-success btn-sm"
@@ -393,7 +424,10 @@
                 type="file"
                 id="formFile"
                 (change)="uploadFile($event, item, i)"
-                [disabled]="provider.aprobado"
+                [disabled]="
+                  provider.status === 'En revision' ||
+                  provider.status === 'Aprobado'
+                "
                 *ngIf="!item.archivo.link"
               />
             </td>
@@ -431,7 +465,10 @@
                 type="file"
                 id="formFile"
                 (change)="uploadFile($event, item, i)"
-                [disabled]="provider.aprobado"
+                [disabled]="
+                  provider.status === 'En revision' ||
+                  provider.status === 'Aprobado'
+                "
                 *ngIf="!item.archivo.link"
               />
             </td>
@@ -451,7 +488,7 @@
     </div>
   </div>
 
-  <div class="row box">
+  <div class="row box" *ngIf="provider.status === 'Pendiente'">
     <div class="col-12 text-center">
       <button type="button" class="btn-enconexion" (click)="saveData()">
         Enviar
