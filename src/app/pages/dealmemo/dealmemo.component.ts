@@ -5,7 +5,6 @@ import { AuthService } from 'src/app/services/auth.service';
 import { GeneralService } from 'src/app/services/general.service';
 import { NgxXml2jsonService } from 'ngx-xml2json';
 import * as Notiflix from 'notiflix';
-import * as moment from 'moment';
 import { Router } from '@angular/router';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 
@@ -38,7 +37,6 @@ export class DealmemoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    moment.locale('es-MX');
     const url = this.router.parseUrl(this.router.url);
     this.idCompany = url.root.children.primary.segments[1].path;
     this.idProject = url.root.children.primary.segments[2].path;

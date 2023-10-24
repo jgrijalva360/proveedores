@@ -44,6 +44,8 @@ export class FilesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getProvider();
+    // this.storageService.test();
+    console.log(window.location.hash);
   }
 
   getProvider() {
@@ -54,7 +56,7 @@ export class FilesComponent implements OnInit, OnDestroy {
       .subscribe((res: any) => {
         this.provider = res;
         console.log(this.provider);
-        this.files();
+        // this.files();
       });
   }
 

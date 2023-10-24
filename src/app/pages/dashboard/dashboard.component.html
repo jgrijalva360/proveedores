@@ -32,9 +32,10 @@
         type="button"
         class="buttonMenu"
         [ngClass]="{
-          colorRed: this.provider.status === 'Pendiente',
-          colorYellow: this.provider.status === 'En revisión',
-          colorGreen: this.provider.status === 'Aprobado'
+          colorRed: statusFiles === 'Rechazado',
+          colorOrange: statusFiles === 'Pendiente',
+          colorYellow: statusFiles === 'En revisión',
+          colorGreen: statusFiles === 'Aprobado'
         }"
         [routerLink]="['files']"
         routerLinkActive="buttonActivate"
@@ -42,13 +43,16 @@
         <i class="fas fa-file-upload icon"></i>
         <p>Carga de archivos</p>
         <div>
-          <span *ngIf="provider.status === 'Pendiente'">
-            <i class="fas fa-exclamation-triangle"></i> Pendiente</span
+          <span *ngIf="statusFiles === 'Rechazado'">
+            <i class="fas fa-exclamation-triangle"></i> Rechazado</span
           >
-          <span *ngIf="provider.status === 'En revisión'">
+          <span *ngIf="statusFiles === 'Pendiente'">
+            <i class="fas fa-spinner fa-spin"></i> Pendiente</span
+          >
+          <span *ngIf="statusFiles === 'En revisión'">
             <i class="fas fa-spinner fa-spin"></i> En revisión</span
           >
-          <span *ngIf="provider.status === 'Aprobado'">
+          <span *ngIf="statusFiles === 'Aprobado'">
             <i class="fas fa-check"></i> Aprobado</span
           >
         </div>
