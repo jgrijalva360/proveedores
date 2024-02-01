@@ -30,9 +30,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const idUser = window.sessionStorage.getItem('id');
     console.log(idUser);
-    if (!idUser) {
-      this.router.navigate(['/']);
-    }
+    // if (!idUser) {
+    //   this.router.navigate(['/']);
+    // }
   }
 
   ngOnDestroy(): void {

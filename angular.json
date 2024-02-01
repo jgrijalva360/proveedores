@@ -26,8 +26,7 @@
             ],
             "scripts": [
               "./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
-              "./node_modules/@fortawesome/fontawesome-free/js/all.min.js",
-              "./node_modules/dropbox/dist/Dropbox-sdk.min.js"
+              "./node_modules/@fortawesome/fontawesome-free/js/all.min.js"
             ],
             "allowedCommonJsDependencies": [
               "notiflix/build/notiflix-notify-aio",

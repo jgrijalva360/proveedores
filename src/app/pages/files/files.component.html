@@ -1,8 +1,5 @@
 <div class="container-fluid">
-  <div
-    class="row box"
-    *ngFor="let tipo of this.provider.files; let indexTipo = index"
-  >
+  <div class="row box" *ngFor="let tipo of this.provider.files; let indexTipo = index">
     <div class="col-12 text-center">
       <h5>{{ tipo.descripcion }}</h5>
     </div>
@@ -21,33 +18,25 @@
             <td>
               <a [href]="item.link" target="blank">{{ item.name }}</a>
             </td>
-            <td
-              [ngClass]="{
+            <td [ngClass]="{
                 'text-danger': item.status === 'Rechazado',
                 'text-primary': item.status === 'Pendiente',
                 'text-warning': item.status === 'En revisión',
                 'text-success': item.status === 'Aprobado'
-              }"
-            >
+              }">
               {{ item.status }}
             </td>
           </tr>
         </tbody>
-        <tfoot
-          *ngIf="
+        <tfoot *ngIf="
             tipo.archivos[tipo.archivos.length - 1]?.mes !==
             mesATexto(mesActual)
-          "
-        >
+          ">
           <tr>
             <td>{{ mesATexto(mesActual) }}</td>
             <td>
-              <input
-                type="file"
-                id="inputFileCSF"
-                class="form-control"
-                (change)="uploadFile($event, indexTipo)"
-              />
+              <input type="file" id="inputFileCSF" class="form-control" accept="pdf"
+                (change)="uploadFile($event, indexTipo)" />
             </td>
             <td class="text-primary">Pendiente</td>
           </tr>
