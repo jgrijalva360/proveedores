@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import localeEs from '@angular/common/locales/es-MX';
 import { registerLocaleData } from '@angular/common';
+import { FechaTimeStampPipe } from './pipes/fecha-time-stamp.pipe';
 registerLocaleData(localeEs);
 
 import { AppRoutingModule } from './app-routing.module';
@@ -21,6 +22,9 @@ import { DealmemoComponent } from './pages/dealmemo/dealmemo.component';
 import { CompanyComponent } from './pages/company/company.component';
 import { FilesComponent } from './pages/files/files.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { SobresComponent } from './pages/sobres/sobres.component';
+import { OrdenComponent } from './pages/orden/orden.component';
+import { ArchivosMesComponent } from './pages/archivos-mes/archivos-mes.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +34,10 @@ import { RegisterComponent } from './pages/register/register.component';
     CompanyComponent,
     FilesComponent,
     RegisterComponent,
+    SobresComponent,
+    OrdenComponent,
+    FechaTimeStampPipe,
+    ArchivosMesComponent,
   ],
   imports: [
     BrowserModule,

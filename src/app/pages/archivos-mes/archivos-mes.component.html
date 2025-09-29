@@ -1,0 +1,47 @@
+<div class="container-fluid">
+  <div class="row box">
+    <div class="col-12 my-3">
+      <h1 class="text-center">Archivos mensuales</h1>
+    </div>
+    <ng-container *ngFor="let mes of arrMonts; let i = index">
+      <div class="col-12 mb-3" *ngIf="mes === today.toLocaleString('es-MX', { month: 'long' })">
+        <p class="text-center">Carga los archivos dentro de la primer semana de <span class="fw-bold">{{ mes
+            }}</span>.</p>
+        <div class="row justify-content-center">
+          <div class="col-8 table-responsive">
+            <table class="table table-bordered table-striped text-center">
+              <thead>
+                <tr>
+                  <th>Nombre del archivo</th>
+                  <th>Archivo</th>
+                  <th>Observación</th>
+                  <th>Estatus</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Constancia de situación fiscal</td>
+                  <td><label class="file-upload">
+                      <button class="btn-upload"><i class="fas fa-upload"></i> Subir archivo</button>
+                      <input type="file" accept=".pdf" (change)="onFileChangePDF($event, 'CSF', mes)">
+                    </label></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>32D opinión del cumplimiento</td>
+                  <td><label class="file-upload">
+                      <button class="btn-upload"><i class="fas fa-upload"></i> Subir archivo</button>
+                      <input type="file" accept=".pdf" (change)="onFileChangePDF($event, '32D', mes)">
+                    </label></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

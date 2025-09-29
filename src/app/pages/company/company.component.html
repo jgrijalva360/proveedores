@@ -1,45 +1,46 @@
 <div class="container-fluid">
-  <div
-    class="row box justify-content-center"
-    *ngIf="empresaSeleccionada.proyectos.length < 1"
-  >
-    <div class="col-auto text-center" *ngFor="let empresa of provider.empresas">
+
+  <div class="row box justify-content-center" *ngIf="empresaSeleccionada.idCompany === undefined">
+    <div class="col-12">
+      <h2 class="text-center">Empresas de {{ usuario.name }}</h2>
+      <p class="text-center">
+        Selecciona una empresa para ver sus proyectos.
+      </p>
+    </div>
+    <div class="col-auto text-center" *ngFor="let empresa of usuario.empresas">
       <a (click)="empresaSeleccionada = empresa">
         <div class="card 1">
           <div class="card_image">
-            <img
-              [src]="empresa.image || '../../../assets/logos/Generica.jpg'"
-            />
+            <img [src]="empresa.image || '../../../assets/logos/Generica.jpg'" />
           </div>
           <div class="card_title title-white">
-            <p>{{ empresa.name }}</p>
+            <p>{{ empresa.nameCompany }}</p>
           </div>
         </div>
       </a>
     </div>
   </div>
 
-  <div
-    class="row box justify-content-center"
-    *ngIf="empresaSeleccionada.proyectos.length > 0"
-  >
-    <div
-      class="col-auto text-center"
-      *ngFor="let proyecto of empresaSeleccionada.proyectos"
-    >
-      <a
-        [routerLink]="
-          './' + empresaSeleccionada.id + '/' + proyecto.id + '/dashboard'
-        "
-      >
+  <div class="row box justify-content-center" *ngIf="empresaSeleccionada.idCompany">
+    <div class="col-12">
+      <h2 class="text-center">Proyectos de {{ empresaSeleccionada?.nameCompany }}</h2>
+      <p class="text-center">
+        Selecciona un proyecto para acceder.
+      </p>
+    </div>
+    <div class="col-12 text-center">
+      <button type="button" class="btn btn-primary" (click)="this.empresaSeleccionada = {}">Regresar</button>
+    </div>
+    <div class="col-auto text-center" *ngFor="let proyecto of usuario.proyectos">
+      <a [routerLink]="
+          './' + empresaSeleccionada.idCompany + '/' + proyecto.idProject + '/dashboard'
+        " *ngIf="proyecto.idC === empresaSeleccionada.idCompany">
         <div class="card 1">
           <div class="card_image">
-            <img
-              [src]="proyecto.image || '../../../assets/logos/Generica.jpg'"
-            />
+            <img [src]="proyecto.image || '../../../assets/logos/Generica.jpg'" />
           </div>
           <div class="card_title title-white">
-            <p>{{ proyecto.name }}</p>
+            <p>{{ proyecto.nameProject }}</p>
           </div>
         </div>
       </a>

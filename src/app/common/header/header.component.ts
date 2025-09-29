@@ -39,6 +39,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onLogout(): void {
+    window.sessionStorage.removeItem('id');
     this.router.navigateByUrl('/');
   }
 

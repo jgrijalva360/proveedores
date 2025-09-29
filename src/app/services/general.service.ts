@@ -1,12 +1,18 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { map } from 'rxjs';
+import { Observable, map } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GeneralService {
+  user$: Observable<any> | undefined;
+
+  private userCache: Map<string, Observable<any>> = new Map();
+  private orderCache: Map<string, Observable<any>> = new Map();
+
   constructor(
     private afs: AngularFirestore,
     public storage: AngularFireStorage
@@ -23,28 +29,35 @@ export class GeneralService {
       .valueChanges();
   }
 
-  getUserId(id: string) {
-    return this.afs.collection('proveedoresExternos').doc(id).valueChanges();
+  getUserId(id: string): Observable<any> {
+    if (!this.userCache.has(id)) {
+      const user$ = this.afs
+        .collection('usersPublic')
+        .doc(id)
+        .valueChanges()
+        .pipe(shareReplay(1));
+
+      this.userCache.set(id, user$);
+    }
+    return this.userCache.get(id)!;
+  }
+
+  updateUser(id: string, sobre: number, arrXML: Array<any>) {
+    return this.afs.collection('usersPublic').doc(id).update({
+      sobre: sobre,
+      xml: arrXML,
+    });
   }
 
   getUserDB(idUser: string) {
-    return this.afs
-      .collection('proveedoresExternos')
-      .doc(idUser)
-      .valueChanges();
+    return this.afs.collection('usersPublic').doc(idUser).valueChanges();
   }
 
   saveUserDB(objUser: any, idUser: string) {
-    return this.afs
-      .collection('proveedoresExternos')
-      .doc(idUser)
-      .update(objUser);
+    return this.afs.collection('usersPublic').doc(idUser).update(objUser);
   }
   updateFilesUserDB(idUser: any, objUser: any) {
-    return this.afs
-      .collection('proveedoresExternos')
-      .doc(idUser)
-      .update(objUser);
+    return this.afs.collection('usersPublic').doc(idUser).update(objUser);
   }
 
   deleteFile(path: any) {
@@ -52,7 +65,7 @@ export class GeneralService {
   }
 
   updateUserDB(id: string, obj: any) {
-    return this.afs.collection('proveedoresExternos').doc(id).update(obj);
+    return this.afs.collection('usersPublic').doc(id).update(obj);
   }
 
   mesATexto(value: number) {
@@ -96,5 +109,51 @@ export class GeneralService {
         break;
     }
     return letrasMes;
+  }
+
+  getOrdenes(
+    idCompany: string,
+    idProject: string,
+    rfc: string
+  ): Observable<any> {
+    const cacheKey = `${idCompany}_${idProject}_${rfc}`;
+
+    if (!this.orderCache.has(cacheKey)) {
+      // console.log('Fetching orders from Firestore...');
+      const orders$ = this.afs
+        .collection('empresas')
+        .doc(idCompany)
+        .collection('proyectos')
+        .doc(idProject)
+        .collection('purchaseOrder', (ref) => ref.where('rfc', '==', rfc))
+        .snapshotChanges()
+        .pipe(
+          map((actions) =>
+            actions.map((a) => {
+              const data = a.payload.doc.data();
+              data.id = a.payload.doc.id;
+              return data;
+            })
+          ),
+          shareReplay(1)
+        );
+
+      this.orderCache.set(cacheKey, orders$);
+    } else {
+      // console.log('Returning cached orders...');
+    }
+    return this.orderCache.get(cacheKey)!;
+  }
+
+  updateOrden(idCompany: string, idProject: string, idOrder: string, obj: any) {
+    console.log(idCompany, idProject, idOrder, obj);
+    return this.afs
+      .collection('empresas')
+      .doc(idCompany)
+      .collection('proyectos')
+      .doc(idProject)
+      .collection('purchaseOrder')
+      .doc(idOrder)
+      .update(obj);
   }
 }

@@ -1,0 +1,44 @@
+table {
+  vertical-align: middle;
+  font-size: 14px;
+}
+th {
+  vertical-align: middle;
+  color: #009fab;
+}
+th,
+td {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.file-upload {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.file-upload input[type="file"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  cursor: pointer;
+  height: 100%;
+  width: 100%;
+}
+
+.btn-upload {
+  display: block;
+  background-color: #009fab;
+  color: white;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  width: 100%;
+}
+
+.btn-upload:hover {
+  background-color: #006683;
+}

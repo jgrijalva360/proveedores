@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { map } from 'rxjs';
+import { BehaviorSubject, map, Observable, shareReplay } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -14,9 +14,9 @@ export class AuthService {
   getUser(email: string, pass: string) {
     return this.afs
       .collection(
-        'proveedoresExternos',
+        'usersPublic',
         (ref) =>
-          ref.where('email', '==', email) && ref.where('password', '==', pass)
+          ref.where('email', '==', email) && ref.where('pass', '==', pass)
       )
       .snapshotChanges()
       .pipe(

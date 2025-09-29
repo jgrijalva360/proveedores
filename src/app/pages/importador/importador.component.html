@@ -1,71 +1,57 @@
 <div class="container-fluid">
-  <div class="row box justify-content-center">
-    <div class="col-auto text-center">
-      <h3>Importador</h3>
+  <div class="row boxTitle justify-content-center align-items-end">
+    <div class="col-12 text-center">
+      <h1>Importador de CFDI</h1>
+      <p>Selecciona los archivos XML y PDF para importarlos al sistema</p>
     </div>
   </div>
-  <div class="row box align-items-end">
-    <div class="col-auto" *ngIf="!isProject">
-      <div class="form-group">
-        <label for="rfcReceptor">RFC del receptor</label>
-        <input
-          type="text"
-          class="form-control"
-          name="rfcReceptor"
-          id="rfcReceptor"
-          placeholder="RFC"
-          [(ngModel)]="rfcReceptor"
-          maxlength="13"
-        />
-      </div>
+  <div class="row box justify-content-center align-items-end">
+    <div class="col-12 text-center">
     </div>
-    <div class="col-auto">
-      <label for="formFile" class="form-label"
-        >Selecciona los archivos XML</label
-      >
-      <input
-        class="form-control"
-        type="file"
-        id="formFile"
-        (change)="onFileChange($event)"
-        multiple
-      />
+    <div class="col-12 col-md-6 col-lg-4">
+      <label for="formFileXML" class="form-label">Selecciona los archivos XML</label>
+      <input class="form-control" type="file" id="formFileXML" (change)="onFileChange($event)" multiple
+        accept=".xml, .XML" />
+      <span class="text-muted"> Selecciona uno o múltiples CFDI </span>
     </div>
-    <div class="col-auto overflow-hidden">
-      <label for="formFile" class="form-label"
-        >Selecciona los archivos PDF</label
-      >
-      <input
-        class="form-control"
-        type="file"
-        id="formFile"
-        (change)="uploadFile($event)"
-        multiple
-      />
-    </div>
-    <div class="col-auto" *ngIf="isProject">
-      <button type="button" class="btn btn-primary mb-3" (click)="saveXML()">
-        Guardar XML / PDF
-      </button>
+    <div class="col-12 col-md-6 col-lg-4 overflow-hidden">
+      <label for="formFilePDF" class="form-label">Selecciona los archivos PDF</label>
+      <input class="form-control" type="file" id="formFilePDF" (change)="uploadFilePDF($event)" multiple
+        accept=".pdf, .PDF" />
+      <span class="text-muted">
+        Selecciona uno o varios PDF
+        <i class="fas fa-info-circle"
+          title="Los archivos PDF se vincularan a los CFDI siempre y cuando el nombre del PDF sea igual al Folio Fiscal (UUID)"></i>
+      </span>
     </div>
   </div>
-  <div class="row box" *ngIf="arrXML.length">
+  <!-- Tabla de XML -->
+  <div class="row box" *ngIf="arrXML.length > 0">
+    <!-- <div class="col-12 text-end">
+      <i class="fas fa-square-full" style="color: yellow;"></i> Incompleto
+      <i class="fas fa-square-full" style="color: green;"></i> Listo
+    </div> -->
+    <div class="col-12">Sobre: {{ sobre }}</div>
     <div class="table-responsive">
       <table class="table table-sm">
         <thead>
           <tr>
-            <th>Proveedor</th>
-            <th>RFC</th>
-            <th>Regimen</th>
-            <th>Concepto</th>
-            <th>Folio</th>
+            <th>#</th>
+            <th>Partida</th>
             <th>Fecha</th>
+            <th>Proveedor</th>
+            <th>Concepto</th>
+            <th>RFC</th>
+            <th>Régimen</th>
+            <th>Folio</th>
+            <th>Inventario</th>
             <th>Importe</th>
-            <th>Descuento</th>
+            <th>Otras Contribuciones</th>
             <th>IVA</th>
             <th>Subtotal</th>
             <th>Ret IVA</th>
             <th>Ret ISR</th>
+            <th>Descuento</th>
             <th>Total</th>
             <th>Clave unidad</th>
             <th>Clave Prod/Serv</th>
@@ -73,70 +59,106 @@
             <th>Metodo de pago</th>
             <th>Forma de pago</th>
             <th>Moneda</th>
-            <th>RFC Receptor</th>
-            <th>Asociado</th>
+            <!-- <th>RFC Receptor</th> -->
+            <!-- <th>Asociado</th> -->
+            <th class="text-center">XML</th>
             <th class="text-center">PDF</th>
+            <th>Eliminar</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            *ngFor="let item of arrXML"
-            [ngClass]="{
-              noReceptor: item.rfcReceptor !== rfcReceptor
-            }"
-          >
+          <tr *ngFor="let item of arrXML; let i = index">
+            <th>{{ i + 1 }}</th>
+            <td>
+              <select class="form-select form-select-sm" [name]="'partida' + i" [id]="'partida' + i"
+                [(ngModel)]="item.partida" style="min-width: max-content;">
+                <option value="PENDIENTE" selected>
+                  Selecciona una partida
+                </option>
+                <ng-container *ngFor="let partida of userDB.partidas[0].cuentas">
+                  <option [value]="partida.CodigoAgrupador" *ngIf="partida.CodigoAgrupador.split('-').length === 3">
+                    {{ partida.CodigoAgrupador }} - {{ partida.Descripcion }}
+                  </option>
+                </ng-container>
+              </select>
+            </td>
+            <td>{{ item.fecha | date : "shortDate" }}</td>
             <td>{{ item.proveedor }}</td>
+            <td>{{ item.concepto | slice : 0 : 80 }}</td>
             <td>{{ item.rfc }}</td>
             <td class="text-center">{{ item.regimen }}</td>
-            <td>{{ item.concepto | slice: 0:80 }}</td>
             <td>{{ item.folioComprobante }}</td>
-            <td>{{ item.fecha | date: "shortDate" }}</td>
-            <td>{{ item.subtotal | number: "1.2-3" }}</td>
-            <td>{{ item.descuento }}</td>
-            <td>{{ (item.iva | number: "1.2-3") || (0 | number: "1.2-3") }}</td>
+            <td>
+              <select class="form-select form-select-sm" name="" id="" [(ngModel)]="item.inventario"
+                style="min-width: max-content;">
+                <option selected>No</option>
+                <option>Si</option>
+              </select>
+            </td>
+            <td>{{ item.subtotal | number : "1.2-3" }}</td>
+            <td>{{ item.otrasCont | number : "1.2-3" }}</td>
+            <td>
+              {{ (item.iva | number : "1.2-3") || (0 | number : "1.2-3") }}
+            </td>
             <td>
               {{
-                (item.subtotal + item.iva | number: "1.2-3") ||
-                  (0 | number: "1.2-3")
+              (item.subtotal + item.iva | number : "1.2-3") ||
+              (0 | number : "1.2-3")
               }}
             </td>
             <td>
-              {{ (item.retIVA | number: "1.2-3") || (0 | number: "1.2-3") }}
+              {{ (item.retIVA | number : "1.2-3") || (0 | number : "1.2-3") }}
             </td>
             <td>
-              {{ (item.retISR | number: "1.2-3") || (0 | number: "1.2-3") }}
+              {{ (item.retISR | number : "1.2-3") || (0 | number : "1.2-3") }}
             </td>
-            <td>{{ item.total | number: "1.2-3" }}</td>
+            <td>{{ item.descuento }}</td>
+            <td>{{ item.total | number : "1.2-3" }}</td>
             <td class="text-center">{{ item.claveUnidad }}</td>
             <td class="text-center">{{ item.claveProdServ }}</td>
             <td class="text-center">{{ item.tipoComprobante }}</td>
             <td class="text-center">{{ item.metodoPago }}</td>
             <td class="text-center">{{ item.formaPago }}</td>
             <td class="text-center">{{ item.moneda }}</td>
-            <td>
+            <!-- <td>
               {{ item.rfcReceptor }}
-            </td>
-            <td>
+            </td> -->
+            <!-- <td>
               {{ item.asociado }}
-            </td>
-            <td
-              [ngClass]="{ sinPDF: !item.path }"
-              class="text-center font-weight-bold"
-            >
-              <ng-container *ngIf="item.path; else sinPDF">
-                <button
-                  type="button"
-                  class="btn btn-link"
-                  style="font-size: 12px; padding: 0"
-                >
-                  Descargar PDF
-                </button>
+            </td> -->
+            <td [ngClass]="{ sinPDF: !item.pathXML }" class="text-center font-weight-bold">
+              <ng-container *ngIf="item.pathXML; else sinPDF">
+                <span class="badge text-bg-success">LISTO</span>
+                <!-- <button type="button" class="btn btn-link" style="font-size: 12px; padding: 0"
+                  (click)="downloadPDF(item)">
+                  Listo
+                </button> -->
               </ng-container>
-              <ng-template #sinPDF> Sin PDF </ng-template>
+              <ng-template #sinPDF><span class="badge text-bg-danger">PENDIENTE</span></ng-template>
+            </td>
+            <td [ngClass]="{ sinPDF: !item.pathPDF }" class="text-center font-weight-bold">
+              <ng-container *ngIf="item.pathPDF; else sinPDF">
+                <span class="badge text-bg-success">LISTO</span>
+                <!-- <button type="button" class="btn btn-link" style="font-size: 12px; padding: 0"
+                  (click)="downloadPDF(item)">
+                  Listo
+                </button> -->
+              </ng-container>
+              <ng-template #sinPDF><span class="badge text-bg-danger">PENDIENTE</span></ng-template>
+            </td>
+            <td class="text-center">
+              <button type="button" class="btn btn-sm p-0" (click)="deleteRow(i)">
+                <i class="fa fa-trash text-danger iconSelect" aria-hidden="true"></i>
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+    <div class="col-12 mt-3 text-center">
+      <button type="button" class="btn btn-primary mb-3" (click)="guardarTodo()">
+        Guardar Sobre {{ sobre }}
+      </button>
     </div>
   </div>
 </div>

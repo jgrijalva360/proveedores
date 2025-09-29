@@ -16,8 +16,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   empresaSeleccionada = { proyectos: [] } as any;
   idUser: any;
 
-  user: Subscription | undefined;
-  providerSubscription: Subscription | undefined;
+  dataUser: any = {};
+
+  userSubscription: Subscription | undefined;
+  // providerSubscription: Subscription | undefined;
 
   constructor(
     private router: Router,
@@ -28,19 +30,35 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    const idUser = window.sessionStorage.getItem('id');
-    console.log(idUser);
-    // if (!idUser) {
-    //   this.router.navigate(['/']);
-    // }
+    const idUser = window.sessionStorage.getItem('id') || '';
+    // console.log('ID de usuario:', idUser);
+    if (idUser.length > 0) {
+      this.getUser(idUser);
+    } else {
+      this.router.navigateByUrl('/');
+    }
   }
 
-  ngOnDestroy(): void {
-    this.user?.unsubscribe();
-    this.providerSubscription?.unsubscribe();
+  getUser(idUser: string) {
+    this.generalService.getUserId(idUser).subscribe((res) => {
+      // console.log(res);
+      if (res === undefined) {
+        this.onLogout();
+      }
+    });
   }
 
   regresar() {
     window.history.go(-1);
+  }
+
+  onLogout(): void {
+    window.sessionStorage.removeItem('id');
+    this.router.navigateByUrl('/');
+  }
+
+  ngOnDestroy(): void {
+    this.userSubscription?.unsubscribe();
+    // this.providerSubscription?.unsubscribe();
   }
 }

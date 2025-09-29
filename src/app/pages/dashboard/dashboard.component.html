@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<!-- <div class="container-fluid">
   <div class="row box justify-content-center">
     <div class="col-auto my-3">
       <button
@@ -86,5 +86,40 @@
       </button>
     </div>
   </div>
+</div> -->
+
+<div class="container-fluid">
+  <div class="row box justify-content-center align-items-center">
+    <!-- <div class="col-auto">
+      <button type="button" class="buttonMenu " style="background-color: green" [routerLink]=" ['importador']"
+        routerLinkActive="buttonActivate">
+        <i class="fas fa-plus-circle icon"></i>
+        <p> Agregar CFDI</p>
+      </button>
+    </div> -->
+    <!-- <div class="col-auto">
+      <button type="button" class="buttonMenu " style="background-color: rgb(0, 162, 255)" [routerLink]=" ['sobres']"
+        routerLinkActive="buttonActivate">
+        <i class="fas fa-folder icon"></i>
+        <p>Sobres</p>
+      </button>
+    </div> -->
+    <div class="col-auto">
+      <button type="button" class="buttonMenu " style="background-color: rgb(0, 162, 255)"
+        [routerLink]=" ['archivosMensuales']" routerLinkActive="buttonActivate">
+        <i class="fas fa-folder icon"></i>
+        <p>Archivos mensuales</p>
+      </button>
+    </div>
+    <div class="col-auto">
+      <button type="button" class="buttonMenu " style="background-color: rgb(255, 102, 0)" [routerLink]=" ['oc']"
+        routerLinkActive="buttonActivate">
+        <i class="fas fa-comment-dollar icon"></i>
+        <p>Pagos pendientes</p>
+
+      </button>
+    </div>
+  </div>
 </div>
+
 <router-outlet></router-outlet>

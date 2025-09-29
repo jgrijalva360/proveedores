@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import * as Notiflix from 'notiflix';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 // import { Router } from '@angular/router';
@@ -49,14 +50,15 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   onLogin() {
     this.subscriptionLogin = this.authService
-      .getUser(this.email, window.btoa(this.password))
-      .subscribe((res) => {
+      .getUser(this.email, this.password)
+      .subscribe((res: any) => {
         console.log(res);
-        if (res.length > 0) {
+        if (res) {
           this.authService.user = res[0];
-
           window.sessionStorage.setItem('id', res[0].id);
-          this.router.navigate(['./home']);
+          this.router.navigate([`./home`]);
+        } else {
+          Notiflix.Notify.failure('Usuario o contraseña incorrectos');
         }
       });
 
@@ -141,6 +143,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptionLogin?.unsubscribe();
+    // this.subscriptionLogin?.unsubscribe();
   }
 }

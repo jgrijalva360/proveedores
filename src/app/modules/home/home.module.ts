@@ -11,7 +11,13 @@ import { ImportadorComponent } from 'src/app/pages/importador/importador.compone
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [DashboardComponent, HeaderComponent, HomeComponent, ProviderComponent, ImportadorComponent],
+  declarations: [
+    DashboardComponent,
+    HeaderComponent,
+    HomeComponent,
+    ProviderComponent,
+    ImportadorComponent,
+  ],
   imports: [CommonModule, HomeRoutingModule, FormsModule],
 })
 export class HomeModule {}

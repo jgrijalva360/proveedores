@@ -1,14 +1,17 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Event, Router } from '@angular/router';
-// import { AngularFireStorage } from '@angular/fire/storage';
+import { Router } from '@angular/router';
 import { NgxXml2jsonService } from 'ngx-xml2json';
-// import Notiflix from 'notiflix-angular';
-import { AuthService } from 'src/app/services/auth.service';
+import * as Notiflix from 'notiflix';
 import { GeneralService } from 'src/app/services/general.service';
-// import { GeneralService } from 'src/app/services/general.service';
-// import { ProjectService } from 'src/app/services/project.service';
-// declare var $: any;
+import { AngularFireStorage } from '@angular/fire/compat/storage';
+
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
+const EXCEL_TYPE =
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+const EXCEL_EXTENSION = '.xlsx';
 
 @Component({
   selector: 'app-importador',
@@ -18,9 +21,13 @@ import { GeneralService } from 'src/app/services/general.service';
 export class ImportadorComponent implements OnInit, OnDestroy {
   xml = {} as any;
   arrXML = [] as any;
-  idCompany: string | undefined;
-  idProject: string | undefined;
+  arrFilesXml = [] as any;
+  arrFilesPdf = [] as any;
   project = {} as any;
+  userDB = {} as any;
+  idUser = '';
+  sobre = 0;
+  arrSobres = [] as any;
 
   objDocumento = {} as any;
 
@@ -28,70 +35,45 @@ export class ImportadorComponent implements OnInit, OnDestroy {
 
   public isProject = false;
 
+  @Input() dato: string = '';
+
   getXMLSubscription: Subscription | undefined;
   getCompanySubscription: Subscription | undefined;
   subscriberGetProject: Subscription | undefined;
 
   constructor(
     private router: Router,
-    private authService: AuthService, // private projectService: ProjectService, // private empresaService: EmpresasService, // public storage: AngularFireStorage, // private generalService: GeneralService
     private generalService: GeneralService,
-    private ngxXml2jsonService: NgxXml2jsonService
+    private ngxXml2jsonService: NgxXml2jsonService,
+    public storage: AngularFireStorage
   ) {}
 
   ngOnInit(): void {
     const url = this.router.parseUrl(this.router.url);
-    console.log(url);
-    // if (url.root.children.primary.segments.length > 1) {
-    //   this.idCompany = url.root.children.primary.segments[1].path;
-    //   this.idProject = url.root.children.primary.segments[3].path;
-    //   this.isProject = true;
-    //   this.getCompany();
-    //   this.getProject();
-    //   this.getXML();
-    // } else {
-    //   this.idCompany = url.root.children.primary.segments[1].path;
-    //   this.idProject = url.root.children.primary.segments[3].path;
-    // }
+    this.idUser = window.sessionStorage.getItem('id') || '';
+    this.getUser(this.idUser);
   }
 
-  getCompany() {
-    // this.getCompanySubscription = this.empresaService
-    //   .getCompanyActual(this.idCompany)
-    //   .subscribe((res: any) => {
-    //     // console.log(res);
-    //     this.rfcReceptor = res.rfc.toUpperCase();
-    //   });
+  getUser(idUser: string) {
+    this.generalService.getUserId(idUser).subscribe((res: any) => {
+      console.log(res);
+      this.userDB = res;
+
+      this.rfcReceptor = res.empresa.rfc;
+      if (res.sobre) {
+        this.sobre = res.sobre + 1;
+      } else {
+        this.sobre = 1;
+      }
+    });
   }
 
-  getProject() {
-    // this.subscriberGetProject = this.empresaService
-    //   .getProjectSpecific(this.idCompany, this.idProject)
-    //   .subscribe((res) => {
-    //     // console.log(res);
-    //     this.project = res;
-    //   });
-  }
-
-  getXML() {
-    // this.getXMLSubscription = this.generalService
-    //   .getXML(this.idCompany, this.idProject)
-    //   .subscribe((res: any) => {
-    //     console.log(res);
-    //     if (res !== undefined) {
-    //       this.arrXML = res.arrXML;
-    //     }
-    //   });
-  }
-
-  saveXML() {
-    // const obj = { arrXML: this.arrXML };
-    // this.projectService
-    //   .saveXML(this.idCompany, this.idProject, obj)
-    //   .then((res) => {
-    //     Notiflix.Notify.Success('Se guardo exitosamente');
-    //   });
-  }
+  // Agregar inventario Si/No Default NO
+  // Agregar partida presupuestal solo del grupo de partidas o partida predefinida
+  // Folio egreso los primeros (5) dígitos del Folio
+  // Que el usuario pueda genera PDF y Excel
+  // Sección de deducible y no deducible
+  //
 
   onFileChange(ev: any) {
     for (let index = 0; index < ev.target.files.length; index++) {
@@ -99,275 +81,334 @@ export class ImportadorComponent implements OnInit, OnDestroy {
       if (archivo.type === 'text/xml') {
         const lector = new FileReader();
         lector.onload = (e) => {
-          this.xmlToJson(e);
+          this.xmlToJson(e, archivo);
         };
         lector.readAsText(archivo);
       } else {
-        // Notiflix.Notify.Failure(
-        //   `El archivo ${archivo.name} no es un archivo XML`
-        // );
+        Notiflix.Notify.failure(
+          `El archivo ${archivo.name} no es un archivo XML`
+        );
       }
     }
-    (<any>document.getElementById('inputFiles')).value = '';
+    (<any>document.getElementById('formFileXML')).value = '';
   }
 
-  xmlToJson(lector: any) {
+  xmlToJson(lector: any, file: any) {
     const res = lector.target.result;
     const parser = new DOMParser();
     const xml = parser.parseFromString(res, 'text/xml');
     const obj = this.ngxXml2jsonService.xmlToJson(xml);
-    // this.validarSiExiste(obj);
-    console.log(obj);
-    this.assignData(obj);
+    this.validarSiExiste(obj, file);
   }
 
-  // validarSiExiste(obj) {
-  //   console.log(obj);
-  //   const folio =
-  //     obj['cfdi:Comprobante']['cfdi:Complemento']['tfd:TimbreFiscalDigital'][
-  //       '@attributes'
-  //     ].UUID;
-  //   const validacion = this.arrXML.findIndex(
-  //     (element) => element.folioComprobante === folio
-  //   );
-  //   if (validacion === -1) {
-  //     if (
-  //       obj['cfdi:Comprobante']['cfdi:Receptor'][
-  //         '@attributes'
-  //       ].Rfc.toUpperCase() === this.rfcReceptor.toUpperCase() &&
-  //       this.isProject
-  //     ) {
-  //       this.assignData(obj);
-  //     } else if (!this.isProject) {
-  //       this.assignData(obj);
-  //     } else if (
-  //       obj['cfdi:Comprobante']['cfdi:Receptor'][
-  //         '@attributes'
-  //       ].Rfc.toUpperCase() !== this.rfcReceptor.toUpperCase() &&
-  //       this.isProject
-  //     ) {
-  //       if (this.project.filmadoras) {
-  //         this.project.filmadoras.forEach((element) => {
-  //           if (
-  //             obj['cfdi:Comprobante']['cfdi:Receptor'][
-  //               '@attributes'
-  //             ].Rfc.toUpperCase() === element.rfc
-  //           ) {
-  //             this.assignData(obj);
-  //           }
-  //         });
-  //       }
-  //     }
-  //   } else if (validacion > -1) {
-  //     console.log('ya existe');
-  //     Notiflix.Notify.Failure(`El folio ${folio} ya se encuentra registrado.`);
-  //   }
-  // }
+  validarSiExiste(obj: any, file: any) {
+    const folio =
+      obj['cfdi:Comprobante']['cfdi:Complemento']['tfd:TimbreFiscalDigital'][
+        '@attributes'
+      ].UUID;
+    let validacion = this.arrXML.findIndex(
+      (element: any) => element.folioComprobante === folio
+    );
 
-  assignData(obj: any) {
-    console.log(obj);
-    if (obj['cfdi:Comprobante']) {
-      console.log(obj);
-      try {
-        this.xml.asociado = false;
-        this.xml.proveedor =
-          obj['cfdi:Comprobante']['cfdi:Emisor']['@attributes'].Nombre;
+    if (this.userDB.xml) {
+      validacion = this.userDB.xml.findIndex(
+        (element: any) => element.folioComprobante === folio
+      );
+    }
 
-        this.xml.rfc =
-          obj['cfdi:Comprobante']['cfdi:Emisor']['@attributes'].Rfc;
-
-        this.xml.regimen =
-          obj['cfdi:Comprobante']['cfdi:Emisor']['@attributes'].RegimenFiscal;
-
-        this.xml.rfcReceptor =
-          obj['cfdi:Comprobante']['cfdi:Receptor']['@attributes'].Rfc;
-
-        // Valido si es array o un objeto
-        if (
-          Array.isArray(
-            obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto']
-          )
-        ) {
-          this.xml.concepto =
-            obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][0 || 1][
-              '@attributes'
-            ].Descripcion;
-
-          this.xml.claveProdServ =
-            obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][0 || 1][
-              '@attributes'
-            ].ClaveProdServ;
-
-          this.xml.claveUnidad =
-            obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][0 || 1][
-              '@attributes'
-            ].ClaveUnidad;
-        } else {
-          this.xml.concepto =
-            obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][
-              '@attributes'
-            ].Descripcion;
-
-          this.xml.claveProdServ =
-            obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][
-              '@attributes'
-            ].ClaveProdServ;
-
-          this.xml.claveUnidad =
-            obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][
-              '@attributes'
-            ].ClaveUnidad;
-        }
-        // -------------------------------------
-
-        this.xml.folioComprobante =
-          obj['cfdi:Comprobante']['cfdi:Complemento'][
-            'tfd:TimbreFiscalDigital'
-          ]['@attributes'].UUID;
-
-        this.xml.fecha = obj['cfdi:Comprobante']['@attributes'].Fecha;
-
-        this.xml.subtotal = parseFloat(
-          obj['cfdi:Comprobante']['@attributes'].SubTotal
-        );
-        this.xml.descuento =
-          parseFloat(obj['cfdi:Comprobante']['@attributes'].Descuento) || 0;
-
-        this.xml.tipoComprobante =
-          obj['cfdi:Comprobante']['@attributes'].TipoDeComprobante;
-
-        this.xml.metodoPago =
-          obj['cfdi:Comprobante']['@attributes'].MetodoPago || '';
-
-        this.xml.formaPago =
-          obj['cfdi:Comprobante']['@attributes'].FormaPago || '';
-
-        this.xml.moneda = obj['cfdi:Comprobante']['@attributes'].Moneda;
-
-        this.xml.total = parseFloat(
-          obj['cfdi:Comprobante']['@attributes'].Total
-        );
-
-        // Validacion si tiene impuestos
-        if (obj['cfdi:Comprobante']['cfdi:Impuestos']) {
-          // impuestos trasladados
-          if (obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Traslados']) {
-            this.xml.iva = parseFloat(
-              obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Traslados'][
-                'cfdi:Traslado'
-              ]['@attributes'].Importe
-            );
-          }
-
-          // retenciones
-          if (obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Retenciones']) {
-            const retenciones =
-              obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Retenciones'][
-                'cfdi:Retencion'
-              ];
-            const esArrayRetenciones = Array.isArray(retenciones);
-            if (esArrayRetenciones) {
-              retenciones.forEach((element) => {
-                if (element['@attributes'].Impuesto === '002') {
-                  this.xml.retIVA = parseFloat(element['@attributes'].Importe);
-                } else if (element['@attributes'].Impuesto === '001') {
-                  this.xml.retISR = parseFloat(element['@attributes'].Importe);
-                }
-              });
-            } else {
-              if (retenciones['@attributes'].Impuesto === '002') {
-                this.xml.retIVA = parseFloat(
-                  retenciones['@attributes'].Importe
-                );
-              } else if (retenciones['@attributes'].Impuesto === '001') {
-                this.xml.retISR = parseFloat(
-                  retenciones['@attributes'].Importe
-                );
-              }
+    if (validacion === -1) {
+      if (
+        obj['cfdi:Comprobante']['cfdi:Receptor'][
+          '@attributes'
+        ].Rfc.toUpperCase() === this.rfcReceptor.toUpperCase() &&
+        this.isProject
+      ) {
+        this.assignData(obj, file);
+      } else if (!this.isProject) {
+        this.assignData(obj, file);
+      } else if (
+        obj['cfdi:Comprobante']['cfdi:Receptor'][
+          '@attributes'
+        ].Rfc.toUpperCase() !== this.rfcReceptor.toUpperCase() &&
+        this.isProject
+      ) {
+        if (this.project.filmadoras) {
+          this.project.filmadoras.forEach((element: any) => {
+            if (
+              obj['cfdi:Comprobante']['cfdi:Receptor'][
+                '@attributes'
+              ].Rfc.toUpperCase() === element.rfc
+            ) {
+              this.assignData(obj, file);
             }
-          }
+          });
         }
-        this.arrXML.push(this.xml);
-        this.xml = {};
-      } catch (error) {
-        console.error('Ocurrio un error');
       }
+    } else if (validacion > -1) {
+      Notiflix.Notify.failure(`El folio ${folio} ya se encuentra cargado.`);
     }
   }
 
-  async uploadFile(event: any) {
-    const files = Object.assign([], event.target.files);
+  assignData(obj: any, file: any) {
+    console.log(obj);
+    if (obj['cfdi:Comprobante']) {
+      // console.log(obj);
+      // try {
+      this.xml.asociado = false;
+      this.xml.proveedor =
+        obj['cfdi:Comprobante']['cfdi:Emisor']['@attributes'].Nombre;
 
+      this.xml.rfc = obj['cfdi:Comprobante']['cfdi:Emisor']['@attributes'].Rfc;
+
+      this.xml.regimen =
+        obj['cfdi:Comprobante']['cfdi:Emisor']['@attributes'].RegimenFiscal;
+
+      this.xml.rfcReceptor =
+        obj['cfdi:Comprobante']['cfdi:Receptor']['@attributes'].Rfc;
+
+      // Valido si es array o un objeto
+      if (
+        Array.isArray(
+          obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto']
+        )
+      ) {
+        this.xml.concepto =
+          obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][0 || 1][
+            '@attributes'
+          ].Descripcion;
+
+        this.xml.claveProdServ =
+          obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][0 || 1][
+            '@attributes'
+          ].ClaveProdServ;
+
+        this.xml.claveUnidad =
+          obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][0 || 1][
+            '@attributes'
+          ].ClaveUnidad;
+      } else {
+        this.xml.concepto =
+          obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][
+            '@attributes'
+          ].Descripcion;
+
+        this.xml.claveProdServ =
+          obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][
+            '@attributes'
+          ].ClaveProdServ;
+
+        this.xml.claveUnidad =
+          obj['cfdi:Comprobante']['cfdi:Conceptos']['cfdi:Concepto'][
+            '@attributes'
+          ].ClaveUnidad;
+      }
+      // -------------------------------------
+
+      this.xml.folioComprobante =
+        obj['cfdi:Comprobante']['cfdi:Complemento']['tfd:TimbreFiscalDigital'][
+          '@attributes'
+        ].UUID;
+
+      this.xml.fecha = obj['cfdi:Comprobante']['@attributes'].Fecha;
+
+      this.xml.subtotal = parseFloat(
+        obj['cfdi:Comprobante']['@attributes'].SubTotal
+      );
+
+      this.xml.descuento =
+        parseFloat(obj['cfdi:Comprobante']['@attributes'].Descuento) || 0;
+
+      this.xml.tipoComprobante =
+        obj['cfdi:Comprobante']['@attributes'].TipoDeComprobante;
+
+      this.xml.metodoPago =
+        obj['cfdi:Comprobante']['@attributes'].MetodoPago || '';
+
+      this.xml.formaPago =
+        obj['cfdi:Comprobante']['@attributes'].FormaPago || '';
+
+      this.xml.moneda = obj['cfdi:Comprobante']['@attributes'].Moneda;
+
+      this.xml.total = parseFloat(obj['cfdi:Comprobante']['@attributes'].Total);
+
+      // Validacion si tiene impuestos
+      if (obj['cfdi:Comprobante']['cfdi:Impuestos']) {
+        // impuestos trasladados
+        if (obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Traslados']) {
+          const traslados =
+            obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Traslados'][
+              'cfdi:Traslado'
+            ];
+          const esArrayTraslados = Array.isArray(traslados);
+          this.xml.iva = 0; // Inicializar iva a 0
+          this.xml.otrasCont = 0; // Inicializar otrasCont a 0
+          if (esArrayTraslados) {
+            traslados.forEach((element) => {
+              if (element['@attributes'].Impuesto === '002') {
+                this.xml.iva += parseFloat(element['@attributes'].Importe);
+              } else if (element['@attributes'].Impuesto === '003') {
+                this.xml.otrasCont = parseFloat(element['@attributes'].Importe);
+              }
+            });
+          } else {
+            this.xml.iva = parseFloat(traslados['@attributes'].Importe);
+          }
+        }
+
+        // retenciones
+        if (obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Retenciones']) {
+          const retenciones =
+            obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Retenciones'][
+              'cfdi:Retencion'
+            ];
+          const esArrayRetenciones = Array.isArray(retenciones);
+          if (esArrayRetenciones) {
+            retenciones.forEach((element) => {
+              if (element['@attributes'].Impuesto === '002') {
+                this.xml.retIVA = parseFloat(element['@attributes'].Importe);
+              } else if (element['@attributes'].Impuesto === '001') {
+                this.xml.retISR = parseFloat(element['@attributes'].Importe);
+              }
+            });
+          } else {
+            if (retenciones['@attributes'].Impuesto === '002') {
+              this.xml.retIVA = parseFloat(retenciones['@attributes'].Importe);
+            } else if (retenciones['@attributes'].Impuesto === '001') {
+              this.xml.retISR = parseFloat(retenciones['@attributes'].Importe);
+            }
+          }
+        }
+      }
+      // Aqui tenemos que mandar a llamar la funcion que validara los datos del CFDI
+      this.xml.pathXML = `CFDIs/${this.userDB.proyecto.nameProject}/${this.userDB.departamento.name}/XML/${file.name}`;
+      this.xml.sobre = this.sobre;
+      this.xml.inventario = 'No';
+      this.xml.partida = 'PENDIENTE';
+      this.arrXML.push(this.xml);
+      this.arrFilesXml.push(file);
+      this.xml = {};
+      // } catch (error) {
+      // console.error('Ocurrio un error');
+      // }
+    }
+  }
+
+  saveFilesXML() {
+    for (let index = 0; index < this.arrFilesXml.length; index++) {
+      const element = this.arrFilesXml[index];
+      const filePath = `CFDIs/${this.userDB.proyecto.nameProject}/${this.userDB.departamento.name}/XML/${element.name}`;
+      const path: any = {};
+      path.pathImageProfile = filePath;
+      const task = this.storage.upload(filePath, element);
+      task.then((res) => {
+        console.log(res);
+        // Notiflix.Notify.success('Se guardo correctamente el XML');
+      });
+      // task.snapshotChanges().subscribe((res: any) => {
+      //   console.log(res);
+      //   Notiflix.Notify.success('Se guardo correctamente el PDF');
+      // });
+    }
+  }
+
+  uploadFilePDF(event: any) {
     for (let index = 0; index < event.target.files.length; index++) {
       const element = event.target.files[index];
       const fileInput = element;
       const fileType = fileInput.type;
       const fileSize = fileInput.size;
       const allowedExtensions = /(.pdf)$/i;
-      if (!allowedExtensions.exec(fileType) || fileSize >= 1000000) {
+      if (!allowedExtensions.exec(fileType) || fileSize >= 2000000) {
         alert(
-          'Por favor agrega unicamente archivos con extension .pdf y tamaño maximo de 1MB '
+          'Por favor agrega unicamente archivos con extension .pdf y tamaño maximo de 2MB '
         );
-        // document.getElementById('labelFile').innerHTML = 'Seleccionar';
-        (<any>document.getElementById('inputGroupFile01')).value = '';
+        // (<any>document.getElementById('inputGroupFile01')).value = '';
       } else {
+        console.log(element.name);
         const XMLEncontrado = this.arrXML.find(
-          (XML: any) => XML.folioComprobante === element.name.split('.')[0]
+          (XML: any) =>
+            XML.folioComprobante.toUpperCase() ===
+            element.name.split('.')[0].toUpperCase()
         );
         if (XMLEncontrado) {
-          const filePath = `CFDIs/PDF/${element.name}`;
-          const path: any = {};
-          path.pathImageProfile = filePath;
-          XMLEncontrado.path = filePath;
-          // const ref = this.storage.ref(filePath);
-          // console.log(ref);
-          // // const task = this.storage.upload(filePath, element);
-          // task.snapshotChanges().subscribe(res => {
-          //   console.log(res.bytesTransferred);
-          //   Notiflix.Notify.Success('Se guardo correctamente el PDF');
-          // });
-          // task.then(res => {
-          //   console.log(res);
-          //   Notiflix.Notify.Success('Se guardo correctamente el PDF');
-          // });
+          const filePath = `CFDIs/${this.userDB.proyecto.nameProject}/${this.userDB.departamento.name}/PDF/${element.name}`;
+          XMLEncontrado.pathPDF = filePath;
+          this.arrFilesPdf.push(element);
         }
       }
     }
-    this.saveXML();
   }
 
-  // downloadPDF(element) {
-  //   if (element.path) {
-  //     const ref = this.storage.ref(element.path);
-  //     const subscriptionURL = ref.getDownloadURL().subscribe(
-  //       (res) => {
-  //         window.open(res, '_blank');
-  //         subscriptionURL.unsubscribe();
-  //       },
-  //       (error) => {
-  //         console.error(error);
-  //         switch (error.code) {
-  //           case 'storage/object-not-found':
-  //             // File doesn't exist
-  //             break;
-  //           case 'storage/unauthorized':
-  //             // User doesn't have permission to access the object
-  //             break;
-  //           case 'storage/canceled':
-  //             // User canceled the upload
-  //             break;
-  //           case 'storage/unknown':
-  //             // Unknown error occurred, inspect the server response
-  //             break;
-  //         }
-  //       }
-  //     );
-  //   }
-  // }
+  saveFilesPDF() {
+    for (let index = 0; index < this.arrFilesPdf.length; index++) {
+      const element = this.arrFilesPdf[index];
+      const filePath = `CFDIs/${this.userDB.proyecto.nameProject}/${this.userDB.departamento.name}/PDF/${element.name}`;
+      const path: any = {};
+      path.pathImageProfile = filePath;
+      const task = this.storage.upload(filePath, element);
+      task.then((res) => {
+        console.log(res);
+        // Notiflix.Notify.success('Se guardo correctamente el PDF');
+      });
+    }
+  }
 
-  // selectXML(XML) {
-  //   console.log(XML);
-  // }
+  guardarTodo() {
+    console.log(this.arrXML);
+    let validacion = true;
+    if (this.arrXML.length === 0) {
+      Notiflix.Report.failure(
+        'No hay XML',
+        'No hay XML para guardar, por favor agrega al menos un XML',
+        'Ok'
+      );
+      return;
+    } else {
+      this.arrXML.forEach((element: any) => {
+        if (element.partida === 'PENDIENTE') {
+          validacion = false;
+        }
+      });
+    }
+
+    if (validacion) {
+      this.saveFilesXML();
+      this.saveFilesPDF();
+      const arrConcat = this.userDB.xml.concat(this.arrXML);
+      this.generalService
+        .updateUser(this.idUser, this.sobre, arrConcat)
+        .then((res) => {
+          console.log(res);
+          this.arrXML = [] as any;
+        })
+        .catch((error) => {
+          Notiflix.Report.failure(
+            'Ocurrió un error',
+            'Ocurrió un error al guardar la lista de XML, comunícate con soporte técnico',
+            'Ok'
+          );
+          console.error('Ocurrió un error al guardar los XML', error);
+        });
+    } else {
+      Notiflix.Report.failure(
+        'Partida pendiente',
+        'Asegúrate de agregar una partida presupuestal a todos los XML antes de guardar.',
+        'Ok'
+      );
+    }
+  }
+
+  deleteRow(index: number) {
+    Notiflix.Confirm.show(
+      'Eliminar fila',
+      '¿Estas seguro de eliminar la fila?',
+      'Confirmar',
+      'Cancelar',
+      () => {
+        this.arrXML.splice(index, 1);
+      }
+    );
+  }
 
   ngOnDestroy() {
     // if (this.isProject) {
