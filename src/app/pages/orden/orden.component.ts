@@ -499,7 +499,10 @@ export class OrdenComponent {
             .subscribe(() => {
               Notiflix.Notify.success('Se elimino correctamente el archivo');
             });
-          pago.pathPDF = null;
+          delete pago.pathPDF;
+          delete pago.aprobadoPDF;
+          delete pago.motivoPDF;
+          delete pago.cargadoPDF;
         } else if (tipo === 'XML') {
           this.storage
             .ref(pago.xml.pathXML)
@@ -507,7 +510,11 @@ export class OrdenComponent {
             .subscribe(() => {
               Notiflix.Notify.success('Se elimino correctamente el archivo');
             });
-          pago.xml = null;
+          delete pago.pathXML;
+          delete pago.xml;
+          delete pago.aprobadoXML;
+          delete pago.motivoXML;
+          delete pago.cargadoXML;
         }
         //
         this.updateOrderPDF();
@@ -530,11 +537,15 @@ export class OrdenComponent {
       !pago.pathPDF
     ) {
       return 'VENCIDO';
-    } else if (pago.xml && pago.pathPDF && !pago.estatus) {
+    } else if (
+      pago.xml &&
+      pago.pathPDF &&
+      (pago.aprobadoXML === undefined || pago.aprobadoPDF === undefined)
+    ) {
       return 'EN REVISION';
-    } else if (pago.estatus == 'APROBADO') {
-      return 'APROBADO';
-    } else if (pago.estatus == 'RECHAZADO') {
+    } else if (pago.aprobadoXML && pago.aprobadoPDF) {
+      return 'EN PROCESO DE PAGO';
+    } else if (pago.aprobadoXML === false || pago.aprobadoPDF === false) {
       return 'RECHAZADO';
     } else if (
       !pago.xml &&
@@ -545,7 +556,6 @@ export class OrdenComponent {
     } else {
       return 'PENDIENTE';
     }
-
     return '';
   }
 

@@ -15,17 +15,13 @@
             <th scope="col">Periodo</th>
             <th scope="col">
               Fecha Inicio
-              <br>
-              <small>
-                Fecha de inicio del periodo
-              </small>
+              <br />
+              <small> Fecha de inicio del periodo </small>
             </th>
             <th scope="col">
               Fecha Fin
-              <br>
-              <small>
-                Fecha de vencimiento
-              </small>
+              <br />
+              <small> Fecha de vencimiento </small>
             </th>
             <th scope="col">Importe</th>
             <th scope="col">IVA</th>
@@ -37,66 +33,165 @@
         </thead>
         <tbody>
           <ng-container *ngFor="let pago of orden.comprometidos; let i = index">
-            <tr class="text-center" [ngClass]="{
-              'table-danger': estatus(pago) === 'VENCIDO', 
-                'table-primary': estatus(pago) === 'EN REVISION', 
-                'table-success': estatus(pago) === 'APROBADO', 
+            <tr
+              class="text-center"
+              [ngClass]="{
+                'table-danger': estatus(pago) === 'VENCIDO',
+                rechazado: estatus(pago) === 'RECHAZADO',
+                'table-primary': estatus(pago) === 'EN REVISION',
+                aprobado: estatus(pago) === 'EN PROCESO DE PAGO',
                 'table-warning': estatus(pago) === 'PENDIENTE'
-              }" *ngIf="convertirAFecha(pago.fechaInicio) <= today">
+              }"
+              *ngIf="convertirAFecha(pago.fechaInicio) <= today"
+            >
               <td class="fw-bold">{{ pago.id }}</td>
               <td>{{ pago.partidaDes }}</td>
               <td>{{ pago.partidaPres }}</td>
               <td>{{ pago.periodo }}</td>
-              <td>{{ pago.fechaInicio | date: 'shortDate' }}</td>
-              <td>{{ pago.fechaFin | date: 'shortDate' }}</td>
-              <td>{{ pago.importe | currency: 'MXN':'symbol':'1.2-2' }}</td>
-              <td>{{ pago.iva | currency: 'MXN':'symbol':'1.2-2' }}</td>
-              <td>{{ pago.total | currency: 'MXN':'symbol':'1.2-2' }}</td>
+              <td>{{ pago.fechaInicio | date : "shortDate" }}</td>
+              <td>{{ pago.fechaFin | date : "shortDate" }}</td>
+              <td>
+                {{ pago.importe | currency : "MXN" : "symbol" : "1.2-2" }}
+              </td>
+              <td>{{ pago.iva | currency : "MXN" : "symbol" : "1.2-2" }}</td>
+              <td>{{ pago.total | currency : "MXN" : "symbol" : "1.2-2" }}</td>
               <td>
                 <ng-container *ngIf="!pago.xml; else templateName">
                   <label class="file-upload">
-                    <button class="btn-upload"><i class="fas fa-upload"></i> Subir archivo</button>
-                    <input type="file" accept=".xml" (change)="onFileChangeXML($event, pago, orden)">
+                    <button class="btn-upload">
+                      <i class="fas fa-upload"></i> Subir archivo
+                    </button>
+                    <input
+                      type="file"
+                      accept=".xml"
+                      (change)="onFileChangeXML($event, pago, orden)"
+                    />
                   </label>
                 </ng-container>
                 <ng-template #templateName>
                   <div>
-                    <button type="button" class="btn btn-link" (click)="downloadFile(pago.xml.pathXML)">Ver
-                      archivo</button>
-                    <button type="button" class="btn btn-sm" title="Eliminar XML" (click)="deleteFile(pago, 'XML')">
-                      <i class="bi bi-x-lg" style="color: red;"></i>
+                    <button
+                      type="button"
+                      class="btn btn-link"
+                      (click)="downloadFile(pago.xml.pathXML)"
+                    >
+                      Ver archivo
                     </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm"
+                      title="Eliminar XML"
+                      (click)="deleteFile(pago, 'XML')"
+                      *ngIf="!pago.aprobadoXML"
+                    >
+                      <i class="bi bi-trash" style="color: red"></i>
+                    </button>
+                    <i
+                      class="bi bi-hourglass-split"
+                      style="color: orange"
+                      title="En revisión"
+                      *ngIf="estatus(pago) === 'EN REVISION'"
+                    ></i>
+                    <i
+                      class="bi bi-check-lg text-success"
+                      title="Aprobado"
+                      *ngIf="estatus(pago) === 'EN PROCESO DE PAGO'"
+                    ></i>
+                    <i
+                      class="bi bi-x-lg"
+                      style="color: red"
+                      title="Rechazado"
+                      *ngIf="estatus(pago) === 'RECHAZADO'"
+                    ></i>
                   </div>
                   <div>
                     <small class="text-muted">
-                      {{ pago.xml.cargado | fechaTimeStamp | date: 'short' }}</small>
+                      {{
+                        pago.xml.cargado | fechaTimeStamp | date : "short"
+                      }}</small
+                    >
+                    <br />
+                    <small class="text-danger" *ngIf="!pago.aprobadoXML">
+                      {{ pago.motivoXML ? pago.motivoXML : "" }}
+                    </small>
                   </div>
                 </ng-template>
               </td>
               <td>
                 <ng-container *ngIf="!pago.pathPDF; else templateNamePDF">
                   <label class="file-upload">
-                    <button class="btn-upload"><i class="fas fa-upload"></i> Subir archivo</button>
-                    <input type="file" accept=".pdf" (change)="onFileChangePDF($event, pago)">
+                    <button class="btn-upload">
+                      <i class="fas fa-upload"></i> Subir archivo
+                    </button>
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      (change)="onFileChangePDF($event, pago)"
+                    />
                   </label>
                 </ng-container>
                 <ng-template #templateNamePDF>
                   <div>
-                    <button type="button" class="btn btn-sm btn-link" (click)="downloadFile(pago.pathPDF)">Ver
-                      archivo</button>
-                    <button type="button" class="btn btn-sm" title="Eliminar PDF" (click)="deleteFile(pago, 'PDF')">
-                      <i class="bi bi-x-lg" style="color: red;"></i>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-link"
+                      (click)="downloadFile(pago.pathPDF)"
+                    >
+                      Ver archivo
                     </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm"
+                      title="Eliminar PDF"
+                      (click)="deleteFile(pago, 'PDF')"
+                      *ngIf="!pago.aprobadoPDF"
+                    >
+                      <i class="bi bi-trash" style="color: red"></i>
+                    </button>
+                    <i
+                      class="bi bi-hourglass-split"
+                      style="color: orange"
+                      title="En revisión"
+                      *ngIf="estatus(pago) === 'EN REVISION'"
+                    ></i>
+                    <i
+                      class="bi bi-check-lg text-success"
+                      title="Aprobado"
+                      *ngIf="estatus(pago) === 'EN PROCESO DE PAGO'"
+                    ></i>
+                    <i
+                      class="bi bi-x-lg"
+                      style="color: red"
+                      *ngIf="estatus(pago) === 'RECHAZADO'"
+                    ></i>
                   </div>
                   <div>
                     <small class="text-muted">
-                      {{ pago.cargadoPDF | fechaTimeStamp | date: 'short' }}</small>
+                      {{
+                        pago.cargadoPDF | fechaTimeStamp | date : "short"
+                      }}</small
+                    >
+                    <br />
+                    <small class="text-danger" *ngIf="!pago.aprobadoPDF">
+                      {{ pago.motivoPDF ? pago.motivoPDF : "" }}
+                    </small>
                   </div>
                 </ng-template>
               </td>
-              <td class=""
-                [ngClass]="{'text-danger': estatus(pago) === 'VENCIDO', 'text-primary': estatus(pago) === 'EN REVISION', 'text-success': estatus(pago) === 'APROBADO', 'text-warning': estatus(pago) === 'PENDIENTE'}">
-                {{ estatus(pago) }}</td>
+              <td
+                [ngClass]="{
+                  'text-warning': estatus(pago) === 'PENDIENTE',
+                  'text-danger':
+                    estatus(pago) === 'VENCIDO' ||
+                    estatus(pago) === 'RECHAZADO',
+                  'text-primary':
+                    estatus(pago) === 'EN REVISION' ||
+                    estatus(pago) === 'EN PROCESO DE PAGO',
+                  'text-success': estatus(pago) === 'APROBADO'
+                }"
+              >
+                {{ estatus(pago) }}
+              </td>
             </tr>
           </ng-container>
         </tbody>
@@ -111,17 +206,29 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Error en el CFDI</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
       </div>
       <div class="modal-body">
         <p>Se encontraron los siguientes errores en el CFDI:</p>
         <ul>
-          <li class="text-danger" *ngFor="let error of arrErrorsXML">{{ error }}</li>
+          <li class="text-danger" *ngFor="let error of arrErrorsXML">
+            {{ error }}
+          </li>
         </ul>
-        <p>Por favor, corrige estos errores e intenta subir el archivo nuevamente.</p>
+        <p>
+          Por favor, corrige estos errores e intenta subir el archivo
+          nuevamente.
+        </p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cerrar
+        </button>
       </div>
     </div>
   </div>

@@ -1,13 +1,26 @@
 .puntero {
-    cursor: pointer;
+  cursor: pointer;
 }
 th,
 td {
   white-space: nowrap;
 }
 .iconDelete {
-color: red;
+  color: red;
 }
 .iconDelete:hover {
   color: #b90000;
+}
+
+.bgGreen {
+  background-color: #d7ffd2;
+}
+.bgRed {
+  background-color: #ffbfbf;
+}
+.bgYellow {
+  background-color: #fffbbe;
+}
+.bgOrange {
+  background-color: #ffd1ab;
 }

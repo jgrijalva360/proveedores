@@ -42,3 +42,10 @@ td {
 .btn-upload:hover {
   background-color: #006683;
 }
+
+.rechazado {
+  background-color: rgb(255, 130, 130);
+}
+.aprobado {
+  background-color: rgb(141, 240, 141);
+}

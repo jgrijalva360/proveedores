@@ -425,4 +425,6 @@ export class DealmemoComponent implements OnInit {
         Notiflix.Notify.success('Se actualizo correctamente la base de datos');
       });
   }
+
+  validacionPagos() {}
 }
