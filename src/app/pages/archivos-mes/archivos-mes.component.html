@@ -3,45 +3,136 @@
     <div class="col-12 my-3">
       <h1 class="text-center">Archivos mensuales</h1>
     </div>
-    <ng-container *ngFor="let mes of arrMonts; let i = index">
-      <div class="col-12 mb-3" *ngIf="mes === today.toLocaleString('es-MX', { month: 'long' })">
-        <p class="text-center">Carga los archivos dentro de la primer semana de <span class="fw-bold">{{ mes
-            }}</span>.</p>
-        <div class="row justify-content-center">
-          <div class="col-8 table-responsive">
-            <table class="table table-bordered table-striped text-center">
-              <thead>
-                <tr>
-                  <th>Nombre del archivo</th>
-                  <th>Archivo</th>
-                  <th>Observación</th>
-                  <th>Estatus</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Constancia de situación fiscal</td>
-                  <td><label class="file-upload">
-                      <button class="btn-upload"><i class="fas fa-upload"></i> Subir archivo</button>
-                      <input type="file" accept=".pdf" (change)="onFileChangePDF($event, 'CSF', mes)">
-                    </label></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td>32D opinión del cumplimiento</td>
-                  <td><label class="file-upload">
-                      <button class="btn-upload"><i class="fas fa-upload"></i> Subir archivo</button>
-                      <input type="file" accept=".pdf" (change)="onFileChangePDF($event, '32D', mes)">
-                    </label></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
+    <ng-container *ngFor="let order of arrOC; let i = index">
+      <ng-container *ngFor="let mes of arrMonts">
+        <div
+          class="col-12 mb-3"
+          *ngIf="mes === today.toLocaleString('es-MX', { month: 'long' })"
+        >
+          <p class="text-center">
+            Carga los archivos del mes de {{ mes }}
+            <span class="fw-bold">{{ order.nombreProveedor }}</span>
+          </p>
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-8 table-responsive">
+              <table class="table table-bordered text-center">
+                <thead>
+                  <tr>
+                    <th>Nombre del archivo</th>
+                    <th>Archivo</th>
+                    <th>Observación</th>
+                    <th>Estatus</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    [ngClass]="{
+                      'table-warning': !order?.archivos?.CSF?.[mes]?.estatus,
+                      'table-success': order?.archivos?.CSF?.[mes]?.estatus === 'APROBADO',
+                      'table-danger': order?.archivos?.CSF?.[mes]?.estatus === 'RECHAZADO',
+                      'table-info': order?.archivos?.CSF?.[mes]?.estatus === 'EN REVISIÓN'
+                      }"
+                  >
+                    <td>Constancia de situación fiscal</td>
+                    <td>
+                      <label
+                        class="file-upload"
+                        *ngIf="!order?.archivos?.CSF?.[mes]?.pathPDF; else viewCSF"
+                      >
+                        <button
+                          [id]="'CSFB' + order.nombreProveedor"
+                          class="btn-upload"
+                        >
+                          <i class="fas fa-upload"></i> Subir archivo
+                        </button>
+                        <input
+                          [id]="'CSFI' + order.nombreProveedor"
+                          type="file"
+                          accept=".pdf"
+                          (change)="onFileChangePDF($event, 'CSF', mes, order)"
+                        />
+                      </label>
+                      <ng-template #viewCSF>
+                        <button
+                          class="btn btn-link btn-sm"
+                          (click)="downloadFilePDF(order?.archivos?.CSF?.[mes]?.pathPDF)"
+                        >
+                          <i class="fas fa-file-pdf"></i> Ver archivo
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm"
+                          (click)="deleteFilePDF('CSF', mes, order?.archivos?.CSF?.[mes]?.pathPDF, order)"
+                        >
+                          <i
+                            class="fa fa-trash text-danger"
+                            aria-hidden="true"
+                          ></i>
+                        </button>
+                      </ng-template>
+                    </td>
+                    <td>{{ order?.archivos?.CSF?.[mes]?.observacion }}</td>
+                    <td>
+                      {{ order?.archivos?.CSF?.[mes]?.estatus || 'PENDIENTE' }}
+                    </td>
+                  </tr>
+                  <tr
+                    [ngClass]="{
+                      'table-warning': !order?.archivos?.['32D']?.[mes]?.estatus,
+                      'table-success': order?.archivos?.['32D']?.[mes]?.estatus === 'APROBADO',
+                      'table-danger': order?.archivos?.['32D']?.[mes]?.estatus === 'RECHAZADO',
+                      'table-info': order?.archivos?.['32D']?.[mes]?.estatus === 'EN REVISIÓN'
+                      }"
+                  >
+                    <td>32D opinión del cumplimiento</td>
+                    <td>
+                      <label
+                        class="file-upload"
+                        *ngIf="!order?.archivos?.['32D']?.[mes]?.pathPDF; else view32D"
+                      >
+                        <button
+                          [id]="'32DB' + order.nombreProveedor"
+                          class="btn-upload"
+                        >
+                          <i class="fas fa-upload"></i> Subir archivo
+                        </button>
+                        <input
+                          [id]="'32DI' + order.nombreProveedor"
+                          type="file"
+                          accept=".pdf"
+                          (change)="onFileChangePDF($event, '32D', mes, order)"
+                        />
+                      </label>
+                      <ng-template #view32D>
+                        <button
+                          class="btn btn-link btn-sm"
+                          (click)="downloadFilePDF(order?.archivos?.['32D']?.[mes]?.pathPDF)"
+                        >
+                          <i class="fas fa-file-pdf"></i> Ver archivo
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm"
+                          (click)="deleteFilePDF('32D', mes, order?.archivos?.['32D']?.[mes]?.pathPDF, order)"
+                        >
+                          <i
+                            class="fa fa-trash text-danger"
+                            aria-hidden="true"
+                          ></i>
+                        </button>
+                      </ng-template>
+                    </td>
+                    <td>{{ order?.archivos?.['32D']?.[mes]?.observacion }}</td>
+                    <td>
+                      {{ order?.archivos?.['32D']?.[mes]?.estatus || 'PENDIENTE' }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
+      </ng-container>
     </ng-container>
   </div>
 </div>

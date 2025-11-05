@@ -1,5 +1,50 @@
+<div class="overlay">
+  <div class="wrapper">
+    <nav id="sidebar" class="scroll">
+      <div id="dismiss">
+        <button type="button" class="btn" (click)="toggle()">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+      </div>
+      <div class="sidebar-header">
+        <!-- <h3>Menú</h3> -->
+        <img
+          src="../../../../assets/logos/headerLogo2.png"
+          class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
+          alt=""
+        />
+      </div>
+      <ul class="list-unstyled components">
+        <li class="nav-item">
+          <a
+            (click)="toggle()"
+            class="nav-link"
+            [routerLink]="['/Inicio']"
+            exact
+            >Inicio</a
+          >
+        </li>
+        <li class="nav-item" routerLinkActive="active">
+          <a
+            (click)="toggle()"
+            class="nav-link"
+            [routerLink]="['archivosMensuales']"
+            >Archivos mensuales</a
+          >
+        </li>
+        <li class="nav-item" routerLinkActive="active">
+          <a
+            (click)="toggle()"
+            class="nav-link"
+            [routerLink]="['pagosPendientes']"
+            >Pagos pendientes</a
+          >
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
 <app-header></app-header>
-
-<div style="height: 66px"></div>
-
+<div style="height: 60px"></div>
+<app-breadcrum></app-breadcrum>
 <router-outlet></router-outlet>

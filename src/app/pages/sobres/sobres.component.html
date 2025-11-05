@@ -2,25 +2,44 @@
   <div class="row boxTitle">
     <div class="col-12">
       <h1 class="text-center">Sobres</h1>
-      <p class="text-center">Aquí se muestran los sobres de CFDI que se han importado.</p>
+      <p class="text-center">
+        Aquí se muestran los sobres de CFDI que se han importado.
+      </p>
     </div>
   </div>
   <div class="row box" *ngIf="arrSobres.length > 0">
     <div class="accordion" id="accordionSobres">
-      <div class="accordion-item" *ngFor="let sobre of arrSobres; let iS = index">
+      <div
+        class="accordion-item"
+        *ngFor="let sobre of arrSobres; let iS = index"
+      >
         <h2 class="accordion-header">
-          <button class="accordion-button" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#sobre' + iS"
-            aria-expanded="true" [attr.aria-controls]="'#sobre' + iS">
+          <button
+            class="accordion-button"
+            type="button"
+            data-bs-toggle="collapse"
+            [attr.data-bs-target]="'#sobre' + iS"
+            aria-expanded="true"
+            [attr.aria-controls]="'#sobre' + iS"
+          >
             Sobre {{ sobre[0].sobre }}
           </button>
         </h2>
-        <div [id]="'sobre' + iS" class="accordion-collapse ">
+        <div [id]="'sobre' + iS" class="accordion-collapse">
           <div class="accordion-body">
             <div class="d-flex justify-content-center my-3">
-              <button type="button" class="btn btn-sm btn-outline-success ms-2" (click)="downloadExcel(sobre)">
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-success ms-2"
+                (click)="downloadExcel(sobre)"
+              >
                 Excel <i class="fa-solid fa-file-excel"></i>
               </button>
-              <button type="button" class="btn btn-sm btn-outline-danger ms-2" (click)="generatePDF(sobre)">
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-danger ms-2"
+                (click)="generatePDF(sobre)"
+              >
                 PDF <i class="fa-solid fa-file-pdf"></i>
               </button>
               <!-- <button type="button" class="btn btn-sm btn-outline-warning ms-2">
@@ -65,8 +84,12 @@
                     <th>{{ i + 1 }}</th>
                     <td>{{ xml.partida }}</td>
                     <td>{{ xml.fecha | date : "shortDate" }}</td>
-                    <td [title]="xml.proveedor">{{ xml.proveedor | slice : 0 : 30 }}</td>
-                    <td [title]="xml.concepto">{{ xml.concepto | slice : 0 : 30 }}</td>
+                    <td [title]="xml.proveedor">
+                      {{ xml.proveedor | slice : 0 : 30 }}
+                    </td>
+                    <td [title]="xml.concepto">
+                      {{ xml.concepto | slice : 0 : 30 }}
+                    </td>
                     <td>{{ xml.rfc }}</td>
                     <td>{{ xml.folioComprobante }}</td>
                     <td>{{ xml.inventario }}</td>
@@ -74,40 +97,51 @@
                     <td>{{ xml.otrasCont | number : "1.2-3" }}</td>
                     <td>
                       {{
-                      (xml.iva | number : "1.2-3") || (0 | number : "1.2-3")
+                        (xml.iva | number : "1.2-3") || (0 | number : "1.2-3")
                       }}
                     </td>
                     <td>
                       {{
-                      (xml.subtotal + xml.iva | number : "1.2-3") ||
-                      (0 | number : "1.2-3")
+                        (xml.subtotal + xml.iva | number : "1.2-3") ||
+                          (0 | number : "1.2-3")
                       }}
                     </td>
                     <td>
                       {{
-                      (xml.retIVA | number : "1.2-3") ||
-                      (0 | number : "1.2-3")
+                        (xml.retIVA | number : "1.2-3") ||
+                          (0 | number : "1.2-3")
                       }}
                     </td>
                     <td>
                       {{
-                      (xml.retISR | number : "1.2-3") ||
-                      (0 | number : "1.2-3")
+                        (xml.retISR | number : "1.2-3") ||
+                          (0 | number : "1.2-3")
                       }}
                     </td>
                     <td>{{ xml.descuento }}</td>
                     <td>{{ xml.total | number : "1.2-3" }}</td>
                     <!-- <td class="text-center">{{ xml.metodoPago }}</td> -->
                     <!-- <td class="text-center">{{ xml.moneda }}</td> -->
-                    <td [ngClass]="{ sinPDF: !xml.pathXML }" class="text-center font-weight-bold">
+                    <td
+                      [ngClass]="{ sinPDF: !xml.pathXML }"
+                      class="text-center font-weight-bold"
+                    >
                       <ng-container *ngIf="xml.pathXML; else sinPDF">
                         <!-- <span class="badge text-bg-success" (click)="downloadFile(xml)">LISTO</span> -->
-                        <button type="button" class="btn btn-link" style="font-size: 12px; padding: 0"
-                          (click)="downloadFile(xml.pathXML)">
+                        <button
+                          type="button"
+                          class="btn btn-link"
+                          style="font-size: 12px; padding: 0"
+                          (click)="downloadFile(xml.pathXML)"
+                        >
                           <i class="fas fa-download"></i>
                         </button>
                       </ng-container>
-                      <ng-template #sinPDF><span class="badge text-bg-danger">PENDIENTE</span></ng-template>
+                      <ng-template #sinPDF
+                        ><span class="badge text-bg-danger"
+                          >PENDIENTE</span
+                        ></ng-template
+                      >
                     </td>
                     <!-- <td [ngClass]="{ sinPDF: !xml.pathPDF }" class="text-center font-weight-bold">
                       <ng-container *ngIf="xml.pathPDF; else sinPDF">

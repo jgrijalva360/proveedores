@@ -1,6 +1,6 @@
-table {
-  vertical-align: middle;
+.tablePagos {
   font-size: 14px;
+  vertical-align: middle;
 }
 th {
   vertical-align: middle;
@@ -28,6 +28,12 @@ td {
   width: 100%;
 }
 
+p {
+  margin: 0;
+  font-size: 12px;
+  vertical-align: middle;
+}
+
 .btn-upload {
   display: block;
   background-color: #009fab;
@@ -43,9 +49,15 @@ td {
   background-color: #006683;
 }
 
-.rechazado {
-  background-color: rgb(255, 130, 130);
+.btn-upload:disabled {
+  background-color: #aaaaaa;
+  cursor: not-allowed;
 }
+
 .aprobado {
   background-color: rgb(141, 240, 141);
+}
+
+.pointer {
+  cursor: pointer;
 }

@@ -14,10 +14,11 @@ const routes: Routes = [
     component: RegisterComponent,
   },
   {
-    path: 'home',
+    path: 'Inicio',
     component: HomeComponent,
     loadChildren: () =>
       import('./modules/home/home.module').then((m) => m.HomeModule),
+    data: { breadcrumb: 'Inicio' },
   },
 ];
 

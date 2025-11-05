@@ -1,57 +1,38 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CompanyComponent } from 'src/app/pages/company/company.component';
-import { FilesComponent } from 'src/app/pages/files/files.component';
-import { ProviderComponent } from 'src/app/pages/provider/provider.component';
-import { ImportadorComponent } from 'src/app/pages/importador/importador.component';
 import { DashboardComponent } from 'src/app/pages/dashboard/dashboard.component';
-import { SobresComponent } from 'src/app/pages/sobres/sobres.component';
 import { OrdenComponent } from 'src/app/pages/orden/orden.component';
 import { ArchivosMesComponent } from 'src/app/pages/archivos-mes/archivos-mes.component';
+import { ProveedoresComponent } from 'src/app/pages/proveedores/proveedores.component';
 
 const routes: Routes = [
-  // {
-  //   path: '',
-  //   component: CompanyComponent,
-  // },
-  // {
-  //   path: 'importador',
-  //   component: ImportadorComponent,
-  // },
-  // {
-  //   path: 'datos',
-  //   component: ProviderComponent,
-  // },
   {
     path: '',
-    component: DashboardComponent,
-    children: [
-      {
-        path: 'data',
-        component: ProviderComponent,
-      },
-      {
-        path: 'files',
-        component: FilesComponent,
-      },
-      {
-        path: 'importador',
-        component: ImportadorComponent,
-      },
-      {
-        path: 'sobres',
-        component: SobresComponent,
-      },
-      {
-        path: 'oc',
-        component: OrdenComponent,
-      },
-      {
-        path: 'archivosMensuales',
-        component: ArchivosMesComponent,
-      },
-    ],
+    component: ProveedoresComponent,
+    data: { breadcrumb: 'Proveedores' },
   },
+  {
+    path: ':id',
+    component: DashboardComponent,
+    data: { breadcrumb: ['dashboard'] },
+  },
+  // {
+  //   path: 'pagosPendientes',
+  //   component: OrdenComponent,
+  //   data: { breadcrumb: 'Pagos pendientes' },
+  //   children: [
+  //     {
+  //       path: ':id',
+  //       component: OrdenComponent,
+  //       data: { breadcrumb: 'Proveedor' },
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: 'archivosMensuales',
+  //   component: ArchivosMesComponent,
+  //   data: { breadcrumb: 'Archivos mensuales' },
+  // },
 ];
 
 @NgModule({

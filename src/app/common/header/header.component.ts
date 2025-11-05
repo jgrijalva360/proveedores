@@ -34,6 +34,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.subscribeUserDB = this.generalService
       .getUserDB(this.idUser)
       .subscribe((res: any) => {
+        // console.log('UserDB', res);
         this.dataUser = res;
       });
   }
@@ -41,6 +42,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   onLogout(): void {
     window.sessionStorage.removeItem('id');
     this.router.navigateByUrl('/');
+  }
+
+  toggle() {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) sidebar.classList.toggle('active');
+
+    document.querySelectorAll('.overlay').forEach((el) => {
+      (el as HTMLElement).classList.toggle('active');
+    });
   }
 
   ngOnDestroy() {

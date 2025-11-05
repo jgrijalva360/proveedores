@@ -114,9 +114,10 @@ export class GeneralService {
   getOrdenes(
     idCompany: string,
     idProject: string,
-    rfc: string
+    tipo: string,
+    propiedad: string
   ): Observable<any> {
-    const cacheKey = `${idCompany}_${idProject}_${rfc}`;
+    const cacheKey = `${idCompany}_${idProject}_${propiedad}`;
 
     if (!this.orderCache.has(cacheKey)) {
       // console.log('Fetching orders from Firestore...');
@@ -125,7 +126,37 @@ export class GeneralService {
         .doc(idCompany)
         .collection('proyectos')
         .doc(idProject)
-        .collection('purchaseOrder', (ref) => ref.where('rfc', '==', rfc))
+        .collection('purchaseOrder', (ref) => ref.where(tipo, '==', propiedad))
+        .snapshotChanges()
+        .pipe(
+          map((actions) =>
+            actions.map((a) => {
+              const data = a.payload.doc.data();
+              data.id = a.payload.doc.id;
+              return data;
+            })
+          ),
+          shareReplay(1)
+        );
+
+      this.orderCache.set(cacheKey, orders$);
+    } else {
+      // console.log('Returning cached orders...');
+    }
+    return this.orderCache.get(cacheKey)!;
+  }
+
+  getOrdenesAdmin(idCompany: string, idProject: string): Observable<any> {
+    const cacheKey = `${idCompany}_${idProject}_${'admin'}`;
+
+    if (!this.orderCache.has(cacheKey)) {
+      // console.log('Fetching orders from Firestore...');
+      const orders$ = this.afs
+        .collection('empresas')
+        .doc(idCompany)
+        .collection('proyectos')
+        .doc(idProject)
+        .collection('purchaseOrder')
         .snapshotChanges()
         .pipe(
           map((actions) =>

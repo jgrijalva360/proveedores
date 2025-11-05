@@ -5,6 +5,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { GeneralService } from 'src/app/services/general.service';
 import * as moment from 'moment';
 
+declare var $: any;
+
 @Component({
   selector: 'home-root',
   templateUrl: './home.component.html',
@@ -55,6 +57,18 @@ export class HomeComponent implements OnInit, OnDestroy {
   onLogout(): void {
     window.sessionStorage.removeItem('id');
     this.router.navigateByUrl('/');
+  }
+
+  toggle() {
+    console.log('Toggle sidebar');
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+      sidebar.classList.toggle('active');
+    }
+    const overlay = document.querySelector('.overlay') as HTMLElement | null;
+    if (overlay) {
+      overlay.classList.toggle('active');
+    }
   }
 
   ngOnDestroy(): void {

@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         if (res) {
           this.authService.user = res[0];
           window.sessionStorage.setItem('id', res[0].id);
-          this.router.navigate([`./home`]);
+          this.router.navigate([`./Inicio`]);
         } else {
           Notiflix.Notify.failure('Usuario o contraseña incorrectos');
         }

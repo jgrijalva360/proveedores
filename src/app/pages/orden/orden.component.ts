@@ -17,9 +17,13 @@ export class OrdenComponent {
   idCompany: any;
   idProject: any;
   xml = {} as any;
+  arrProviders = [] as any[];
+  arrAllOC = [] as any[];
   arrOC = [] as any[];
   today: Date = new Date();
   arrErrorsXML = [] as any[];
+  totales = [] as any[];
+  step = 0;
 
   constructor(
     private generalService: GeneralService,
@@ -30,7 +34,8 @@ export class OrdenComponent {
   ngOnInit(): void {
     this.idUser = window.sessionStorage.getItem('id') || '';
     this.getUser(this.idUser);
-    this.today = new Date();
+    // this.today = new Date('2025-10-18T15:00:00'); // Solo para pruebas
+    this.today = new Date(); // Fecha actual
   }
 
   getUser(idUser: string) {
@@ -40,24 +45,118 @@ export class OrdenComponent {
       // console.log('User', this.user);
       this.idCompany = res.empresa.idCompany;
       this.idProject = res.proyecto.idProject;
-      this.getOrdenes();
+
+      if (this.user.tipo === 'jefeDepartamento') {
+        this.getOrdenes('departamento', this.user.depto);
+      } else if (this.user.tipo === 'proveedor') {
+        this.getOrdenes('rfc', this.user.rfc);
+      } else if (this.user.tipo === 'admin') {
+        this.getOrdenesAdmin();
+      }
     });
   }
 
-  getOrdenes() {
+  getOrdenes(tipo: string, propiedad: string) {
     this.generalService
-      .getOrdenes(this.idCompany, this.idProject, this.user.rfc)
+      .getOrdenes(this.idCompany, this.idProject, tipo, propiedad)
       .subscribe((orden: any) => {
-        // console.log(orden);
-        this.arrOC = orden;
-        orden.forEach((element: any) => {
-          element.comprometidos.forEach((comprometido: any, index: number) => {
-            comprometido.id = 'OC-' + element.orderCounter + '-' + (index + 1);
-          });
-        });
+        console.log(orden);
+        this.arrAllOC = orden;
+        this.totales = [];
+
+        // Extraer los objetos por nombre del proveedor sin duplicados
+        const proveedoresUnicos = Array.from(
+          new Set(orden.map((item: any) => item.nombreProveedor))
+        ).map((nombreProveedor) =>
+          orden.find((item: any) => item.nombreProveedor === nombreProveedor)
+        );
+
+        if (proveedoresUnicos.length === 1) {
+          this.selectProvider(proveedoresUnicos[0]);
+          this.step = 2;
+        } else {
+          this.arrProviders = proveedoresUnicos;
+          this.step = 1;
+        }
+
+        // orden = orden.sort((a: any, b: any) => a.orderCounter - b.orderCounter);
+
+        // this.totales = [];
+        // this.arrOC = orden;
+        // orden.forEach((element: any) => {
+        //   let objTotales = {
+        //     importe: 0,
+        //     iva: 0,
+        //     total: 0,
+        //   };
+        //   element.comprometidos.forEach((comprometido: any, index: number) => {
+        //     comprometido.id = 'OC-' + element.orderCounter + '-' + (index + 1);
+        //     objTotales.importe += comprometido.importe;
+        //     objTotales.iva += comprometido.iva;
+        //     objTotales.total += comprometido.total;
+        //   });
+        //   this.totales.push(objTotales);
+        // });
         // filtrar las ordenes que su fecha de inicio no sea mayor a la fecha actual
         // console.log('Ordenes', this.arrOC);
       });
+  }
+
+  getOrdenesAdmin() {
+    this.generalService
+      .getOrdenesAdmin(this.idCompany, this.idProject)
+      .subscribe((ordenes: any) => {
+        console.log(ordenes);
+        this.arrAllOC = ordenes;
+        this.totales = [];
+
+        // Extraer los objetos por nombre del proveedor sin duplicados
+        this.arrProviders = Array.from(
+          new Set(ordenes.map((item: any) => item.nombreProveedor))
+        ).map((nombreProveedor) =>
+          ordenes.find((item: any) => item.nombreProveedor === nombreProveedor)
+        );
+
+        if (this.arrProviders.length === 1) {
+          this.selectProvider(this.arrProviders[0]);
+          this.step = 2;
+        } else {
+          this.arrProviders = this.arrProviders;
+          this.step = 1;
+        }
+
+        // ordenes = ordenes.sort(
+        //   (a: any, b: any) => a.orderCounter - b.orderCounter
+        // );
+
+        // this.arrOC = ordenes;
+        // ordenes.forEach((element: any) => {
+        //   let objTotales = {
+        //     importe: 0,
+        //     iva: 0,
+        //     total: 0,
+        //   };
+        //   element.comprometidos.forEach((comprometido: any, index: number) => {
+        //     comprometido.id = 'OC-' + element.orderCounter + '-' + (index + 1);
+
+        //     objTotales.importe += comprometido.importe;
+        //     objTotales.iva += comprometido.iva;
+        //     objTotales.total += comprometido.total;
+        //   });
+        //   this.totales.push(objTotales);
+        // });
+        // filtrar las ordenes que su fecha de inicio no sea mayor a la fecha actual
+        // console.log('Ordenes', this.arrOC);
+      });
+  }
+
+  selectProvider(provider: any) {
+    this.arrOC = [];
+    this.arrOC.push(
+      ...this.arrAllOC.filter(
+        (item) => item.nombreProveedor === provider.nombreProveedor
+      )
+    );
   }
 
   onFileChangeXML(ev: any, pago: any, orden: any) {
@@ -75,7 +174,6 @@ export class OrdenComponent {
         );
       }
     }
-    // (<any>document.getElementById('formFileXML')).value = '';
   }
 
   xmlToJson(lector: any, file: any, pago: any, orden: any) {
@@ -83,58 +181,8 @@ export class OrdenComponent {
     const parser = new DOMParser();
     const xml = parser.parseFromString(res, 'text/xml');
     const obj = this.ngxXml2jsonService.xmlToJson(xml);
-    // this.validarSiExiste(obj, file);
     this.assignData(obj, file, pago, orden);
   }
-
-  // validarSiExiste(obj: any, file: any) {
-  //   const folio =
-  //     obj['cfdi:Comprobante']['cfdi:Complemento']['tfd:TimbreFiscalDigital'][
-  //       '@attributes'
-  //     ].UUID;
-
-  //   let validacion = this.arrXML.findIndex(
-  //     (element: any) => element.folioComprobante === folio
-  //   );
-
-  //   if (this.userDB.xml) {
-  //     validacion = this.userDB.xml.findIndex(
-  //       (element: any) => element.folioComprobante === folio
-  //     );
-  //   }
-
-  //   if (validacion === -1) {
-  //     if (
-  //       obj['cfdi:Comprobante']['cfdi:Receptor'][
-  //         '@attributes'
-  //       ].Rfc.toUpperCase() === this.rfcReceptor.toUpperCase() &&
-  //       this.isProject
-  //     ) {
-  //       this.assignData(obj, file);
-  //     } else if (!this.isProject) {
-  //       this.assignData(obj, file);
-  //     } else if (
-  //       obj['cfdi:Comprobante']['cfdi:Receptor'][
-  //         '@attributes'
-  //       ].Rfc.toUpperCase() !== this.rfcReceptor.toUpperCase() &&
-  //       this.isProject
-  //     ) {
-  //       if (this.project.filmadoras) {
-  //         this.project.filmadoras.forEach((element: any) => {
-  //           if (
-  //             obj['cfdi:Comprobante']['cfdi:Receptor'][
-  //               '@attributes'
-  //             ].Rfc.toUpperCase() === element.rfc
-  //           ) {
-  //             this.assignData(obj, file);
-  //           }
-  //         });
-  //       }
-  //     }
-  //   } else if (validacion > -1) {
-  //     Notiflix.Notify.failure(`El folio ${folio} ya se encuentra cargado.`);
-  //   }
-  // }
 
   assignData(obj: any, file: any, pago: any, orden: any) {
     // console.log('XML', obj);
@@ -524,37 +572,101 @@ export class OrdenComponent {
   }
 
   convertirAFecha(fechaString: string): Date {
-    const date = new Date(fechaString);
-    // Verifica si la conversión fue exitosa (la fecha no es "Invalid Date")
-    // return isNaN(date.getTime()) ? null : date;
+    const date = new Date(fechaString); // Agrega una hora para evitar problemas de zona horaria
     return date;
+  }
+
+  ultimoViernes(fecha: string): Date {
+    const fechaDate = this.convertirAFecha(fecha);
+    // Obtener el ultimo viernes del mes de la fecha dada
+    const diaSemana = fechaDate.getDay(); // 0 (Domingo) a 6 (Sábado)
+    const diasParaViernes = (diaSemana + 2) % 7; // Días para retroceder al viernes
+    fechaDate.setDate(fechaDate.getDate() - diasParaViernes);
+    const ultimoViernes = new Date(fechaDate);
+    // console.log(ultimoViernes);
+    return ultimoViernes;
+  }
+
+  fechaFinal(fecha: string): Date {
+    const ultimoViernes = this.ultimoViernes(fecha);
+    // Restar 3 días
+    const tresDiasAntes = new Date(ultimoViernes);
+    tresDiasAntes.setDate(ultimoViernes.getDate() - 3);
+    const primerDiaDelMes = new Date(
+      ultimoViernes.getFullYear(),
+      ultimoViernes.getMonth(),
+      1
+    );
+
+    if (tresDiasAntes.getMonth() !== ultimoViernes.getMonth()) {
+      tresDiasAntes.setTime(primerDiaDelMes.getTime());
+    }
+
+    tresDiasAntes.setHours(23, 59, 59, 999);
+    return tresDiasAntes;
+  }
+
+  fechaInicial(fecha: string): Date {
+    const ultimoViernes = this.fechaFinal(fecha);
+
+    // restar 10 días al último viernes siempre y cuando no se pase al mes anterior
+    const onceDiasAntes = new Date(ultimoViernes);
+    onceDiasAntes.setDate(ultimoViernes.getDate() - 10);
+    const primerDiaDelMes = new Date(
+      ultimoViernes.getFullYear(),
+      ultimoViernes.getMonth(),
+      1
+    );
+    if (onceDiasAntes.getMonth() !== ultimoViernes.getMonth()) {
+      onceDiasAntes.setTime(primerDiaDelMes.getTime());
+    }
+
+    onceDiasAntes.setHours(0, 0, 0, 0);
+    return onceDiasAntes;
   }
 
   estatus(pago: any): string {
     if (
-      this.today > this.convertirAFecha(pago.fechaFin) &&
+      this.today > this.fechaFinal(pago.fechaFin) &&
       !pago.xml &&
       !pago.pathPDF
     ) {
       return 'VENCIDO';
-    } else if (
+    }
+
+    if (
       pago.xml &&
       pago.pathPDF &&
       (pago.aprobadoXML === undefined || pago.aprobadoPDF === undefined)
     ) {
       return 'EN REVISION';
-    } else if (pago.aprobadoXML && pago.aprobadoPDF) {
+    }
+
+    if (pago.aprobadoXML && pago.aprobadoPDF) {
       return 'EN PROCESO DE PAGO';
-    } else if (pago.aprobadoXML === false || pago.aprobadoPDF === false) {
+    }
+
+    if (pago.aprobadoXML && pago.aprobadoPDF && pago.estatus === 'Pagado') {
+      return 'PAGADO';
+    }
+
+    if ((!pago.aprobadoXML || !pago.aprobadoPDF) && pago.xml && pago.pathPDF) {
       return 'RECHAZADO';
-    } else if (
-      !pago.xml &&
-      !pago.pathPDF &&
-      this.today <= this.convertirAFecha(pago.fechaFin)
+    }
+
+    if (
+      (!pago.xml || !pago.pathPDF) &&
+      this.today >= this.fechaInicial(pago.fechaFin)
     ) {
       return 'PENDIENTE';
-    } else {
-      return 'PENDIENTE';
+    }
+
+    if (
+      !pago.xml &&
+      !pago.pathPDF &&
+      this.today <= this.fechaInicial(pago.fechaFin)
+    ) {
+      return 'PRÓXIMO';
     }
     return '';
   }

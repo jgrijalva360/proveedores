@@ -9,6 +9,8 @@ import { HomeComponent } from '../../modules/home/home.component';
 import { ProviderComponent } from 'src/app/pages/provider/provider.component';
 import { ImportadorComponent } from 'src/app/pages/importador/importador.component';
 import { FormsModule } from '@angular/forms';
+import { BreadcrumComponent } from 'src/app/common/breadcrum/breadcrum.component';
+import { ProveedoresComponent } from 'src/app/pages/proveedores/proveedores.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +19,8 @@ import { FormsModule } from '@angular/forms';
     HomeComponent,
     ProviderComponent,
     ImportadorComponent,
+    BreadcrumComponent,
+    ProveedoresComponent,
   ],
   imports: [CommonModule, HomeRoutingModule, FormsModule],
 })

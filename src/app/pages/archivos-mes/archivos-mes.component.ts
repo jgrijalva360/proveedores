@@ -33,16 +33,42 @@ export class ArchivosMesComponent {
   getUser(idUser: string) {
     this.generalService.getUserId(idUser).subscribe((res: any) => {
       this.user = res;
-      console.log('User', this.user);
+      // console.log('User', this.user);
       this.idCompany = res.empresa.idCompany;
       this.idProject = res.proyecto.idProject;
-      this.getOrdenes();
+
+      if (this.user.tipo === 'jefeDepartamento') {
+        this.getOrdenes('departamento', this.user.depto);
+      } else if (this.user.tipo === 'proveedor') {
+        this.getOrdenes('rfc', this.user.rfc);
+      } else if (this.user.tipo === 'admin') {
+        this.getOrdenesAdmin();
+      }
     });
   }
 
-  getOrdenes() {
+  getOrdenes(tipo: string, propiedad: string) {
     this.generalService
-      .getOrdenes(this.idCompany, this.idProject, this.user.rfc)
+      .getOrdenes(this.idCompany, this.idProject, tipo, propiedad)
+      .subscribe((orden: any) => {
+        this.arrOC = orden;
+        orden.forEach((element: any) => {
+          element.comprometidos.forEach((comprometido: any, index: number) => {
+            comprometido.id = 'OC-' + element.orderCounter + '-' + (index + 1);
+          });
+        });
+        // filtrar las ordenes que su fecha de inicio no sea mayor a la fecha actual
+        // this.arrOC = this.arrOC.filter(
+        //   (orden) => new Date(orden.fechaInicio) <= this.today
+        // );
+        console.log('Ordenes', this.arrOC);
+        this.getMonths();
+      });
+  }
+
+  getOrdenesAdmin() {
+    this.generalService
+      .getOrdenesAdmin(this.idCompany, this.idProject)
       .subscribe((orden: any) => {
         this.arrOC = orden;
         orden.forEach((element: any) => {
@@ -76,11 +102,11 @@ export class ArchivosMesComponent {
     });
     // console.log('Months', Object.keys(months));
     this.arrMonts = Object.keys(months);
-    console.log('Months', this.arrMonts);
+    // console.log('Months', this.arrMonts);
     // return months;
   }
 
-  onFileChangePDF(ev: any, nombre: any, mes: string) {
+  onFileChangePDF(ev: any, nombre: any, mes: string, order: any) {
     const element = ev.target.files[0];
     const fileInput = element;
     const fileType = fileInput.type;
@@ -91,31 +117,66 @@ export class ArchivosMesComponent {
         'Por favor agrega unicamente archivos con extension .pdf y tamaño maximo de 2MB '
       );
     } else {
-      const filePath = `CFDIs/${this.user.proyecto.nameProject}/${this.user.departamento.name}/${this.user.rfc}/${nombre}/${mes}/${element.name}`;
+      const filePath = `CFDIs/${this.user.proyecto.nameProject}/${this.user.departamento.name}/${order.rfc}/${nombre}/${mes}/${element.name}`;
       const task = this.storage.upload(filePath, element);
       task.then(() => {
         Notiflix.Notify.success('Se guardo correctamente el PDF');
-        this.updateOrderPDF(nombre, mes, filePath);
+        this.updateOrderPDF(nombre, mes, filePath, order);
       });
     }
   }
 
-  updateOrderPDF(nombre: string, mes: string, filePath: string) {
-    this.arrOC.forEach((element) => {
-      console.log('Element', element);
+  updateOrderPDF(nombre: string, mes: string, filePath: string, order: any) {
+    // console.log('Order', order);
+    // console.log('Nombre', nombre);
+    // console.log('Mes', mes);
+    // console.log('FilePath', filePath);
 
-      element.archivos[nombre][mes] = {
-        cargadoPDF: new Date(),
+    const archivos = order.archivos || {};
+
+    archivos[nombre] = {
+      [mes]: {
+        fechaCargado: new Date(),
         pathPDF: filePath,
-      };
+        estatus: 'EN REVISIÓN',
+      },
+    };
 
-      // this.generalService
-      //   .updateOrden(this.idCompany, this.idProject, element.id, {
-      //     archivos: element.archivos,
-      //   })
-      //   .then(() => {
-      //     Notiflix.Notify.success('Se actualizo correctamente la orden');
-      //   });
-    });
+    this.generalService
+      .updateOrden(this.idCompany, this.idProject, order.id, {
+        archivos: archivos,
+      })
+      .then(() => {
+        Notiflix.Notify.success('Se actualizo correctamente la orden');
+      });
+  }
+
+  downloadFilePDF(path: string) {
+    // console.log('Path', path);
+    this.storage
+      .ref(path)
+      .getDownloadURL()
+      .subscribe((url) => {
+        window.open(url, '_blank');
+      });
+  }
+
+  deleteFilePDF(nombre: string, mes: string, filePath: string, order: any) {
+    this.storage
+      .ref(filePath)
+      .delete()
+      .subscribe(() => {
+        Notiflix.Notify.success('Se elimino correctamente el PDF');
+        // Actualizar la orden para eliminar la referencia del archivo
+        const archivos = { ...order.archivos };
+        delete archivos[nombre][mes];
+        this.generalService
+          .updateOrden(this.idCompany, this.idProject, order.id, {
+            archivos: archivos,
+          })
+          .then(() => {
+            Notiflix.Notify.success('Se actualizo correctamente la orden');
+          });
+      });
   }
 }
