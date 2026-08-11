@@ -25,6 +25,9 @@ import { RegisterComponent } from './pages/register/register.component';
 import { SobresComponent } from './pages/sobres/sobres.component';
 import { OrdenComponent } from './pages/orden/orden.component';
 import { ArchivosMesComponent } from './pages/archivos-mes/archivos-mes.component';
+import { FormOrdenComponent } from './pages/form-orden/form-orden.component';
+import { TerminosComponent } from './pages/terminos/terminos.component';
+import { ComprobacionesComponent } from './pages/comprobaciones/comprobaciones.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +41,9 @@ import { ArchivosMesComponent } from './pages/archivos-mes/archivos-mes.componen
     OrdenComponent,
     FechaTimeStampPipe,
     ArchivosMesComponent,
+    FormOrdenComponent,
+    TerminosComponent,
+    ComprobacionesComponent,
   ],
   imports: [
     BrowserModule,

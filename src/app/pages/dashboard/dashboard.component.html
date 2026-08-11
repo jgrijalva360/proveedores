@@ -141,5 +141,19 @@
         <p>Pagos pendientes</p>
       </button>
     </div>
+    <div class="col-auto">
+      <button
+        type="button"
+        class="buttonMenu"
+        style="background-color: rgb(255, 196, 0)"
+        [routerLink]="['gastosPorComprobar']"
+        routerLinkActive="buttonActivate"
+      >
+        <i class="fas fa-comment-dollar icon"></i>
+        <p>Gastos por comprobar</p>
+      </button>
+    </div>
   </div>
 </div>
+
+<router-outlet></router-outlet>

@@ -1,0 +1,589 @@
+<div id="loading" class="loading2" *ngIf="!deleteElement">
+  <div>
+    <img src="../assets/logos/enconexiongif.gif" class="img" alt="" />
+    <h5 id="welcome" class="text">EN CONEXIÓN</h5>
+    <p id="welcome2" class="text2">ASESORÍA CORPORATIVA</p>
+  </div>
+</div>
+
+<header>
+  <div class="container-fluid">
+    <div
+      class="row justify-content-center justify-content-md-between align-items-center text-center"
+    >
+      <div
+        class="col-12 col-sm-12 col-md-4 order-md-5 order-12 text-center text-md-start"
+      >
+        <a [routerLink]="['/']">
+          <img
+            src="./assets/logos/headerLogo2.png"
+            class="logoHeader"
+            alt="logo"
+          />
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <form
+    class="was-validated"
+    #proveedorForm="ngForm"
+    (ngSubmit)="sendForm(proveedorForm)"
+    novalidate
+  >
+    <div class="row box">
+      <div class="col-12 text-center">
+        <h1>Registro de proveedor</h1>
+      </div>
+    </div>
+    <!-- Datos del Proveedor -->
+    <div class="row box">
+      <div class="col-12">
+        <h3>Datos del Proveedor</h3>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="accion-input-group">
+          <input
+            type="text"
+            class="accion-input"
+            [(ngModel)]="dataForm.nombre"
+            #nombreRef="ngModel"
+            name="Nombre"
+            id="Nombre"
+            placeholder=""
+            required
+            maxlength="80"
+          />
+          <label for="Nombre" class="accion-label"
+            >Nombre o razón social <span class="text-danger">*</span></label
+          >
+          <span class="bar"></span>
+          <span
+            class="error-msg"
+            *ngIf="nombreRef.invalid && nombreRef.touched"
+          >
+            ⚠️ Este campo es obligatorio
+          </span>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="accion-input-group">
+          <input
+            type="text"
+            class="accion-input"
+            style="text-transform: uppercase"
+            [(ngModel)]="dataForm.rfc"
+            #rfcRef="ngModel"
+            name="RFC"
+            id="RFC"
+            placeholder=""
+            required
+            maxlength="13"
+            [class.is-invalid-accion]="rfcInvalido"
+            [class.is-invalid-accion]="existePreOrden"
+            (input)="validarRFC()"
+          />
+          <label for="RFC" class="accion-label"
+            >RFC <span class="text-danger">*</span></label
+          >
+          <span class="bar"></span>
+          <span class="error-msg" *ngIf="rfcRef.invalid && rfcRef.touched">
+            ⚠️ Este campo es obligatorio
+          </span>
+          <span class="error-msg" *ngIf="rfcInvalido">
+            ⚠️ El RFC ingresado no es válido
+          </span>
+          <span class="error-msg" *ngIf="existePreOrden">
+            ⚠️ El RFC ingresado ya existe en el sistema
+          </span>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="accion-input-group">
+          <select
+            class="accion-input"
+            name="regimenFiscal"
+            id="regimenFiscal"
+            [(ngModel)]="dataForm.regimenFiscal"
+            #regimenFiscalRef="ngModel"
+            required
+          >
+            <option value="601">601 - General de ley persona moral</option>
+            <option value="606">606 - Arrendamiento</option>
+            <option value="611">611 - Ingresos por dividendos</option>
+            <option value="612">
+              612 - Personas físicas con actividades empresariales y
+              profesionales
+            </option>
+            <option value="621">621 - Incorporación Fiscal</option>
+            <option value="626">626 - RESICO</option>
+            <option value="0">0 - Otro</option>
+          </select>
+          <label for="regimenFiscal" class="accion-label"
+            >Régimen Fiscal <span class="text-danger">*</span></label
+          >
+          <span class="bar"></span>
+          <span
+            class="error-msg"
+            *ngIf="regimenFiscalRef.invalid && regimenFiscalRef.touched"
+          >
+            ⚠️ Este campo es obligatorio
+          </span>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="accion-input-group">
+          <input
+            type="text"
+            class="accion-input"
+            [(ngModel)]="dataForm.codigoPostal"
+            #codigoPostalRef="ngModel"
+            name="codigoPostal"
+            id="codigoPostal"
+            placeholder=""
+            required
+          />
+          <label for="codigoPostal" class="accion-label"
+            >Código Postal <span class="text-danger">*</span></label
+          >
+          <span class="bar"></span>
+          <span
+            class="error-msg"
+            *ngIf="codigoPostalRef.invalid && codigoPostalRef.touched"
+          >
+            ⚠️ Este campo es obligatorio
+          </span>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="accion-input-group">
+          <input
+            type="text"
+            class="accion-input"
+            [(ngModel)]="dataForm.email"
+            #emailRef="ngModel"
+            name="email"
+            id="email"
+            placeholder=""
+            required
+          />
+          <label for="email" class="accion-label"
+            >Email <span class="text-danger">*</span></label
+          >
+          <span class="bar"></span>
+          <span class="error-msg" *ngIf="emailRef.invalid && emailRef.touched">
+            ⚠️ Este campo es obligatorio
+          </span>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="accion-input-group">
+          <input
+            type="text"
+            class="accion-input"
+            [(ngModel)]="dataForm.telefono"
+            #telefonoRef="ngModel"
+            name="telefono"
+            id="telefono"
+            placeholder=""
+            required
+          />
+          <label for="telefono" class="accion-label"
+            >Teléfono <span class="text-danger">*</span></label
+          >
+          <span class="bar"></span>
+          <span
+            class="error-msg"
+            *ngIf="telefonoRef.invalid && telefonoRef.touched"
+          >
+            ⚠️ Este campo es obligatorio
+          </span>
+        </div>
+      </div>
+    </div>
+    <!-- Conceptos -->
+    <div class="row box">
+      <div class="col-12">
+        <h3>Actividad</h3>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="accion-input-group">
+          <input
+            type="text"
+            class="accion-input"
+            [(ngModel)]="dataForm.actividad"
+            #actividadRef="ngModel"
+            name="Actividad"
+            id="Actividad"
+            placeholder=""
+            required
+            maxlength="100"
+          />
+          <label for="Actividad" class="accion-label"
+            >Actividad a realizar <span class="text-danger">*</span></label
+          >
+          <span class="bar"></span>
+          <span
+            class="error-msg"
+            *ngIf="actividadRef.invalid && actividadRef.touched"
+          >
+            ⚠️ Este campo es obligatorio
+          </span>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="accion-input-group">
+          <select
+            class="accion-input"
+            [(ngModel)]="dataForm.departamento"
+            #departamentoRef="ngModel"
+            name="Departamento"
+            id="Departamento"
+            required
+          >
+            <option>Alimentación</option>
+            <option>ANDA</option>
+            <option>Arte</option>
+            <option>Cast</option>
+            <option>Cámara</option>
+            <option>Clearance</option>
+            <option>Dirección</option>
+            <option>Edición</option>
+            <option>Equipo</option>
+            <option>Extras</option>
+            <option>Foto Fija</option>
+            <option>Legal</option>
+            <option>Locaciones</option>
+            <option>Maquillaje y peinados</option>
+            <option>Picture Cards</option>
+            <option>Post producción</option>
+            <option>Producción</option>
+            <option>Safety</option>
+            <option>Seguridad</option>
+            <option>Sonido</option>
+            <option>Staff</option>
+            <option>Stunts</option>
+            <option>Sustentabilidad</option>
+            <option>Transportación</option>
+            <option>Travel</option>
+            <option>TBD</option>
+            <option>Vestuario</option>
+            <option>Video y Data</option>
+          </select>
+          <label for="Departamento" class="accion-label"
+            >Departamento <span class="text-danger">*</span></label
+          >
+          <span class="bar"></span>
+          <span
+            class="error-msg"
+            *ngIf="departamentoRef.invalid && departamentoRef.touched"
+          >
+            ⚠️ Este campo es obligatorio
+          </span>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="accion-input-group">
+          <select
+            class="accion-input"
+            [(ngModel)]="dataForm.moneda"
+            #monedaRef="ngModel"
+            name="Moneda"
+            id="Moneda"
+            required
+          >
+            <option value="MXN">Peso Mexicano (MXN)</option>
+            <option value="USD">Dolar (USD)</option>
+            <option value="EUR">Euro (EUR)</option>
+          </select>
+          <label for="Moneda" class="accion-label"
+            >Moneda <span class="text-danger">*</span></label
+          >
+          <span class="bar"></span>
+          <span
+            class="error-msg"
+            *ngIf="monedaRef.invalid && monedaRef.touched"
+          >
+            ⚠️ Este campo es obligatorio
+          </span>
+        </div>
+      </div>
+    </div>
+    <!-- Datos Bancarios -->
+    <div class="row box">
+      <div class="col-12">
+        <h3>Datos Bancarios</h3>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="accion-input-group">
+          <input
+            type="text"
+            class="accion-input"
+            [(ngModel)]="dataForm.banco"
+            #bancoRef="ngModel"
+            name="Banco"
+            id="Banco"
+            placeholder=""
+            required
+            maxlength="30"
+          />
+          <label for="Banco" class="accion-label"
+            >Banco <span class="text-danger">*</span></label
+          >
+          <span class="bar"></span>
+          <span class="error-msg" *ngIf="bancoRef.invalid && bancoRef.touched">
+            ⚠️ Este campo es obligatorio
+          </span>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="accion-input-group">
+          <input
+            type="text"
+            class="accion-input"
+            [(ngModel)]="dataForm.cuenta"
+            #cuentaRef="ngModel"
+            name="Cuenta"
+            id="Cuenta"
+            placeholder=""
+            required
+            maxlength="10"
+          />
+          <label for="Cuenta" class="accion-label"
+            >Cuenta <span class="text-danger">*</span></label
+          >
+          <span class="bar"></span>
+          <span
+            class="error-msg"
+            *ngIf="cuentaRef.invalid && cuentaRef.touched"
+          >
+            ⚠️ Este campo es obligatorio
+          </span>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="accion-input-group">
+          <input
+            type="text"
+            class="accion-input"
+            [(ngModel)]="dataForm.clabe"
+            #clabeRef="ngModel"
+            name="CLABE"
+            id="CLABE"
+            placeholder=""
+            maxlength="18"
+            required
+          />
+          <label for="CLABE" class="accion-label"
+            >Cuenta CLABE <span class="text-danger">*</span></label
+          >
+          <span class="bar"></span>
+          <span class="error-msg" *ngIf="clabeRef.invalid && clabeRef.touched">
+            ⚠️ Este campo es obligatorio
+          </span>
+        </div>
+      </div>
+    </div>
+    <!-- Pagos -->
+    <div class="row box">
+      <div class="col-12">
+        <h3>Pagos</h3>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="accion-input-group">
+          <select
+            class="accion-input"
+            [(ngModel)]="dataForm.unidad"
+            #unidadRef="ngModel"
+            name="Unidad"
+            id="Unidad"
+            required
+          >
+            <option value="1">Diario</option>
+            <option value="7">Semanal</option>
+            <option value="15">Quincenal</option>
+            <option value="30">Mensual</option>
+            <option value="60">Bimestral</option>
+            <option value="90">Trimestral</option>
+          </select>
+          <label for="" class="accion-label"
+            >Frecuencia de pagos <span class="text-danger">*</span></label
+          >
+          <span class="bar"></span>
+          <span
+            class="error-msg"
+            *ngIf="unidadRef.invalid && unidadRef.touched"
+          >
+            ⚠️ Este campo es obligatorio
+          </span>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="accion-input-group">
+          <input
+            type="date"
+            class="accion-input"
+            [(ngModel)]="dataForm.fechaInicio"
+            #fechaInicioRef="ngModel"
+            name="FechaInicio"
+            id="FechaInicio"
+            placeholder=""
+            required
+          />
+          <label for="" class="accion-label">Fecha inicio</label>
+          <span class="bar"></span>
+          <span
+            class="error-msg"
+            *ngIf="fechaInicioRef.invalid && fechaInicioRef.touched"
+          >
+            ⚠️ Este campo es obligatorio
+          </span>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="accion-input-group">
+          <input
+            type="date"
+            class="accion-input"
+            [(ngModel)]="dataForm.fechaFin"
+            #fechaFinRef="ngModel"
+            name="FechaFin"
+            id="FechaFin"
+            placeholder=""
+            required
+          />
+          <label for="" class="accion-label">Fecha fin</label>
+          <span class="bar"></span>
+          <span
+            class="error-msg"
+            *ngIf="fechaFinRef.invalid && fechaFinRef.touched"
+          >
+            ⚠️ Este campo es obligatorio
+          </span>
+        </div>
+      </div>
+      <div class="col-12 col-md-4 col-lg-3">
+        <div class="accion-input-group">
+          <input
+            type="number"
+            class="accion-input"
+            [(ngModel)]="dataForm.cantidad"
+            #cantidadRef="ngModel"
+            name="Cantidad"
+            id="Cantidad"
+            placeholder=""
+            required
+          />
+          <label for="" class="accion-label"
+            >Cantidad <span class="text-danger">*</span></label
+          >
+          <span class="bar"></span>
+          <span
+            class="error-msg"
+            *ngIf="cantidadRef.invalid && cantidadRef.touched"
+          >
+            ⚠️ Este campo es obligatorio
+          </span>
+        </div>
+      </div>
+      <div class="col-12 col-md-4 col-lg-3">
+        <div class="accion-input-group">
+          <input
+            type="number"
+            class="accion-input"
+            [(ngModel)]="dataForm.importe"
+            #importeRef="ngModel"
+            name="Importe"
+            id="Importe"
+            placeholder=""
+            required
+          />
+          <label for="Importe" class="accion-label"
+            >Importe <span class="text-danger">*</span></label
+          >
+          <span class="bar"></span>
+          <span
+            class="error-msg"
+            *ngIf="importeRef.invalid && importeRef.touched"
+          >
+            ⚠️ Este campo es obligatorio
+          </span>
+        </div>
+      </div>
+      <div class="col-12 col-md-4 col-lg-3">
+        <div class="accion-input-group">
+          <input
+            type="number"
+            class="accion-input"
+            [value]="dataForm.importe * 0.16 * (dataForm.cantidad || 1) || 0"
+            name="IVA"
+            id="IVA"
+            placeholder=""
+            disabled
+          />
+          <label for="IVA" class="accion-label">IVA</label>
+          <span class="bar"></span>
+        </div>
+      </div>
+      <div class="col-12 col-md-4 col-lg-3">
+        <div class="accion-input-group">
+          <input
+            type="number"
+            class="accion-input"
+            [value]="
+              dataForm.importe * (dataForm.cantidad || 1) +
+                dataForm.importe * 0.16 * (dataForm.cantidad || 1) || 0
+            "
+            name="Total"
+            id="Total"
+            placeholder=""
+            disabled
+          />
+          <label for="Total" class="accion-label">Total</label>
+          <span class="bar"></span>
+        </div>
+      </div>
+    </div>
+    <!-- Boton Guardar -->
+    <div class="row box justify-content-between">
+      <div class="col-12 my-2 text-center text-lg-start">
+        <input
+          type="checkbox"
+          class="form-check-input was-validated"
+          [(ngModel)]="dataForm.terminos"
+          name="terminos"
+          id="terminosCondiciones"
+          required
+        />
+        <label
+          class="form-check-label"
+          style="user-select: none"
+          for="terminosCondiciones"
+        >
+          &nbsp; Acepto los
+          <a href="/terminos-y-condiciones" target="_blank"
+            >términos y condiciones</a
+          >
+        </label>
+      </div>
+      <div class="col-12 col-lg-6 text-center text-lg-start">
+        <button type="submit" class="btn btn-primary">Enviar</button>
+      </div>
+
+      <div
+        class="col-12 col-lg-6 text-center text-lg-end mt-5 mt-lg-0"
+        *ngIf="proveedorForm.dirty"
+      >
+        <button
+          type="button"
+          class="btn btn-link btn-sm text-danger"
+          (click)="clearForm(proveedorForm)"
+        >
+          <i class="fas fa-trash"></i> Limpiar formulario
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

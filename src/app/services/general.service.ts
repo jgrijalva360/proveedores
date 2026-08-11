@@ -5,7 +5,7 @@ import { Observable, map } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class GeneralService {
   user$: Observable<any> | undefined;
@@ -45,7 +45,7 @@ export class GeneralService {
   updateUser(id: string, sobre: number, arrXML: Array<any>) {
     return this.afs.collection('usersPublic').doc(id).update({
       sobre: sobre,
-      xml: arrXML,
+      xml: arrXML
     });
   }
 
@@ -126,11 +126,11 @@ export class GeneralService {
         .doc(idCompany)
         .collection('proyectos')
         .doc(idProject)
-        .collection('purchaseOrder', (ref) => ref.where(tipo, '==', propiedad))
+        .collection('purchaseOrder', ref => ref.where(tipo, '==', propiedad))
         .snapshotChanges()
         .pipe(
-          map((actions) =>
-            actions.map((a) => {
+          map(actions =>
+            actions.map(a => {
               const data = a.payload.doc.data();
               data.id = a.payload.doc.id;
               return data;
@@ -159,8 +159,8 @@ export class GeneralService {
         .collection('purchaseOrder')
         .snapshotChanges()
         .pipe(
-          map((actions) =>
-            actions.map((a) => {
+          map(actions =>
+            actions.map(a => {
               const data = a.payload.doc.data();
               data.id = a.payload.doc.id;
               return data;
@@ -186,5 +186,34 @@ export class GeneralService {
       .collection('purchaseOrder')
       .doc(idOrder)
       .update(obj);
+  }
+
+  getproject(idCompany: string, idProject: string) {
+    return this.afs
+      .collection('empresas')
+      .doc(idCompany)
+      .collection('proyectos')
+      .doc(idProject)
+      .valueChanges();
+  }
+
+  getPreOrden(idCompany: string, idProject: string, rfc: string) {
+    return this.afs
+      .collection('empresas')
+      .doc(idCompany)
+      .collection('proyectos')
+      .doc(idProject)
+      .collection('preOrder', ref => ref.where('rfc', '==', rfc))
+      .valueChanges();
+  }
+
+  addPreOrden(idCompany: string, idProject: string, obj: any) {
+    return this.afs
+      .collection('empresas')
+      .doc(idCompany)
+      .collection('proyectos')
+      .doc(idProject)
+      .collection('preOrder')
+      .add(obj);
   }
 }

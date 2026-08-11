@@ -48,7 +48,7 @@ export class ProveedoresComponent {
     this.generalService
       .getOrdenes(this.idCompany, this.idProject, tipo, propiedad)
       .subscribe((orden: any) => {
-        console.log(orden);
+        // console.log(orden);
         // this.arrAllOC = orden;
         // this.totales = [];
 
@@ -72,7 +72,7 @@ export class ProveedoresComponent {
     this.generalService
       .getOrdenesAdmin(this.idCompany, this.idProject)
       .subscribe((ordenes: any) => {
-        console.log(ordenes);
+        // console.log(ordenes);
 
         // Extraer los objetos por nombre del proveedor sin duplicados
         this.arrProviders = Array.from(
@@ -84,12 +84,14 @@ export class ProveedoresComponent {
   }
 
   goToProvider(proveedor: any) {
-    console.log('Proveedor seleccionado:', proveedor.rfc);
+    // console.log('Proveedor seleccionado:', proveedor.rfc);
     // navegar al dashboard del proveedor
     // window.sessionStorage.setItem(
     //   'providerSelected',
     //   JSON.stringify(proveedor)
     // );
-    this.router.navigate(['Inicio/' + proveedor.rfc]);
+    this.router.navigate([`Inicio/${proveedor.rfc}`]).then((res) => {
+      // console.log(res);
+    });
   }
 }

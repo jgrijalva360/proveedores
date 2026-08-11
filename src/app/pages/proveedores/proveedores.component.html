@@ -1,10 +1,11 @@
 <div class="container-fluid">
-  <div class="row box justify-content-center">
-    <div class="col-12 col-md-6 table-responsive">
+  <div class="row box">
+    <div class="col-12 table-responsive">
       <table class="table table-hover text-center">
         <thead>
           <tr>
-            <th scope="col">Proveedor</th>
+            <th>Proveedor</th>
+            <th>RFC</th>
           </tr>
         </thead>
         <tbody>
@@ -13,10 +14,12 @@
             *ngFor="let item of arrProviders"
             (click)="goToProvider(item)"
           >
-            <td scope="row">{{ item.nombreProveedor }}</td>
+            <td>{{ item.nombreProveedor }}</td>
+            <td>{{ item.rfc }}</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
 </div>
+<router-outlet></router-outlet>

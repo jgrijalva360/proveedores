@@ -1,0 +1,33 @@
+{
+  "folders": [
+	{
+		"name": "proyectoEnconexion",
+		"path": "../../../proyectoEnconexion"
+	},
+	{
+		"name": "proveedores",
+		"path": "../.."
+	},
+	{
+		"name": "findPets",
+		"path": "../../../findPets"
+	},
+	{
+		"name": "websiteEnconexion",
+		"path": "../../../websiteEnconexion"
+	},
+	{
+		"name": "jbikers",
+		"path": "../../../jbikers"
+	},
+	{
+		"name": "artProject",
+		"path": "../../../artProject"
+	},
+	{
+		"name": "jbgraphic",
+		"path": "../../../jbgraphic"
+	}
+],
+  "settings": {}
+}

@@ -4,39 +4,40 @@ import { DashboardComponent } from 'src/app/pages/dashboard/dashboard.component'
 import { OrdenComponent } from 'src/app/pages/orden/orden.component';
 import { ArchivosMesComponent } from 'src/app/pages/archivos-mes/archivos-mes.component';
 import { ProveedoresComponent } from 'src/app/pages/proveedores/proveedores.component';
+import { ComprobacionesComponent } from 'src/app/pages/comprobaciones/comprobaciones.component';
 
 const routes: Routes = [
   {
     path: '',
     component: ProveedoresComponent,
-    data: { breadcrumb: 'Proveedores' },
+    data: { breadcrumb: 'Proveedores' }
   },
   {
     path: ':id',
     component: DashboardComponent,
-    data: { breadcrumb: ['dashboard'] },
-  },
-  // {
-  //   path: 'pagosPendientes',
-  //   component: OrdenComponent,
-  //   data: { breadcrumb: 'Pagos pendientes' },
-  //   children: [
-  //     {
-  //       path: ':id',
-  //       component: OrdenComponent,
-  //       data: { breadcrumb: 'Proveedor' },
-  //     },
-  //   ],
-  // },
-  // {
-  //   path: 'archivosMensuales',
-  //   component: ArchivosMesComponent,
-  //   data: { breadcrumb: 'Archivos mensuales' },
-  // },
+    data: { breadcrumb: 'proveedor' },
+    children: [
+      {
+        path: 'archivosMensuales',
+        component: ArchivosMesComponent,
+        data: { breadcrumb: 'Archivos mensuales' }
+      },
+      {
+        path: 'pagosPendientes',
+        component: OrdenComponent,
+        data: { breadcrumb: 'Pagos pendientes' }
+      },
+      {
+        path: 'gastosPorComprobar',
+        component: ComprobacionesComponent,
+        data: { breadcrumb: 'Gastos por comprobar' }
+      }
+    ]
+  }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class HomeRoutingModule {}

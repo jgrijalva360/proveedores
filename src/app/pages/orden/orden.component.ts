@@ -3,13 +3,14 @@ import { GeneralService } from 'src/app/services/general.service';
 import * as Notiflix from 'notiflix';
 import { NgxXml2jsonService } from 'ngx-xml2json';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
+import { Router } from '@angular/router';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-orden',
   templateUrl: './orden.component.html',
-  styleUrls: ['./orden.component.css'],
+  styleUrls: ['./orden.component.css']
 })
 export class OrdenComponent {
   idUser: any;
@@ -23,26 +24,32 @@ export class OrdenComponent {
   today: Date = new Date();
   arrErrorsXML = [] as any[];
   totales = [] as any[];
-  step = 0;
+  rfcSeleccionado: string = '';
 
   constructor(
     private generalService: GeneralService,
     private ngxXml2jsonService: NgxXml2jsonService,
-    public storage: AngularFireStorage
+    public storage: AngularFireStorage,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
+    console.log('Se inicia order');
+    const rfc = this.router.url.split('/')[2];
+    this.rfcSeleccionado = rfc;
+
     this.idUser = window.sessionStorage.getItem('id') || '';
-    this.getUser(this.idUser);
+
     // this.today = new Date('2025-10-18T15:00:00'); // Solo para pruebas
     this.today = new Date(); // Fecha actual
+    this.getUser(this.idUser);
   }
 
   getUser(idUser: string) {
     // pdfMake.createPdf({}).open();
     this.generalService.getUserId(idUser).subscribe((res: any) => {
       this.user = res;
-      // console.log('User', this.user);
+      console.log('User', this.user);
       this.idCompany = res.empresa.idCompany;
       this.idProject = res.proyecto.idProject;
 
@@ -61,42 +68,26 @@ export class OrdenComponent {
       .getOrdenes(this.idCompany, this.idProject, tipo, propiedad)
       .subscribe((orden: any) => {
         console.log(orden);
-        this.arrAllOC = orden;
         this.totales = [];
 
-        // Extraer los objetos por nombre del proveedor sin duplicados
-        const proveedoresUnicos = Array.from(
-          new Set(orden.map((item: any) => item.nombreProveedor))
-        ).map((nombreProveedor) =>
-          orden.find((item: any) => item.nombreProveedor === nombreProveedor)
-        );
+        orden = orden.sort((a: any, b: any) => a.orderCounter - b.orderCounter);
 
-        if (proveedoresUnicos.length === 1) {
-          this.selectProvider(proveedoresUnicos[0]);
-          this.step = 2;
-        } else {
-          this.arrProviders = proveedoresUnicos;
-          this.step = 1;
-        }
-
-        // orden = orden.sort((a: any, b: any) => a.orderCounter - b.orderCounter);
-
-        // this.totales = [];
-        // this.arrOC = orden;
-        // orden.forEach((element: any) => {
-        //   let objTotales = {
-        //     importe: 0,
-        //     iva: 0,
-        //     total: 0,
-        //   };
-        //   element.comprometidos.forEach((comprometido: any, index: number) => {
-        //     comprometido.id = 'OC-' + element.orderCounter + '-' + (index + 1);
-        //     objTotales.importe += comprometido.importe;
-        //     objTotales.iva += comprometido.iva;
-        //     objTotales.total += comprometido.total;
-        //   });
-        //   this.totales.push(objTotales);
-        // });
+        this.totales = [];
+        this.arrOC = orden;
+        orden.forEach((element: any) => {
+          let objTotales = {
+            importe: 0,
+            iva: 0,
+            total: 0
+          };
+          element.comprometidos.forEach((comprometido: any, index: number) => {
+            comprometido.id = 'OC-' + element.orderCounter + '-' + (index + 1);
+            objTotales.importe += comprometido.importe;
+            objTotales.iva += comprometido.iva;
+            objTotales.total += comprometido.total;
+          });
+          this.totales.push(objTotales);
+        });
         // filtrar las ordenes que su fecha de inicio no sea mayor a la fecha actual
         // console.log('Ordenes', this.arrOC);
       });
@@ -106,57 +97,38 @@ export class OrdenComponent {
     this.generalService
       .getOrdenesAdmin(this.idCompany, this.idProject)
       .subscribe((ordenes: any) => {
-        console.log(ordenes);
-        this.arrAllOC = ordenes;
+        // console.log(ordenes);
         this.totales = [];
 
-        // Extraer los objetos por nombre del proveedor sin duplicados
-        this.arrProviders = Array.from(
-          new Set(ordenes.map((item: any) => item.nombreProveedor))
-        ).map((nombreProveedor) =>
-          ordenes.find((item: any) => item.nombreProveedor === nombreProveedor)
+        let ordenesFiltradas = ordenes.filter(
+          (orden: any) => orden.rfc === this.rfcSeleccionado
         );
 
-        if (this.arrProviders.length === 1) {
-          this.selectProvider(this.arrProviders[0]);
-          this.step = 2;
-        } else {
-          this.arrProviders = this.arrProviders;
-          this.step = 1;
-        }
+        // console.log('OC Filtradas', ordenesFiltradas);
 
-        // ordenes = ordenes.sort(
-        //   (a: any, b: any) => a.orderCounter - b.orderCounter
-        // );
+        ordenesFiltradas = ordenesFiltradas.sort(
+          (a: any, b: any) => a.orderCounter - b.orderCounter
+        );
 
-        // this.arrOC = ordenes;
-        // ordenes.forEach((element: any) => {
-        //   let objTotales = {
-        //     importe: 0,
-        //     iva: 0,
-        //     total: 0,
-        //   };
-        //   element.comprometidos.forEach((comprometido: any, index: number) => {
-        //     comprometido.id = 'OC-' + element.orderCounter + '-' + (index + 1);
+        ordenesFiltradas.forEach((element: any) => {
+          let objTotales = {
+            importe: 0,
+            iva: 0,
+            total: 0
+          };
+          element.comprometidos.forEach((comprometido: any, index: number) => {
+            comprometido.id = 'OC-' + element.orderCounter + '-' + (index + 1);
 
-        //     objTotales.importe += comprometido.importe;
-        //     objTotales.iva += comprometido.iva;
-        //     objTotales.total += comprometido.total;
-        //   });
-        //   this.totales.push(objTotales);
-        // });
+            objTotales.importe += comprometido.importe;
+            objTotales.iva += comprometido.iva;
+            objTotales.total += comprometido.total;
+          });
+          this.totales.push(objTotales);
+        });
         // filtrar las ordenes que su fecha de inicio no sea mayor a la fecha actual
+        this.arrOC = ordenesFiltradas;
         // console.log('Ordenes', this.arrOC);
       });
-  }
-
-  selectProvider(provider: any) {
-    this.arrOC = [];
-    this.arrOC.push(
-      ...this.arrAllOC.filter(
-        (item) => item.nombreProveedor === provider.nombreProveedor
-      )
-    );
   }
 
   onFileChangeXML(ev: any, pago: any, orden: any) {
@@ -164,7 +136,7 @@ export class OrdenComponent {
       const archivo = ev.target.files[index];
       if (archivo.type === 'text/xml') {
         const lector = new FileReader();
-        lector.onload = (e) => {
+        lector.onload = e => {
           this.xmlToJson(e, archivo, pago, orden);
         };
         lector.readAsText(archivo);
@@ -290,7 +262,7 @@ export class OrdenComponent {
           this.xml.iva = 0; // Inicializar iva a 0
           this.xml.otrasCont = 0; // Inicializar otrasCont a 0
           if (esArrayTraslados) {
-            traslados.forEach((element) => {
+            traslados.forEach(element => {
               if (element['@attributes'].Impuesto === '002') {
                 this.xml.iva += parseFloat(element['@attributes'].Importe);
               } else if (element['@attributes'].Impuesto === '003') {
@@ -310,7 +282,7 @@ export class OrdenComponent {
             ];
           const esArrayRetenciones = Array.isArray(retenciones);
           if (esArrayRetenciones) {
-            retenciones.forEach((element) => {
+            retenciones.forEach(element => {
               if (element['@attributes'].Impuesto === '002') {
                 this.xml.retIVA = parseFloat(element['@attributes'].Importe);
               } else if (element['@attributes'].Impuesto === '001') {
@@ -358,7 +330,7 @@ export class OrdenComponent {
     }
     // Validar que el folio no exista en los archivos de la orden
     // Aqui valido en la orden actual
-    this.arrOC.forEach((element) => {
+    this.arrOC.forEach(element => {
       if (element.xml.folioComprobante === xml.folioComprobante) {
         validacion = false;
         const mensaje = `El folio ${xml.folioComprobante} ya se encuentra cargado en esta orden u otra orden`;
@@ -389,6 +361,7 @@ export class OrdenComponent {
     }
 
     // Mes y año del XML debe coincidir con el mes y año del pago
+    // Esta deshabilitado para hacer pruebas con archivos de otros años
     // if (
     //   this.convertirAFecha(this.xml.fecha).getMonth() !==
     //     this.convertirAFecha(pago.fechaInicio).getMonth() ||
@@ -421,12 +394,12 @@ export class OrdenComponent {
     }
 
     // Validar que el RFC receptor sea igual al de la empresa
-    if (this.xml.rfcReceptor !== this.user.empresa.rfc) {
-      validacion = false;
-      const mensaje = `El RFC receptor del CFDI ${this.xml.rfcReceptor} no coincide con el RFC de la empresa ${this.user.empresa.rfc}`;
-      // Notiflix.Notify.failure(mensaje);
-      this.arrErrorsXML.push(mensaje);
-    }
+    // if (this.xml.rfcReceptor !== this.user.empresa.rfc) {
+    //   validacion = false;
+    //   const mensaje = `El RFC receptor del CFDI ${this.xml.rfcReceptor} no coincide con el RFC de la empresa ${this.user.empresa.rfc}`;
+    //   // Notiflix.Notify.failure(mensaje);
+    //   this.arrErrorsXML.push(mensaje);
+    // }
 
     // Validar que la moneda sea igual al de la orden
     if (this.xml.moneda !== orden.moneda) {
@@ -467,10 +440,10 @@ export class OrdenComponent {
   }
 
   updateOrderXML(file: any, obj: any) {
-    this.arrOC.forEach((element) => {
+    this.arrOC.forEach(element => {
       this.generalService
         .updateOrden(this.idCompany, this.idProject, element.id, {
-          comprometidos: element.comprometidos,
+          comprometidos: element.comprometidos
         })
         .then(() => {
           Notiflix.Notify.success('Se actualizo correctamente la orden');
@@ -484,7 +457,7 @@ export class OrdenComponent {
     const path: any = {};
     path.pathImageProfile = filePath;
     const task = this.storage.upload(filePath, file);
-    task.then((res) => {
+    task.then(res => {
       Notiflix.Notify.success('Se guardo correctamente el archivo XML');
       this.xml = {} as any;
     });
@@ -513,10 +486,10 @@ export class OrdenComponent {
   }
 
   updateOrderPDF() {
-    this.arrOC.forEach((element) => {
+    this.arrOC.forEach(element => {
       this.generalService
         .updateOrden(this.idCompany, this.idProject, element.id, {
-          comprometidos: element.comprometidos,
+          comprometidos: element.comprometidos
         })
         .then(() => {
           Notiflix.Notify.success('Se actualizo correctamente la orden');
@@ -528,7 +501,7 @@ export class OrdenComponent {
     this.storage
       .ref(path)
       .getDownloadURL()
-      .subscribe((url) => {
+      .subscribe(url => {
         window.open(url, '_blank');
       });
   }

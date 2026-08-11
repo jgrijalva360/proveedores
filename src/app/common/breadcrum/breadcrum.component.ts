@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { ActivatedRouteSnapshot, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { GeneralService } from 'src/app/services/general.service';
 
 @Component({
   selector: 'app-breadcrum',
@@ -9,48 +10,94 @@ import { ActivatedRouteSnapshot, Router } from '@angular/router';
 export class BreadcrumComponent {
   breadcrumbs: Array<{ label: string; url: string }> = [];
 
-  constructor(private router: Router) {}
+  idCompany: string = '';
+  idProject: string = '';
+  rfcSeleccionado: string = '';
+  oc: any = {};
 
-  ngOnInit() {
-    // Subscribe to the router events to update breadcrumbs on navigation
+  constructor(
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private generalService: GeneralService
+  ) {}
+
+  ngOnInit(): void {
+    const rfc = this.router.url.split('/')[2];
+    this.rfcSeleccionado = rfc;
+    this.createBreadcrumbs();
+    // this.getUser(window.sessionStorage.getItem('id') || '');
+  }
+
+  createBreadcrumbs(): void {
     this.router.events.subscribe(() => {
-      const root: ActivatedRouteSnapshot =
-        this.router.routerState.snapshot.root;
-      this.breadcrumbs = this.buildBreadCrumb(root);
+      this.breadcrumbs = [];
+      let currentRoute = this.activatedRoute.root;
+      // console.log(currentRoute);
+      let url = '';
+      while (currentRoute.children.length > 0) {
+        const childRoutes = currentRoute.children;
+        // console.log(childRoutes);
+        let nextRoute = null;
+        for (const route of childRoutes) {
+          if (route.outlet === 'primary') {
+            nextRoute = route;
+            break;
+          }
+        }
+        if (!nextRoute) {
+          break;
+        }
+        currentRoute = nextRoute;
+        const routeSnapshot = currentRoute.snapshot;
+        if (routeSnapshot.url.length > 0) {
+          const routeURL = routeSnapshot.url
+            .map((segment) => segment.path)
+            .join('/');
+          url += `/${routeURL}`;
+          let label = routeSnapshot.data['breadcrumb'] || routeURL || 'Home';
+          if (label === 'proveedor') {
+            label = routeSnapshot.params['id'];
+            // this.getOrden();
+            this.breadcrumbs.push({ label, url });
+          } else {
+            this.breadcrumbs.push({ label, url });
+          }
+        }
+      }
     });
   }
 
-  buildBreadCrumb(
-    route: ActivatedRouteSnapshot,
-    url: string = '',
-    breadcrumbs: Array<{ label: string; url: string }> = []
-  ): Array<{ label: string; url: string }> {
-    const children: ActivatedRouteSnapshot[] = route.children;
+  getUser(idUser: string) {
+    this.generalService.getUserId(idUser).subscribe((res: any) => {
+      // this.user = res;
+      // console.log('User', this.user);
+      this.idCompany = res.empresa.idCompany;
+      this.idProject = res.proyecto.idProject;
+    });
+  }
 
-    // console.log('breadcrumbs', breadcrumbs);
+  getOrden() {
+    this.generalService
+      .getOrdenes(this.idCompany, this.idProject, 'rfc', this.rfcSeleccionado)
+      .subscribe((ordenes: any) => {
+        // console.log(ordenes);
 
-    if (route.data && route.data['breadcrumb']) {
-      if (route.data['breadcrumb'] === 'Proveedor') {
-        breadcrumbs.push({
-          label: route.params['id'],
-          url: url || '/',
+        let ordenesFiltradas = ordenes.filter(
+          (orden: any) => orden.rfc === this.rfcSeleccionado
+        );
+
+        console.log('OC Ordenadas', ordenesFiltradas);
+
+        this.oc = ordenesFiltradas[0];
+
+        this.breadcrumbs.push({
+          label: this.oc.nombreProveedor,
+          url: `/${this.rfcSeleccionado}`,
         });
-      } else {
-        breadcrumbs.push({
-          label: String(route.data['breadcrumb']),
-          url: url || '/',
-        });
-      }
-    }
 
-    if (children.length === 0) {
-      return breadcrumbs;
-    }
-
-    return this.buildBreadCrumb(
-      children[0],
-      `${url}/${children[0].url}`,
-      breadcrumbs
-    );
+        // filtrar las ordenes que su fecha de inicio no sea mayor a la fecha actual
+        // this.arrOC = ordenesFiltradas;
+        // console.log('Ordenes', this.arrOC);
+      });
   }
 }

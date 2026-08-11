@@ -1,0 +1,38 @@
+<div class="container-fluid">
+  <div class="row box">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="text-center">#</th>
+            <th>Nombre</th>
+            <th>Deducible</th>
+            <th>Proyecto</th>
+            <th>Importe</th>
+            <th>IVA</th>
+            <th>Total</th>
+            <th>Aprobado</th>
+            <th class="text-center">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th class="text-center">{{ comprobacion.countCheck }}</th>
+            <td>{{ comprobacion.nombre }}</td>
+            <td>{{ comprobacion.deducible }}</td>
+            <td>{{ comprobacion.proyecto }}</td>
+            <td>{{ comprobacion.importe | number: '1.2-3' }}</td>
+            <td>{{ comprobacion.iva | number: '1.2-3' }}</td>
+            <td>{{ comprobacion.total | number: '1.2-3' }}</td>
+            <td>{{ comprobacion.aprobada ? 'Aprobada' : 'Pendiente' }}</td>
+            <td class="text-center">
+              <button type="button" class="btn btn-primary btn-sm">
+                <i class="fas fa-file-pdf"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

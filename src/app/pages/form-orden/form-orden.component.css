@@ -1,0 +1,321 @@
+header {
+  background: #1f1f1f;
+  width: 100%;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  color: white;
+}
+.logoHeader {
+  max-width: 140px;
+}
+.imgProfile {
+  width: 50px;
+  height: 50px;
+}
+.imgProfileEdit {
+  width: 150px;
+  height: 150px;
+}
+.bars {
+  color: #039fab;
+  font-size: 25px;
+}
+.cogs {
+  color: #039fab;
+  font-size: 25px;
+}
+.nameProject {
+  font-weight: bolder;
+  color: white;
+  font-size: 1.2em;
+  margin: 0;
+  padding: 0;
+}
+.detailProject {
+  font-size: 0.9em;
+  color: white;
+  margin: 0;
+  padding: 0;
+}
+
+/* ------------- */
+/*
+    DEMO STYLE
+*/
+
+nav {
+  overflow-y: auto;
+}
+/* ---------------------------------------------------
+    SIDEBAR STYLE
+----------------------------------------------------- */
+
+.wrapper {
+  display: flex;
+  width: 100%;
+}
+
+#sidebar {
+  width: 250px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 999;
+  background: #1f1f1f;
+  color: #fff;
+  transition: all 0.3s;
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
+}
+
+#sidebar.active {
+  left: 0;
+}
+
+#dismiss {
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+  text-align: center;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  -webkit-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+#dismiss:hover {
+  /* background: #fff; */
+  color: #039fab;
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  width: 100vw;
+  height: 100%;
+  background: #00000066;
+  z-index: 998;
+  opacity: 0;
+  transition: all 0.5s ease-in-out;
+}
+.overlay.active {
+  display: block;
+  opacity: 1;
+}
+
+#sidebar .sidebar-header {
+  padding: 20px;
+  background: #1f1f1f;
+}
+
+#sidebar ul.components {
+  padding: 20px 0;
+  border-bottom: 1px solid #47748b;
+}
+
+#sidebar ul p {
+  color: #fff;
+  padding: 10px;
+}
+
+#sidebar ul li a {
+  padding: 10px;
+  font-size: 1.1em;
+  display: block;
+}
+
+#sidebar ul li a:hover {
+  color: #039fab;
+  background: #fff;
+}
+
+#sidebar ul li.active > a,
+a[aria-expanded='true'] {
+  color: #fff;
+  background-color: #039fab;
+}
+
+a[data-toggle='collapse'] {
+  position: relative;
+}
+
+.dropdown-toggle::after {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+}
+
+ul ul a {
+  font-size: 0.9em !important;
+  padding-left: 30px !important;
+  background: #039fab;
+}
+
+ul.CTAs {
+  padding: 20px;
+}
+
+ul.CTAs a {
+  text-align: center;
+  font-size: 0.9em !important;
+  display: block;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+a.download {
+  background: #fff;
+  color: #039fab;
+}
+
+a.article,
+a.article:hover {
+  background: #039fab !important;
+  color: #fff !important;
+}
+.scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Estilo de inputs */
+/* Contenedor principal */
+.accion-input-group {
+  position: relative;
+  margin-top: 25px;
+  margin-bottom: 10px;
+}
+
+/* Input base estilo Google */
+.accion-input {
+  font-size: 16px;
+  padding: 10px 0;
+  display: block;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #d1d1d1;
+  background: transparent;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+/* Label flotante */
+.accion-label {
+  color: #70757a;
+  font-size: 16px;
+  position: absolute;
+  pointer-events: none;
+  left: 0;
+  top: 10px;
+  transition: 0.2s ease all;
+}
+
+/* Animación label arriba */
+.accion-input:focus ~ .accion-label,
+.accion-input:not(:placeholder-shown) ~ .accion-label {
+  top: -20px;
+  font-size: 12px;
+  color: #039fab;
+}
+
+/* Barra inferior animada */
+.bar {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+.bar:before {
+  content: '';
+  height: 2px;
+  width: 0;
+  bottom: 0;
+  position: absolute;
+  background: #039fab;
+  transition: 0.3s ease all;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.accion-input:focus ~ .bar:before {
+  width: 100%;
+}
+
+/* --- ESTADOS DE ERROR --- */
+
+/* Mensaje oculto por defecto */
+.error-msg {
+  color: #d93025;
+  font-size: 12px;
+  margin-top: 8px;
+  display: block; /* Lo controla el *ngIf de Angular */
+}
+
+/* Cuando Angular detecta error y el usuario ya interactuó */
+.accion-input.ng-invalid.ng-touched {
+  border-bottom: 1px solid #d93025 !important;
+}
+
+.accion-input.ng-invalid.ng-touched ~ .accion-label {
+  color: #d93025 !important;
+}
+
+.accion-input.ng-invalid.ng-touched ~ .bar:before {
+  background: #d93025 !important;
+  width: 100%; /* Mantiene la línea roja extendida */
+}
+
+/* Clase manual que aplicamos con [class.is-invalid-accion] */
+.accion-input.is-invalid-accion {
+  border-bottom: 2px solid #d93025 !important;
+}
+
+.accion-input.is-invalid-accion ~ .accion-label,
+.accion-input.is-invalid-accion ~ .error-msg {
+  color: #d93025 !important;
+  display: block;
+}
+
+.accion-input.is-invalid-accion ~ .bar:before {
+  background: #d93025 !important;
+  width: 100%;
+}
+
+/* LOADING */
+.loading2 {
+  text-align: center;
+  background-color: #1f1f1f;
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  z-index: 9999;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  transition: ease 400ms;
+}
+.ocultar {
+  opacity: 0%;
+}
+
+.text {
+  font-family: 'Montserrat', sans-serif;
+  color: #fff;
+  font-weight: bold;
+  font-size: 25px;
+}
+.text2 {
+  font-family: 'Montserrat', sans-serif;
+  color: #009fab;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.img {
+  width: 110px;
+}

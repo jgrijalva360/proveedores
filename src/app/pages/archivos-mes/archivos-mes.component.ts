@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { GeneralService } from 'src/app/services/general.service';
 import * as Notiflix from 'notiflix';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-archivos-mes',
@@ -18,13 +19,20 @@ export class ArchivosMesComponent {
 
   archivos = [];
   arrMonts: string[] = [];
+  totales: any[] = [];
+  rfcSeleccionado = '';
+  mesEncontrado = false;
 
   constructor(
     private generalService: GeneralService,
-    public storage: AngularFireStorage
+    public storage: AngularFireStorage,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
+    const rfc = this.router.url.split('/')[2];
+    this.rfcSeleccionado = rfc;
+    // console.log('RFC Seleccionado', this.rfcSeleccionado);
     this.idUser = window.sessionStorage.getItem('id') || '';
     this.getUser(this.idUser);
     this.today = new Date();
@@ -51,16 +59,13 @@ export class ArchivosMesComponent {
     this.generalService
       .getOrdenes(this.idCompany, this.idProject, tipo, propiedad)
       .subscribe((orden: any) => {
-        this.arrOC = orden;
-        orden.forEach((element: any) => {
-          element.comprometidos.forEach((comprometido: any, index: number) => {
-            comprometido.id = 'OC-' + element.orderCounter + '-' + (index + 1);
-          });
-        });
+        // console.log(orden);
+        this.totales = [];
+
+        orden = orden.sort((a: any, b: any) => a.orderCounter - b.orderCounter);
+
         // filtrar las ordenes que su fecha de inicio no sea mayor a la fecha actual
-        // this.arrOC = this.arrOC.filter(
-        //   (orden) => new Date(orden.fechaInicio) <= this.today
-        // );
+        this.arrOC = orden;
         console.log('Ordenes', this.arrOC);
         this.getMonths();
       });
@@ -69,18 +74,23 @@ export class ArchivosMesComponent {
   getOrdenesAdmin() {
     this.generalService
       .getOrdenesAdmin(this.idCompany, this.idProject)
-      .subscribe((orden: any) => {
-        this.arrOC = orden;
-        orden.forEach((element: any) => {
-          element.comprometidos.forEach((comprometido: any, index: number) => {
-            comprometido.id = 'OC-' + element.orderCounter + '-' + (index + 1);
-          });
-        });
+      .subscribe((ordenes: any) => {
+        // console.log(ordenes);
+        this.totales = [];
+
+        let ordenesFiltradas = ordenes.filter(
+          (orden: any) => orden.rfc === this.rfcSeleccionado
+        );
+
+        // console.log('OC Filtradas', ordenesFiltradas);
+
+        ordenesFiltradas = ordenesFiltradas.sort(
+          (a: any, b: any) => a.orderCounter - b.orderCounter
+        );
+
         // filtrar las ordenes que su fecha de inicio no sea mayor a la fecha actual
-        // this.arrOC = this.arrOC.filter(
-        //   (orden) => new Date(orden.fechaInicio) <= this.today
-        // );
-        console.log('Ordenes', this.arrOC);
+        this.arrOC = ordenesFiltradas;
+        // console.log('Ordenes', this.arrOC);
         this.getMonths();
       });
   }
@@ -102,7 +112,13 @@ export class ArchivosMesComponent {
     });
     // console.log('Months', Object.keys(months));
     this.arrMonts = Object.keys(months);
-    // console.log('Months', this.arrMonts);
+    console.log('Months', this.arrMonts);
+    this.mesEncontrado = false;
+    for (const mes of this.arrMonts) {
+      if (mes === this.today.toLocaleString('es-MX', { month: 'long' })) {
+        this.mesEncontrado = true;
+      }
+    }
     // return months;
   }
 
