@@ -1,23 +1,22 @@
 <div class="container-fluid">
-  <div class="row box mt-3">
-    <div class="col-auto">
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb m-0">
-          <li
-            class="breadcrumb-item"
-            *ngFor="let bread of breadcrumbs; let last = last"
-            [ngClass]="{ 'color-enconexion': last }"
-          >
-            <ng-container *ngIf="!last; else lastBreadcrumb">
-              <a [routerLink]="bread.url" style="text-decoration: none">{{
-                bread.label
-              }}</a>
-            </ng-container>
-            <ng-template #lastBreadcrumb>{{ bread.label }}</ng-template>
-          </li>
-        </ol>
-      </nav>
+  <div class="row">
+    <div class="col-12">
+      <div class="breadcrumb-container">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb m-0">
+            <li
+              class="breadcrumb-item"
+              *ngFor="let bread of breadcrumbs; let last = last"
+              [class.active]="last"
+            >
+              <ng-container *ngIf="!last; else lastBreadcrumb">
+                <a [routerLink]="bread.url">{{ bread.label }}</a>
+              </ng-container>
+              <ng-template #lastBreadcrumb>{{ bread.label }}</ng-template>
+            </li>
+          </ol>
+        </nav>
+      </div>
     </div>
-    <div class="col-auto"></div>
   </div>
 </div>

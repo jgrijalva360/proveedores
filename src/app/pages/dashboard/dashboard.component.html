@@ -1,158 +1,31 @@
-<!-- <app-menu *ngIf="aprobado"></app-menu> -->
-<!-- <router-outlet *ngIf="aprobado"></router-outlet> -->
+<div class="container-fluid py-2">
+  <div class="menu-nav-container my-2">
+    <a
+      class="menu-nav-btn"
+      [routerLink]="['archivosMensuales']"
+      routerLinkActive="active"
+    >
+      <i class="fas fa-folder-open"></i>
+      <span>Archivos Mensuales</span>
+    </a>
 
-<!-- <div class="container-fluid">
-  <div class="row box justify-content-center">
-    <div class="col-auto my-3">
-      <button
-        type="button"
-        class="buttonMenu"
-        [ngClass]="{
-          colorRed: this.provider.status === 'Pendiente',
-          colorYellow: this.provider.status === 'En revisión',
-          colorGreen: this.provider.status === 'Aprobado'
-        }"
-        [routerLink]="['data']"
-        routerLinkActive="buttonActivate"
-      >
-        <i class="fas fa-cog icon"></i>
-        <p>Mis datos</p>
-        <div>
-          <span *ngIf="provider.status === 'Pendiente'">
-            <i class="fas fa-exclamation-triangle"></i> Pendiente</span
-          >
-          <span *ngIf="provider.status === 'En revisión'">
-            <i class="fas fa-spinner fa-spin"></i> En revisión</span
-          >
-          <span *ngIf="provider.status === 'Aprobado'">
-            <i class="fas fa-check"></i> Aprobado</span
-          >
-        </div>
-      </button>
-    </div>
-    <div class="col-auto my-3">
-      <button
-        type="button"
-        class="buttonMenu"
-        [ngClass]="{
-          colorRed: statusFiles === 'Rechazado',
-          colorOrange: statusFiles === 'Pendiente',
-          colorYellow: statusFiles === 'En revisión',
-          colorGreen: statusFiles === 'Aprobado'
-        }"
-        [routerLink]="['files']"
-        routerLinkActive="buttonActivate"
-      >
-        <i class="fas fa-file-upload icon"></i>
-        <p>Carga de archivos</p>
-        <div>
-          <span *ngIf="statusFiles === 'Rechazado'">
-            <i class="fas fa-exclamation-triangle"></i> Rechazado</span
-          >
-          <span *ngIf="statusFiles === 'Pendiente'">
-            <i class="fas fa-spinner fa-spin"></i> Pendiente</span
-          >
-          <span *ngIf="statusFiles === 'En revisión'">
-            <i class="fas fa-spinner fa-spin"></i> En revisión</span
-          >
-          <span *ngIf="statusFiles === 'Aprobado'">
-            <i class="fas fa-check"></i> Aprobado</span
-          >
-        </div>
-      </button>
-    </div>
-    <div class="col-auto my-3">
-      <button
-        type="button"
-        class="buttonMenu"
-        [ngClass]="{
-          colorRed: this.provider.status === 'Pendiente',
-          colorYellow: this.provider.status === 'En revisión',
-          colorGreen: this.provider.status === 'Aprobado'
-        }"
-        [routerLink]="['dealMemo']"
-        routerLinkActive="buttonActivate"
-      >
-        <i class="fas fa-calendar-week icon"></i>
-        <p>Calendario de pagos</p>
-        <div>
-          <span *ngIf="provider.status === 'Pendiente'">
-            <i class="fas fa-exclamation-triangle"></i> Pendiente</span
-          >
-          <span *ngIf="provider.status === 'En revisión'">
-            <i class="fas fa-spinner fa-spin"></i> En revisión</span
-          >
-          <span *ngIf="provider.status === 'Aprobado'">
-            <i class="fas fa-check"></i> Aprobado</span
-          >
-        </div>
-      </button>
-    </div>
-  </div>
-</div> -->
+    <a
+      class="menu-nav-btn"
+      [routerLink]="['pagosPendientes']"
+      routerLinkActive="active"
+    >
+      <i class="fas fa-file-invoice-dollar"></i>
+      <span>Pagos Pendientes (OC)</span>
+    </a>
 
-<div class="container-fluid">
-  <div class="row box justify-content-center align-items-center">
-    <!-- <div class="col-auto">
-      <button
-        type="button"
-        class="buttonMenu"
-        style="background-color: green"
-        [routerLink]="['importador']"
-        routerLinkActive="buttonActivate"
-      >
-        <i class="fas fa-plus-circle icon"></i>
-        <p>Agregar CFDI</p>
-      </button>
-    </div>
-    <div class="col-auto">
-      <button
-        type="button"
-        class="buttonMenu"
-        style="background-color: rgb(0, 162, 255)"
-        [routerLink]="['sobres']"
-        routerLinkActive="buttonActivate"
-      >
-        <i class="fas fa-folder icon"></i>
-        <p>Sobres</p>
-      </button>
-    </div> -->
-    <div class="col-auto">
-      <button
-        type="button"
-        class="buttonMenu"
-        style="background-color: rgb(0, 162, 255)"
-        [routerLink]="['archivosMensuales']"
-        routerLinkActive="buttonActivate"
-      >
-        <i class="fas fa-folder icon"></i>
-        <p>Archivos mensuales</p>
-      </button>
-    </div>
-    <div class="col-auto">
-      <button
-        type="button"
-        class="buttonMenu"
-        style="background-color: rgb(255, 102, 0)"
-        [routerLink]="['pagosPendientes']"
-        routerLinkActive="buttonActivate"
-      >
-        <i class="fas fa-comment-dollar icon"></i>
-        <p>Pagos pendientes</p>
-      </button>
-    </div>
-    <div class="col-auto">
-      <button
-        type="button"
-        class="buttonMenu"
-        style="background-color: rgb(255, 196, 0)"
-        [routerLink]="['gastosPorComprobar']"
-        routerLinkActive="buttonActivate"
-      >
-        <i class="fas fa-comment-dollar icon"></i>
-        <p>Gastos por comprobar</p>
-      </button>
-    </div>
+    <a
+      class="menu-nav-btn"
+      [routerLink]="['gastosPorComprobar']"
+      routerLinkActive="active"
+    >
+      <i class="fas fa-receipt"></i>
+      <span>Gastos por Comprobar (GXC)</span>
+    </a>
   </div>
 </div>
 

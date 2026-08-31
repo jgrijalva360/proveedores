@@ -1,3 +1,29 @@
-table {
-  white-space: nowrap;
+.project-card {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border-radius: 12px;
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 159, 171, 0.15);
+  box-shadow: 2px 4px 12px #00000014;
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 102, 131, 0.12) !important;
+  border-color: #009fab;
+}
+
+.icon-box-project {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  background-color: #f0fbfc;
+  color: #006683;
+}
+
+.pointer {
+  cursor: pointer;
 }

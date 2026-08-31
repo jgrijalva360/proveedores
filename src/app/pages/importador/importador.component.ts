@@ -55,11 +55,13 @@ export class ImportadorComponent implements OnInit, OnDestroy {
   }
 
   getUser(idUser: string) {
+    if (!idUser) return;
     this.generalService.getUserId(idUser).subscribe((res: any) => {
+      if (!res) return;
       console.log(res);
       this.userDB = res;
 
-      this.rfcReceptor = res.empresa.rfc;
+      this.rfcReceptor = res.empresa?.rfc || '';
       if (res.sobre) {
         this.sobre = res.sobre + 1;
       } else {

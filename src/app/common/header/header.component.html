@@ -1,12 +1,9 @@
-<header>
+<header class="py-1">
   <div class="container-fluid">
-    <div
-      class="row justify-content-center justify-content-md-between align-items-center text-center"
-    >
-      <div
-        class="col-12 col-sm-12 col-md-4 order-md-5 order-12 text-center text-md-start"
-      >
-        <a [routerLink]="['./']">
+    <div class="row align-items-center">
+      <!-- Logo y botón de menú -->
+      <div class="col-auto d-flex align-items-center">
+        <a [routerLink]="['./']" class="me-2">
           <img
             src="./assets/logos/headerLogo2.png"
             class="logoHeader"
@@ -16,34 +13,36 @@
         <button
           type="button"
           id="sidebarCollapse"
-          class="btn"
+          class="btn btn-sm p-1"
           title="Menu"
           (click)="toggle()"
         >
           <i class="fas fa-bars bars"></i>
         </button>
       </div>
-      <!-- <div class="col-12 col-sm-12 col-md-4 order-md-5 order-12 text-center">
-        {{ dataUser.name }}
-        <br />
-        RFC: {{ dataUser.rfc }}
-      </div> -->
-      <div
-        class="col-6 col-sm-6 col-md-4 text-center text-md-end order-md-12 order-5"
-      >
+
+      <!-- Información central de Empresa y Proyecto en línea -->
+      <div class="col text-center d-none d-md-block">
+        <div class="d-inline-flex align-items-center gap-2 header-info-badge py-1 px-3" *ngIf="nombreProyecto || dataUser?.name">
+          <span class="badge bg-dark border border-secondary text-light" *ngIf="nombreEmpresa">{{ nombreEmpresa }}</span>
+          <span class="text-white fw-bold small text-truncate" style="max-width: 250px;">{{ nombreProyecto || dataUser?.name }}</span>
+          <span class="text-white-50 small border-start border-secondary ps-2" *ngIf="dataUser?.rfc">RFC: {{ dataUser?.rfc }}</span>
+        </div>
+      </div>
+
+      <!-- Icono de perfil y menú desplegable -->
+      <div class="col-auto ms-auto text-end">
         <a
-          class="dropdown-toggle"
+          class="dropdown-toggle user-btn text-decoration-none"
           role="button"
           id="dropdownMenuLink"
           data-toggle="dropdown"
           data-bs-toggle="dropdown"
           aria-expanded="false"
         >
-          <img
-            src="{{ urlImageDefault }}"
-            alt="photoProfile"
-            class="imgProfile rounded"
-          />
+          <span class="user-icon-wrapper">
+            <i class="fas fa-user text-white"></i>
+          </span>
         </a>
 
         <div

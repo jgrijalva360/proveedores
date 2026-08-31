@@ -39,6 +39,8 @@ export class OrdenComponent {
     this.rfcSeleccionado = rfc;
 
     this.idUser = window.sessionStorage.getItem('id') || '';
+    this.idCompany = window.sessionStorage.getItem('idCompany') || '';
+    this.idProject = window.sessionStorage.getItem('idProject') || '';
 
     // this.today = new Date('2025-10-18T15:00:00'); // Solo para pruebas
     this.today = new Date(); // Fecha actual
@@ -46,12 +48,18 @@ export class OrdenComponent {
   }
 
   getUser(idUser: string) {
+    if (!idUser) return;
     // pdfMake.createPdf({}).open();
     this.generalService.getUserId(idUser).subscribe((res: any) => {
+      if (!res) return;
       this.user = res;
       console.log('User', this.user);
-      this.idCompany = res.empresa.idCompany;
-      this.idProject = res.proyecto.idProject;
+      if (!this.idCompany) {
+        this.idCompany = res.empresa?.idCompany || '';
+      }
+      if (!this.idProject) {
+        this.idProject = res.proyecto?.idProject || '';
+      }
 
       if (this.user.tipo === 'jefeDepartamento') {
         this.getOrdenes('departamento', this.user.depto);

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { Observable, map } from 'rxjs';
+import { Observable, map, of } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 
 @Injectable({
@@ -16,7 +16,7 @@ export class GeneralService {
   constructor(
     private afs: AngularFirestore,
     public storage: AngularFireStorage
-  ) {}
+  ) { }
 
   getXMLPublic(idCompany: string, idProject: string, RFC: string) {
     return this.afs
@@ -30,6 +30,9 @@ export class GeneralService {
   }
 
   getUserId(id: string): Observable<any> {
+    if (!id) {
+      return of(undefined);
+    }
     if (!this.userCache.has(id)) {
       const user$ = this.afs
         .collection('usersPublic')
@@ -188,7 +191,8 @@ export class GeneralService {
       .update(obj);
   }
 
-  getproject(idCompany: string, idProject: string) {
+  getproject(idCompany: string, idProject: string): Observable<any> {
+    if (!idCompany || !idProject) return of(null);
     return this.afs
       .collection('empresas')
       .doc(idCompany)
@@ -215,5 +219,62 @@ export class GeneralService {
       .doc(idProject)
       .collection('preOrder')
       .add(obj);
+  }
+
+  getCompany(idCompany: string): Observable<any> {
+    if (!idCompany) return of(null);
+    return this.afs.collection('empresas').doc(idCompany).valueChanges();
+  }
+
+  getCompanyProjects(idCompany: string): Observable<any[]> {
+    if (!idCompany) return of([]);
+    return this.afs
+      .collection('empresas')
+      .doc(idCompany)
+      .collection('proyectos')
+      .snapshotChanges()
+      .pipe(
+        map(actions =>
+          actions.map(a => {
+            const data = a.payload.doc.data() as any;
+            data.idProject = a.payload.doc.id;
+            data.idC = idCompany;
+            return data;
+          })
+        )
+      );
+  }
+
+  getSolicitudesGXC(idCompany: string, idProject: string, rfc: string): Observable<any[]> {
+    return this.afs
+      .collection('empresas')
+      .doc(idCompany)
+      .collection('proyectos')
+      .doc(idProject)
+      .collection('solicitudes', ref =>
+        ref.where('tipo', '==', 'GXC').where('rfc', '==', rfc)
+      )
+      .snapshotChanges()
+      .pipe(
+        map(actions =>
+          actions.map(a => {
+            const data = a.payload.doc.data() as any;
+            data.id = a.payload.doc.id;
+            return data;
+          })
+        ),
+        shareReplay(1)
+      );
+  }
+
+  updateSolicitud(idCompany: string, idProject: string, idSol: string, data: any) {
+    return this.afs
+      .collection('empresas')
+      .doc(idCompany)
+      .collection('proyectos')
+      .doc(idProject)
+      .collection('solicitudes')
+      .doc(idSol)
+      .update(data);
   }
 }

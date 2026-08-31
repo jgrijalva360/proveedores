@@ -44,48 +44,28 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   subscriptionLogin: Subscription | undefined;
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, private authService: AuthService) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   onLogin() {
+    if (!this.email || !this.password) {
+      Notiflix.Notify.failure('Por favor ingresa correo y contraseña');
+      return;
+    }
+
     this.subscriptionLogin = this.authService
-      .getUser(this.email, this.password)
+      .getUser(this.email.trim(), this.password.trim())
       .subscribe((res: any) => {
         console.log(res);
-        if (res) {
+        if (res && res.length > 0 && res[0]) {
           this.authService.user = res[0];
           window.sessionStorage.setItem('id', res[0].id);
-          this.router.navigate([`./Inicio`]);
+          this.router.navigate([`/Inicio/${res[0].id}`]);
         } else {
           Notiflix.Notify.failure('Usuario o contraseña incorrectos');
         }
       });
-
-    // this.authService
-    //   .loginEmailUser(this.email, this.password)
-    //   .then((res) => {
-    //     console.log(res);
-    //     this.router.navigate(['./home']);
-    //   })
-    //   .catch((err) => {
-    //     if (err.code === 'auth/invalid-email') {
-    //       this.errorMsg = 'Verifica el usuario';
-    //       document.getElementById('user')?.classList.add('is-invalid');
-    //       setTimeout(() => {
-    //         this.errorMsg = '';
-    //       }, 3000);
-    //     } else {
-    //       this.errorMsg = 'Verifica la contraseña';
-    //       document
-    //         .getElementById('user')
-    //         ?.classList.replace('is-invalid', 'is-valid');
-    //       document.getElementById('password')?.classList.add('is-invalid');
-    //       setTimeout(() => {
-    //         this.errorMsg = '';
-    //       }, 3000);
-    //     }
-    //   });
   }
 
   rfcValido(rfc: any, aceptarGenerico = false) {

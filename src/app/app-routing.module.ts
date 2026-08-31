@@ -16,7 +16,7 @@ const routes: Routes = [
     component: RegisterComponent
   },
   {
-    path: 'Inicio',
+    path: 'Inicio/:id',
     component: HomeComponent,
     loadChildren: () =>
       import('./modules/home/home.module').then(m => m.HomeModule),
@@ -38,4 +38,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

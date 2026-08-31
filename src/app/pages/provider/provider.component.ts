@@ -66,8 +66,8 @@ export class ProviderComponent implements OnInit, OnDestroy {
     this.providerSubscription = this.generalService
       .getUserDB(this.idUser)
       .subscribe((res: any) => {
-        this.provider = res;
-        if (this.provider.banks === undefined) {
+        this.provider = res || {};
+        if (this.provider && this.provider.banks === undefined) {
           this.provider.banks = [];
         }
         console.log(this.provider);

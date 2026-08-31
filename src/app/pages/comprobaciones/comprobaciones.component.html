@@ -1,38 +1,183 @@
-<div class="container-fluid">
-  <div class="row box">
-    <div class="table-responsive">
-      <table class="table">
-        <thead>
-          <tr>
-            <th class="text-center">#</th>
-            <th>Nombre</th>
-            <th>Deducible</th>
-            <th>Proyecto</th>
-            <th>Importe</th>
-            <th>IVA</th>
-            <th>Total</th>
-            <th>Aprobado</th>
-            <th class="text-center">Acción</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th class="text-center">{{ comprobacion.countCheck }}</th>
-            <td>{{ comprobacion.nombre }}</td>
-            <td>{{ comprobacion.deducible }}</td>
-            <td>{{ comprobacion.proyecto }}</td>
-            <td>{{ comprobacion.importe | number: '1.2-3' }}</td>
-            <td>{{ comprobacion.iva | number: '1.2-3' }}</td>
-            <td>{{ comprobacion.total | number: '1.2-3' }}</td>
-            <td>{{ comprobacion.aprobada ? 'Aprobada' : 'Pendiente' }}</td>
-            <td class="text-center">
-              <button type="button" class="btn btn-primary btn-sm">
-                <i class="fas fa-file-pdf"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+<div class="container-fluid py-2">
+  <!-- Resumen superior en formato .box existente -->
+  <div class="row">
+    <div class="col-12 col-md-4">
+      <div class="box">
+        <span class="text-secondary small fw-bold">TOTAL OTORGADO GXC</span>
+        <h3 class="mb-0 mt-1">${{ totalOtorgado | number: '1.2-2' }}</h3>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="box">
+        <span class="text-secondary small fw-bold">TOTAL COMPROBADO</span>
+        <h3 class="mb-0 mt-1 text-dark">${{ totalComprobado | number: '1.2-2' }}</h3>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="box">
+        <span class="text-secondary small fw-bold">SALDO POR COMPROBAR</span>
+        <h3 class="mb-0 mt-1 text-dark">${{ saldoDisponible | number: '1.2-2' }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado de carga -->
+  <div *ngIf="cargando" class="text-center py-4">
+    <div class="spinner-border text-secondary" role="status"></div>
+    <p class="mt-2 text-muted small">Cargando solicitudes GXC...</p>
+  </div>
+
+  <!-- Vista Principal de Comprobaciones -->
+  <div *ngIf="!cargando" class="row">
+    <!-- Listado de Solicitudes GXC -->
+    <div class="col-12 col-lg-5">
+      <div class="box">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="mb-0">Solicitudes (GXC)</h3>
+          <span class="badge bg-light text-dark border">{{ solicitudesGXC.length }} registros</span>
+        </div>
+        <div class="list-group list-group-flush" *ngIf="solicitudesGXC.length > 0; else sinSolicitudes">
+          <button
+            type="button"
+            class="list-group-item list-group-item-action py-2 px-3 border-bottom pointer"
+            *ngFor="let sol of solicitudesGXC"
+            [class.bg-light]="solicitudSeleccionada?.id === sol.id"
+            (click)="seleccionarSolicitud(sol)"
+          >
+            <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+              <span class="fw-bold text-dark">Folio: {{ sol.folio || sol.id }}</span>
+              <span class="badge bg-light text-dark border">
+                {{ sol.aprobado ? 'Aprobada' : 'Pendiente' }}
+              </span>
+            </div>
+            <p class="mb-1 small text-muted text-truncate">{{ sol.concepto || sol.motivo || 'Sin concepto' }}</p>
+            <div class="d-flex justify-content-between small text-secondary">
+              <span>Monto: <strong>${{ (sol.importe || sol.total || 0) | number: '1.2-2' }}</strong></span>
+              <span>Comprobantes: <strong>{{ sol.arrXML?.length || 0 }}</strong></span>
+            </div>
+          </button>
+        </div>
+        <ng-template #sinSolicitudes>
+          <div class="p-3 text-center text-muted small">
+            <p class="mb-0">No se encontraron solicitudes GXC registradas para tu RFC en este proyecto.</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Detalle de Comprobantes de la Solicitud Seleccionada -->
+    <div class="col-12 col-lg-7">
+      <div class="box" *ngIf="solicitudSeleccionada; else seleccionarSol">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h3 class="mb-0">Comprobantes: {{ solicitudSeleccionada.folio || solicitudSeleccionada.id }}</h3>
+            <small class="text-secondary">{{ solicitudSeleccionada.concepto || 'Gastos por comprobar' }}</small>
+          </div>
+          <div>
+            <label class="btn-enconexion pointer mb-0">
+              <i class="fas fa-upload me-1"></i> Subir XML
+              <input type="file" (change)="onFileChangeXML($event)" accept=".xml" hidden multiple />
+            </label>
+          </div>
+        </div>
+
+        <div class="table-responsive" *ngIf="solicitudSeleccionada.arrXML && solicitudSeleccionada.arrXML.length > 0; else sinComprobantes">
+          <table class="table table-hover align-middle text-start">
+            <thead class="table-light">
+              <tr>
+                <th>UUID / Emisor</th>
+                <th>Fecha</th>
+                <th class="text-end">Total</th>
+                <th class="text-center">Archivos</th>
+                <th class="text-center">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cfdi of solicitudSeleccionada.arrXML">
+                <td>
+                  <div class="fw-bold text-truncate text-dark small" style="max-width: 170px;" [title]="cfdi.uuid">
+                    {{ cfdi.uuid }}
+                  </div>
+                  <small class="text-muted d-block text-truncate" style="max-width: 170px;">
+                    {{ cfdi.nombreEmisor || cfdi.rfcEmisor }}
+                  </small>
+                </td>
+                <td class="small">{{ cfdi.fecha | date: 'dd/MM/yyyy' }}</td>
+                <td class="text-end fw-bold text-dark">${{ cfdi.total | number: '1.2-2' }}</td>
+                <td class="text-center">
+                  <!-- Botón XML -->
+                  <button
+                    *ngIf="cfdi.pathXML"
+                    type="button"
+                    class="btn btn-outline-secondary btn-sm me-1"
+                    (click)="descargarArchivo(cfdi.pathXML)"
+                    title="Descargar XML"
+                  >
+                    <i class="fas fa-file-code"></i>
+                  </button>
+                  <!-- Botón PDF o Carga -->
+                  <button
+                    *ngIf="cfdi.pathPDF"
+                    type="button"
+                    class="btn btn-outline-secondary btn-sm"
+                    (click)="descargarArchivo(cfdi.pathPDF)"
+                    title="Descargar PDF"
+                  >
+                    <i class="fas fa-file-pdf"></i>
+                  </button>
+                  <label *ngIf="!cfdi.pathPDF" class="btn btn-outline-secondary btn-sm mb-0 pointer" title="Adjuntar PDF">
+                    <i class="fas fa-file-upload"></i>
+                    <input type="file" (change)="onFileChangePDF($event, cfdi)" accept=".pdf" hidden />
+                  </label>
+                </td>
+                <td class="text-center">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary btn-sm"
+                    (click)="eliminarComprobante(cfdi)"
+                    title="Eliminar comprobante"
+                  >
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #sinComprobantes>
+          <div class="text-center py-4 text-muted">
+            <i class="fas fa-file-invoice fa-2x mb-2 text-secondary"></i>
+            <p class="small mb-0">No has cargado comprobantes para esta solicitud. Presiona <strong>"Subir XML"</strong> para comenzar.</p>
+          </div>
+        </ng-template>
+      </div>
+      <ng-template #seleccionarSol>
+        <div class="box text-center py-5 text-muted">
+          <i class="fas fa-arrow-left fa-2x mb-2 text-secondary"></i>
+          <p class="mb-0">Selecciona una solicitud del panel izquierdo para gestionar sus comprobaciones.</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Errores XML -->
+<div class="modal fade" id="errorGXCModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title h3 mb-0">Validación de CFDI</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small">El comprobante XML no cumple con las siguientes validaciones:</p>
+        <ul class="text-danger small">
+          <li *ngFor="let err of arrErrorsXML">{{ err }}</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+      </div>
     </div>
   </div>
 </div>

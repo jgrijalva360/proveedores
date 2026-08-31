@@ -14,8 +14,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   idUser = '';
   dataUser = {} as any;
   user = {} as any;
-  userDB = {} as any;
-  urlImageDefault = '../../../../assets/logos/noPhoto.jpg';
+  nombreProyecto: string = '';
+  nombreEmpresa: string = '';
 
   subscribeUser: Subscription | undefined;
   subscribeUserDB: Subscription | undefined;
@@ -27,6 +27,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ) {}
   ngOnInit(): void {
     this.idUser = window.sessionStorage.getItem('id') as any;
+    this.nombreProyecto = window.sessionStorage.getItem('nombreProyecto') || '';
+    this.nombreEmpresa = window.sessionStorage.getItem('nombreEmpresa') || '';
     this.getUserDB();
   }
 
@@ -36,6 +38,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
       .subscribe((res: any) => {
         // console.log('UserDB', res);
         this.dataUser = res;
+        if (!this.nombreProyecto && res?.proyecto?.nameProject) {
+          this.nombreProyecto = res.proyecto.nameProject;
+        }
+        if (!this.nombreEmpresa && res?.empresa?.nameCompany) {
+          this.nombreEmpresa = res.empresa.nameCompany;
+        }
       });
   }
 

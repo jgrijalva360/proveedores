@@ -43,7 +43,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getUser(idUser: string) {
     this.generalService.getUserId(idUser).subscribe((res) => {
-      // console.log(res);
+      console.log(res);
       if (res === undefined) {
         this.onLogout();
       }

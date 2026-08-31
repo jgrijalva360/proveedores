@@ -35,8 +35,10 @@ export class SobresComponent {
   }
 
   getUser(idUser: string) {
+    if (!idUser) return;
     // pdfMake.createPdf({}).open();
     this.generalService.getUserId(idUser).subscribe((res: any) => {
+      if (!res) return;
       this.userDB = res;
       console.log(this.userDB);
       this.filtrarSobres();

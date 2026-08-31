@@ -1,3 +1,4 @@
+/* Header y Navbar superior pulido y compacto */
 header {
   background: #1f1f1f;
   width: 100%;
@@ -5,190 +6,83 @@ header {
   top: 0;
   position: fixed;
   z-index: 100;
-  color: white;
-}
-.logoHeader {
-  max-width: 140px;
-}
-.imgProfile {
-  width: 50px;
-  height: 50px;
-}
-.imgProfileEdit {
-  width: 150px;
-  height: 150px;
-}
-.bars {
-  color: #039fab;
-  font-size: 25px;
-}
-.cogs {
-  color: #039fab;
-  font-size: 25px;
-}
-.nameProject {
-  font-weight: bolder;
-  color: white;
-  font-size: 1.2em;
-  margin: 0;
-  padding: 0;
-}
-.detailProject {
-  font-size: 0.9em;
-  color: white;
-  margin: 0;
-  padding: 0;
-}
-
-/* ------------- */
-/*
-    DEMO STYLE
-*/
-
-@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
-
-a,
-a:hover,
-a:focus {
-  color: inherit;
-  text-decoration: none;
-  transition: all 0.3s;
-}
-nav {
-  overflow-y: auto;
-}
-/* ---------------------------------------------------
-    SIDEBAR STYLE
------------------------------------------------------ */
-
-.wrapper {
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  border-bottom: 2px solid #009fab;
+  height: 52px;
   display: flex;
-  width: 100%;
+  align-items: center;
 }
 
-#sidebar {
-  width: 250px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  z-index: 999;
-  background: #1f1f1f;
-  color: #fff;
-  transition: all 0.3s;
-  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
+.logoHeader {
+  max-width: 110px;
+  height: auto;
+  transition: transform 0.2s ease;
 }
 
-#sidebar.active {
-  left: 0;
+.logoHeader:hover {
+  transform: scale(1.03);
 }
 
-#dismiss {
-  width: 35px;
-  height: 35px;
-  line-height: 35px;
-  text-align: center;
-  position: absolute;
-  top: 10px;
-  right: 10px;
+.header-info-badge {
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+}
+
+.user-icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: #009fab;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
   cursor: pointer;
-  -webkit-transition: all 0.3s;
-  -o-transition: all 0.3s;
-  transition: all 0.3s;
 }
 
-#dismiss:hover {
-  /* background: #fff; */
-  color: #039fab;
+.user-icon-wrapper:hover {
+  background: #007c86;
+  border-color: #ffffff;
+  box-shadow: 0 0 8px rgba(0, 159, 171, 0.5);
 }
 
-.overlay {
-  display: none;
-  position: fixed;
-  width: 100vw;
-  height: 100%;
-  background: #00000066;
-  z-index: 998;
-  opacity: 0;
-  transition: all 0.5s ease-in-out;
-}
-.overlay.active {
-  display: block;
-  opacity: 1;
+.bars {
+  color: #009fab;
+  font-size: 18px;
+  transition: color 0.2s ease;
 }
 
-#sidebar .sidebar-header {
-  padding: 20px;
-  background: #1f1f1f;
+.bars:hover {
+  color: #ffffff;
 }
 
-#sidebar ul.components {
-  padding: 20px 0;
-  border-bottom: 1px solid #47748b;
+.dropdown-menu {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 159, 171, 0.2);
+  padding: 8px 0;
 }
 
-#sidebar ul p {
-  color: #fff;
-  padding: 10px;
+.dropdown-header {
+  color: #006683;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 6px 16px;
 }
 
-#sidebar ul li a {
-  padding: 10px;
-  font-size: 1.1em;
-  display: block;
+.dropdown-item {
+  color: #333333;
+  font-size: 13px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-#sidebar ul li a:hover {
-  color: #039fab;
-  background: #fff;
-}
-
-#sidebar ul li.active > a,
-a[aria-expanded="true"] {
-  color: #fff;
-  background-color: #039fab;
-}
-
-a[data-toggle="collapse"] {
-  position: relative;
-}
-
-.dropdown-toggle::after {
-  display: block;
-  position: absolute;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-}
-
-ul ul a {
-  font-size: 0.9em !important;
-  padding-left: 30px !important;
-  background: #039fab;
-}
-
-ul.CTAs {
-  padding: 20px;
-}
-
-ul.CTAs a {
-  text-align: center;
-  font-size: 0.9em !important;
-  display: block;
-  border-radius: 5px;
-  margin-bottom: 5px;
-}
-
-a.download {
-  background: #fff;
-  color: #039fab;
-}
-
-a.article,
-a.article:hover {
-  background: #039fab !important;
-  color: #fff !important;
-}
-.scroll::-webkit-scrollbar {
-  display: none;
+.dropdown-item:hover {
+  background-color: #f0fbfc;
+  color: #006683;
 }

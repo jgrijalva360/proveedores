@@ -1,72 +1,67 @@
-/* @import url('https://fonts.googleapis.com/css?family=Fredericka+the+Great&display=swap'); */
-.buttonMenu {
-  height: 60px;
-  min-width: 180px;
-  font-size: 14px;
-  padding: 10px 20px;
-  outline: none;
-  color: #fff;
-  border-radius: 12px;
-  box-shadow: 2px 4px 12px #00000044;
-  transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
-  white-space: normal;
+/* Menú de pestañas / navegación elegante basado en la paleta corporativa */
+.menu-nav-container {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  padding: 10px 0;
 }
 
-p {
-  font-size: 1em;
-  margin: 0;
-}
-span {
-  font-weight: bold;
-  font-size: 1em;
-}
-
-.buttonMenu:hover {
-  transform: scale(1.02);
-  box-shadow: 0px 0px 12px #0000008a;
-}
-
-.buttonActivate {
-  transform: scale(1.1);
-}
-.buttonActivate:hover {
-  transform: scale(1.1);
+.menu-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  background-color: #ffffff;
+  color: #006683;
+  border: 1.5px solid #009fab;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
 }
 
-.icon {
-  font-size: 1.5em;
-  margin: 0 5px;
+.menu-nav-btn i {
+  font-size: 16px;
+  margin-right: 8px;
+  color: #009fab;
+  transition: color 0.25s ease;
 }
 
-.colorReturn {
-  background-color: #03ab79;
+.menu-nav-btn:hover {
+  background-color: #f0fbfc;
+  color: #006683;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 159, 171, 0.15);
 }
 
-@media (max-width: 500px) {
-  .buttonMenu {
-    font-size: 0.7em;
-    /* background-color: #fff;
-      color: #039fab; */
+.menu-nav-btn:hover i {
+  color: #006683;
+}
+
+/* Estado activo */
+.menu-nav-btn.active,
+.menu-nav-btn.menuActivate {
+  background: linear-gradient(135deg, #009fab 0%, #006683 100%);
+  color: #ffffff !important;
+  border-color: transparent;
+  box-shadow: 0 4px 14px rgba(0, 102, 131, 0.25);
+  transform: translateY(-2px);
+}
+
+.menu-nav-btn.active i,
+.menu-nav-btn.menuActivate i {
+  color: #ffffff !important;
+}
+
+@media (max-width: 576px) {
+  .menu-nav-btn {
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 13px;
   }
-
-  p {
-    font-size: 0.9em;
-  }
 }
-
-.colorGreen {
-  background-color: #3ab44a;
-}
-.colorRed {
-  background-color: #c20000;
-}
-.colorYellow {
-  background-color: #ddce00;
-}
-.colorOrange {
-  background-color: #dd9700;
-}
-/* --------------------- */
