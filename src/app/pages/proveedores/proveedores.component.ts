@@ -171,6 +171,7 @@ export class ProveedoresComponent implements OnInit, OnDestroy {
         this.generalService.getCompany(item.idCompany).subscribe((emp: any) => {
           if (emp) {
             item.nombreEmpresa = emp.nameCompany || emp.nombre || emp.razonSocial || emp.name || item.nombreEmpresa || item.idCompany;
+            item.rfcEmpresa = (emp.rfc || emp.RFC || emp.rfcCompany || '').trim().toUpperCase();
             this.cd.detectChanges();
           }
         });
@@ -181,6 +182,7 @@ export class ProveedoresComponent implements OnInit, OnDestroy {
         this.generalService.getproject(item.idCompany, item.idProject).subscribe((proj: any) => {
           if (proj) {
             item.nombreProyecto = proj.nameProject || proj.nombre || proj.name || item.nombreProyecto || item.idProject;
+            item.rfcProyecto = (proj.rfc || proj.RFC || proj.rfcProyecto || proj.rfcReceptor || '').trim().toUpperCase();
             this.cd.detectChanges();
           }
         });
@@ -205,6 +207,12 @@ export class ProveedoresComponent implements OnInit, OnDestroy {
     window.sessionStorage.setItem('idProject', idProject);
     window.sessionStorage.setItem('nombreProyecto', proyecto.nombreProyecto || proyecto.nameProject || '');
     window.sessionStorage.setItem('nombreEmpresa', proyecto.nombreEmpresa || proyecto.nameCompany || '');
+    if (proyecto.rfcEmpresa || proyecto.rfc) {
+      window.sessionStorage.setItem('rfcEmpresa', (proyecto.rfcEmpresa || proyecto.rfc || '').trim().toUpperCase());
+    }
+    if (proyecto.rfcProyecto) {
+      window.sessionStorage.setItem('rfcProyecto', (proyecto.rfcProyecto || '').trim().toUpperCase());
+    }
     window.sessionStorage.setItem('projectSelected', JSON.stringify(proyecto));
 
     // Navegar al dashboard del proyecto con el RFC o ID del proveedor

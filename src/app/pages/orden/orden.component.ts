@@ -25,13 +25,19 @@ export class OrdenComponent {
   arrErrorsXML = [] as any[];
   totales = [] as any[];
   rfcSeleccionado: string = '';
+  nombreProyecto: string = '';
+  nombreEmpresa: string = '';
+  rfcEmpresa: string = '';
+  rfcProyecto: string = '';
+  companyData: any = null;
+  projectData: any = null;
 
   constructor(
     private generalService: GeneralService,
     private ngxXml2jsonService: NgxXml2jsonService,
     public storage: AngularFireStorage,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     console.log('Se inicia order');
@@ -41,10 +47,57 @@ export class OrdenComponent {
     this.idUser = window.sessionStorage.getItem('id') || '';
     this.idCompany = window.sessionStorage.getItem('idCompany') || '';
     this.idProject = window.sessionStorage.getItem('idProject') || '';
+    this.nombreProyecto = window.sessionStorage.getItem('nombreProyecto') || '';
+    this.nombreEmpresa = window.sessionStorage.getItem('nombreEmpresa') || '';
+    this.rfcEmpresa = window.sessionStorage.getItem('rfcEmpresa') || '';
+    this.rfcProyecto = window.sessionStorage.getItem('rfcProyecto') || '';
+
+    this.cargarDatosEmpresaYProyecto();
 
     // this.today = new Date('2025-10-18T15:00:00'); // Solo para pruebas
     this.today = new Date(); // Fecha actual
     this.getUser(this.idUser);
+  }
+
+  cargarDatosEmpresaYProyecto(): void {
+    const idCompany = this.idCompany || window.sessionStorage.getItem('idCompany') || '';
+    const idProject = this.idProject || window.sessionStorage.getItem('idProject') || '';
+
+    if (idCompany) {
+      this.generalService.getCompany(idCompany).subscribe((comp: any) => {
+        if (comp) {
+          this.companyData = comp;
+          const rfc = (comp.rfc || comp.RFC || comp.rfcCompany || comp.rfcEmpresa || '').toString().trim().toUpperCase();
+          if (rfc) {
+            this.rfcEmpresa = rfc;
+            window.sessionStorage.setItem('rfcEmpresa', rfc);
+          }
+          const nombre = comp.nameCompany || comp.nombre || comp.razonSocial || comp.name || '';
+          if (nombre) {
+            this.nombreEmpresa = nombre;
+            window.sessionStorage.setItem('nombreEmpresa', nombre);
+          }
+        }
+      });
+    }
+
+    if (idCompany && idProject) {
+      this.generalService.getproject(idCompany, idProject).subscribe((proj: any) => {
+        if (proj) {
+          this.projectData = proj;
+          const rfcP = (proj.rfc || proj.RFC || proj.rfcProyecto || proj.rfcReceptor || '').toString().trim().toUpperCase();
+          if (rfcP) {
+            this.rfcProyecto = rfcP;
+            window.sessionStorage.setItem('rfcProyecto', rfcP);
+          }
+          const nombreP = proj.nameProject || proj.nombreProyecto || proj.nombre || proj.name || '';
+          if (nombreP) {
+            this.nombreProyecto = nombreP;
+            window.sessionStorage.setItem('nombreProyecto', nombreP);
+          }
+        }
+      });
+    }
   }
 
   getUser(idUser: string) {
@@ -54,11 +107,30 @@ export class OrdenComponent {
       if (!res) return;
       this.user = res;
       console.log('User', this.user);
-      if (!this.idCompany) {
-        this.idCompany = res.empresa?.idCompany || '';
+      let recargarContexto = false;
+      if (!this.idCompany && (res.empresa?.idCompany || res.idCompany)) {
+        this.idCompany = res.empresa?.idCompany || res.idCompany || '';
+        recargarContexto = true;
       }
-      if (!this.idProject) {
-        this.idProject = res.proyecto?.idProject || '';
+      if (!this.idProject && (res.proyecto?.idProject || res.idProject)) {
+        this.idProject = res.proyecto?.idProject || res.idProject || '';
+        recargarContexto = true;
+      }
+      if (!this.nombreProyecto) {
+        this.nombreProyecto = res.nombreProyecto || res.proyecto?.nameProject || res.proyecto?.nombre || '';
+      }
+      if (recargarContexto) {
+        this.cargarDatosEmpresaYProyecto();
+      }
+      if (!this.nombreProyecto && this.idCompany && this.idProject) {
+        this.generalService.getproject(this.idCompany, this.idProject).subscribe((proj: any) => {
+          if (proj) {
+            this.nombreProyecto = proj.nameProject || proj.nombreProyecto || proj.name || '';
+            if (this.nombreProyecto) {
+              window.sessionStorage.setItem('nombreProyecto', this.nombreProyecto);
+            }
+          }
+        });
       }
 
       if (this.user.tipo === 'jefeDepartamento') {
@@ -82,6 +154,7 @@ export class OrdenComponent {
 
         this.totales = [];
         this.arrOC = orden;
+        this.generalService.calcularResumenPagos(this.arrOC, this.today);
         orden.forEach((element: any) => {
           let objTotales = {
             importe: 0,
@@ -135,6 +208,7 @@ export class OrdenComponent {
         });
         // filtrar las ordenes que su fecha de inicio no sea mayor a la fecha actual
         this.arrOC = ordenesFiltradas;
+        this.generalService.calcularResumenPagos(this.arrOC, this.today);
         // console.log('Ordenes', this.arrOC);
       });
   }
@@ -264,7 +338,7 @@ export class OrdenComponent {
         if (obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Traslados']) {
           const traslados =
             obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Traslados'][
-              'cfdi:Traslado'
+            'cfdi:Traslado'
             ];
           const esArrayTraslados = Array.isArray(traslados);
           this.xml.iva = 0; // Inicializar iva a 0
@@ -286,7 +360,7 @@ export class OrdenComponent {
         if (obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Retenciones']) {
           const retenciones =
             obj['cfdi:Comprobante']['cfdi:Impuestos']['cfdi:Retenciones'][
-              'cfdi:Retencion'
+            'cfdi:Retencion'
             ];
           const esArrayRetenciones = Array.isArray(retenciones);
           if (esArrayRetenciones) {
@@ -307,7 +381,10 @@ export class OrdenComponent {
         }
       }
       // Aqui tenemos que mandar a llamar la funcion que validara los datos del CFDI
-      this.xml.pathXML = `CFDIs/${this.user.proyecto.nameProject}/${this.user.departamento.name}/${this.user.rfc}/${pago.id}/${this.xml.folioComprobante}.xml`;
+      console.log(this.user);
+      const proyNombre = this.obtenerNombreProyecto(orden);
+      const rfc = this.obtenerRFC(orden);
+      this.xml.pathXML = `CFDIs_PROVEEDORES/${proyNombre}/${rfc}/${pago.id}/${this.xml.folioComprobante}.xml`;
       this.xml.inventario = 'No';
       this.xml.partida = 'PENDIENTE';
       this.xml.cargado = new Date();
@@ -321,28 +398,57 @@ export class OrdenComponent {
     this.arrErrorsXML = [];
 
     let validacion = true;
-    // Validar que el RFC del XML sea igual al del proveedor
-    if (xml.rfc !== this.user.rfc) {
+
+    // 1. Validar que el RFC emisor del XML coincida con el del proveedor
+    const rfcEmisorXML = (xml.rfc || '').toString().trim().toUpperCase();
+    const rfcProveedor = (this.obtenerRFC(orden) || '').toString().trim().toUpperCase();
+    if (rfcProveedor && rfcEmisorXML !== rfcProveedor) {
       validacion = false;
-      const mensaje = `El RFC del CFDI ${xml.rfc} no coincide con el RFC del proveedor ${this.user.rfc}`;
-      // Notiflix.Notify.failure(mensaje);
+      const mensaje = `El RFC emisor del CFDI (${rfcEmisorXML}) no coincide con el RFC del proveedor (${rfcProveedor}).`;
       this.arrErrorsXML.push(mensaje);
     }
 
-    // Validar que el importe no sea mayor al comprometido
-    if (xml.subtotal !== pago.importe) {
+    // 2. Validar que el RFC receptor del XML corresponda al del proyecto o empresa
+    const rfcReceptorXML = (xml.rfcReceptor || this.xml.rfcReceptor || '').toString().trim().toUpperCase();
+    const rfcsValidosReceptor = this.obtenerRFCsReceptoresValidos(orden);
+
+    if (!rfcReceptorXML) {
       validacion = false;
-      const mensaje = `El importe del CFDI ${xml.subtotal} no coincide con el importe comprometido ${pago.importe}`;
-      // Notiflix.Notify.failure(mensaje);
+      const mensaje = 'El CFDI no contiene un RFC receptor válido.';
+      this.arrErrorsXML.push(mensaje);
+    } else if (rfcsValidosReceptor.length > 0) {
+      const coincideRFCReceptor = rfcsValidosReceptor.includes(rfcReceptorXML);
+      if (!coincideRFCReceptor) {
+        validacion = false;
+        const nombreEntidad = this.obtenerNombreEmpresaOProyecto(orden);
+        const rfcsEsperados = rfcsValidosReceptor.join(', ');
+        const mensaje = `El RFC receptor del CFDI (${rfcReceptorXML}) no corresponde al RFC de la empresa o proyecto (${rfcsEsperados}${nombreEntidad ? ' - ' + nombreEntidad : ''}).`;
+        this.arrErrorsXML.push(mensaje);
+      }
+    } else {
+      console.warn('No se encontraron RFCs registrados de la empresa o proyecto para validar el receptor.');
+    }
+
+    // 3. Validar que el importe corresponda al mismo importe del pago pendiente
+    const subtotalXML = Number(xml.subtotal) || 0;
+    const totalXML = Number(xml.total) || 0;
+    const importePago = Number(pago.importe) || 0;
+
+    const diffSubtotal = Math.abs(subtotalXML - importePago);
+    const diffTotal = Math.abs(totalXML - importePago);
+
+    // Valida coincidencia con el importe del pago con tolerancia de $0.01 para evitar fallos de precisión en punto flotante
+    if (diffSubtotal > 0.01 && diffTotal > 0.01) {
+      validacion = false;
+      const mensaje = `El importe del CFDI (${this.formatearMoneda(subtotalXML)}) no coincide con el importe del pago pendiente (${this.formatearMoneda(importePago)}).`;
       this.arrErrorsXML.push(mensaje);
     }
-    // Validar que el folio no exista en los archivos de la orden
-    // Aqui valido en la orden actual
+
+    // 4. Validar que el folio no exista en los archivos de la orden
     this.arrOC.forEach(element => {
-      if (element.xml.folioComprobante === xml.folioComprobante) {
+      if (element.xml && element.xml.folioComprobante === xml.folioComprobante) {
         validacion = false;
         const mensaje = `El folio ${xml.folioComprobante} ya se encuentra cargado en esta orden u otra orden`;
-        // Notiflix.Notify.failure(mensaje);
         this.arrErrorsXML.push(mensaje);
       }
       // Aqui valido en los comprometidos de la orden actual
@@ -353,83 +459,43 @@ export class OrdenComponent {
         ) {
           validacion = false;
           const mensaje = `El folio ${xml.folioComprobante} ya se encuentra cargado en otro pago`;
-          // Notiflix.Notify.failure(mensaje);
           this.arrErrorsXML.push(mensaje);
         }
       });
     });
 
-    // Valido los datos del XML
-    // Tipo de comprobante (Ingreso)
+    // 5. Tipo de comprobante (Ingreso)
     if (this.xml.tipoDeComprobante !== 'I') {
       validacion = false;
       const mensaje = `El tipo de comprobante debe ser Ingreso (I) y el CDFI es ${this.xml.tipoDeComprobante}`;
-      // Notiflix.Notify.failure(mensaje);
       this.arrErrorsXML.push(mensaje);
     }
 
-    // Mes y año del XML debe coincidir con el mes y año del pago
-    // Esta deshabilitado para hacer pruebas con archivos de otros años
-    // if (
-    //   this.convertirAFecha(this.xml.fecha).getMonth() !==
-    //     this.convertirAFecha(pago.fechaInicio).getMonth() ||
-    //   (this.convertirAFecha(this.xml.fecha).getMonth() !==
-    //     this.convertirAFecha(pago.fechaFin).getMonth() &&
-    //     this.convertirAFecha(this.xml.fecha).getFullYear() !==
-    //       this.convertirAFecha(pago.fechaInicio).getFullYear()) ||
-    //   this.convertirAFecha(this.xml.fecha).getFullYear() !==
-    //     this.convertirAFecha(pago.fechaFin).getFullYear()
-    // ) {
-    //   validacion = false;
-    //   const mensaje = `El mes y año del CFDI debe coincidir con el pago ${this.convertirAFecha(
-    //     pago.fechaInicio
-    //   ).toLocaleDateString('es-MX', {
-    //     month: 'long',
-    //     year: 'numeric',
-    //   })} y el XML es ${this.convertirAFecha(this.xml.fecha).toLocaleDateString(
-    //     'es-MX',
-    //     { month: 'long', year: 'numeric' }
-    //   )}`;
-    //   this.arrErrorsXML.push(mensaje);
-    // }
-
-    // Validar que el uso de CFDI sea G03
+    // 6. Validar que el uso de CFDI sea G03
     if (this.xml.usoCFDI !== 'G03') {
       validacion = false;
       const mensaje = `El uso de CFDI debe ser G03 y el XML es ${this.xml.usoCFDI}`;
-      // Notiflix.Notify.failure(mensaje);
       this.arrErrorsXML.push(mensaje);
     }
 
-    // Validar que el RFC receptor sea igual al de la empresa
-    // if (this.xml.rfcReceptor !== this.user.empresa.rfc) {
-    //   validacion = false;
-    //   const mensaje = `El RFC receptor del CFDI ${this.xml.rfcReceptor} no coincide con el RFC de la empresa ${this.user.empresa.rfc}`;
-    //   // Notiflix.Notify.failure(mensaje);
-    //   this.arrErrorsXML.push(mensaje);
-    // }
-
-    // Validar que la moneda sea igual al de la orden
+    // 7. Validar que la moneda sea igual al de la orden
     if (this.xml.moneda !== orden.moneda) {
       validacion = false;
       const mensaje = `La moneda del CFDI ${this.xml.moneda} no coincide con la moneda de la orden ${orden.moneda}`;
-      // Notiflix.Notify.failure(mensaje);
       this.arrErrorsXML.push(mensaje);
     }
 
-    // Validar que la forma de pago sea 03
+    // 8. Validar que la forma de pago sea 03
     if (this.xml.formaPago !== '03') {
       validacion = false;
       const mensaje = `La forma de pago del CFDI ${this.xml.formaPago} no coincide con la forma de pago 03`;
-      // Notiflix.Notify.failure(mensaje);
       this.arrErrorsXML.push(mensaje);
     }
 
-    // Validar que el metodo de pago sea PUE
+    // 9. Validar que el metodo de pago sea PUE
     if (this.xml.metodoPago !== 'PUE') {
       validacion = false;
       const mensaje = `El método de pago del CFDI ${this.xml.metodoPago} no coincide con el método de pago PUE`;
-      // Notiflix.Notify.failure(mensaje);
       this.arrErrorsXML.push(mensaje);
     }
 
@@ -461,7 +527,12 @@ export class OrdenComponent {
   }
 
   saveFilesXML(file: any, pago: any) {
-    const filePath = `CFDIs/${this.user.proyecto.nameProject}/${this.user.departamento.name}/${this.user.rfc}/${pago.id}/${this.xml.folioComprobante}.xml`;
+    const proyNombre = this.obtenerNombreProyecto();
+    const rfc = this.obtenerRFC();
+    const filePath =
+      pago.xml?.pathXML ||
+      this.xml.pathXML ||
+      `CFDIs_PROVEEDORES/${proyNombre}/${rfc}/${pago.id}/${this.xml.folioComprobante}.xml`;
     const path: any = {};
     path.pathImageProfile = filePath;
     const task = this.storage.upload(filePath, file);
@@ -482,7 +553,9 @@ export class OrdenComponent {
         'Por favor agrega unicamente archivos con extension .pdf y tamaño maximo de 2MB '
       );
     } else {
-      const filePath = `CFDIs/${this.user.proyecto.nameProject}/${this.user.departamento.name}/${this.user.rfc}/${pago.id}/${element.name}`;
+      const proyNombre = this.obtenerNombreProyecto();
+      const rfc = this.obtenerRFC();
+      const filePath = `CFDIs_PROVEEDORES/${proyNombre}/${rfc}/${pago.id}/${element.name}`;
       pago.pathPDF = filePath;
       pago.cargadoPDF = new Date();
       const task = this.storage.upload(filePath, element);
@@ -548,7 +621,7 @@ export class OrdenComponent {
         //
         this.updateOrderPDF();
       },
-      () => {}
+      () => { }
     );
   }
 
@@ -607,50 +680,162 @@ export class OrdenComponent {
   }
 
   estatus(pago: any): string {
-    if (
-      this.today > this.fechaFinal(pago.fechaFin) &&
-      !pago.xml &&
-      !pago.pathPDF
-    ) {
-      return 'VENCIDO';
-    }
-
-    if (
-      pago.xml &&
-      pago.pathPDF &&
-      (pago.aprobadoXML === undefined || pago.aprobadoPDF === undefined)
-    ) {
-      return 'EN REVISION';
-    }
-
-    if (pago.aprobadoXML && pago.aprobadoPDF) {
-      return 'EN PROCESO DE PAGO';
-    }
-
-    if (pago.aprobadoXML && pago.aprobadoPDF && pago.estatus === 'Pagado') {
-      return 'PAGADO';
-    }
-
-    if ((!pago.aprobadoXML || !pago.aprobadoPDF) && pago.xml && pago.pathPDF) {
-      return 'RECHAZADO';
-    }
-
-    if (
-      (!pago.xml || !pago.pathPDF) &&
-      this.today >= this.fechaInicial(pago.fechaFin)
-    ) {
-      return 'PENDIENTE';
-    }
-
-    if (
-      !pago.xml &&
-      !pago.pathPDF &&
-      this.today <= this.fechaInicial(pago.fechaFin)
-    ) {
-      return 'PRÓXIMO';
-    }
-    return '';
+    return this.generalService.estatusPago(pago, this.today);
   }
 
-  ngOnDestroy(): void {}
+  obtenerNombreProyecto(orden?: any): string {
+    return (
+      this.nombreProyecto ||
+      this.projectData?.nameProject ||
+      this.projectData?.nombreProyecto ||
+      this.projectData?.nombre ||
+      this.projectData?.name ||
+      window.sessionStorage.getItem('nombreProyecto') ||
+      orden?.nombreProyecto ||
+      orden?.nameProject ||
+      this.user?.nombreProyecto ||
+      this.user?.proyecto?.nameProject ||
+      this.user?.proyecto?.nombreProyecto ||
+      this.idProject ||
+      'Proyecto'
+    );
+  }
+
+  obtenerNombreEmpresa(orden?: any): string {
+    return (
+      this.nombreEmpresa ||
+      this.companyData?.nameCompany ||
+      this.companyData?.nombre ||
+      this.companyData?.razonSocial ||
+      this.companyData?.name ||
+      window.sessionStorage.getItem('nombreEmpresa') ||
+      orden?.nombreEmpresa ||
+      orden?.filmadora?.name ||
+      this.user?.nombreEmpresa ||
+      this.user?.empresa?.nameCompany ||
+      this.user?.empresa?.nombre ||
+      ''
+    );
+  }
+
+  obtenerNombreEmpresaOProyecto(orden?: any): string {
+    return (
+      orden?.filmadora?.name ||
+      this.obtenerNombreProyecto(orden) ||
+      this.obtenerNombreEmpresa(orden) ||
+      ''
+    );
+  }
+
+  obtenerRFC(orden?: any): string {
+    return (
+      orden?.rfc ||
+      this.user?.rfc ||
+      this.rfcSeleccionado ||
+      'PROV'
+    );
+  }
+
+  obtenerRFCsReceptoresValidos(orden?: any): string[] {
+    const rfcs = new Set<string>();
+
+    const agregar = (val: any) => {
+      if (val && typeof val === 'string') {
+        const limpio = val.trim().toUpperCase();
+        if (limpio.length >= 9 && limpio.length <= 14) {
+          rfcs.add(limpio);
+        }
+      }
+    };
+
+    // 1. De la orden de compra (filmadora seleccionada al crear la OC)
+    if (orden) {
+      agregar(orden.filmadora?.rfc);
+      agregar(orden.filmadora?.RFC);
+      agregar(orden.rfcReceptor);
+      agregar(orden.rfcEmpresa);
+      agregar(orden.rfcFilmadora);
+      agregar(orden.empresa?.rfc);
+      agregar(orden.empresa?.RFC);
+      agregar(orden.proyecto?.rfc);
+      agregar(orden.proyecto?.RFC);
+    }
+
+    // 2. De la empresa cargada de Firestore
+    if (this.companyData) {
+      agregar(this.companyData.rfc);
+      agregar(this.companyData.RFC);
+      agregar(this.companyData.rfcCompany);
+      agregar(this.companyData.rfcEmpresa);
+      if (Array.isArray(this.companyData.filmadoras)) {
+        this.companyData.filmadoras.forEach((f: any) => {
+          agregar(f?.rfc);
+          agregar(f?.RFC);
+        });
+      }
+    }
+
+    // 3. Del proyecto cargado de Firestore
+    if (this.projectData) {
+      agregar(this.projectData.rfc);
+      agregar(this.projectData.RFC);
+      agregar(this.projectData.rfcProyecto);
+      agregar(this.projectData.rfcReceptor);
+      if (Array.isArray(this.projectData.filmadoras)) {
+        this.projectData.filmadoras.forEach((f: any) => {
+          agregar(f?.rfc);
+          agregar(f?.RFC);
+        });
+      }
+    }
+
+    // 4. Variables de sesión / usuario
+    agregar(this.rfcEmpresa);
+    agregar(this.rfcProyecto);
+    if (this.user) {
+      agregar(this.user.empresa?.rfc);
+      agregar(this.user.empresa?.RFC);
+      agregar(this.user.proyecto?.rfc);
+      agregar(this.user.proyecto?.RFC);
+      if (Array.isArray(this.user.empresas)) {
+        this.user.empresas.forEach((e: any) => {
+          agregar(e?.rfc);
+          agregar(e?.RFC);
+        });
+      }
+    }
+
+    // 5. De sessionStorage
+    agregar(window.sessionStorage.getItem('rfcEmpresa'));
+    agregar(window.sessionStorage.getItem('rfcProyecto'));
+    try {
+      const projRaw = window.sessionStorage.getItem('projectSelected');
+      if (projRaw) {
+        const p = JSON.parse(projRaw);
+        agregar(p.rfc);
+        agregar(p.RFC);
+        agregar(p.rfcEmpresa);
+        agregar(p.rfcProyecto);
+        agregar(p.rfcReceptor);
+        agregar(p.filmadora?.rfc);
+        agregar(p.empresa?.rfc);
+        agregar(p.proyecto?.rfc);
+      }
+    } catch (e) {
+      // Ignorar si no es JSON válido
+    }
+
+    return Array.from(rfcs);
+  }
+
+  formatearMoneda(valor: number): string {
+    return (valor || 0).toLocaleString('es-MX', {
+      style: 'currency',
+      currency: 'MXN',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  ngOnDestroy(): void { }
 }

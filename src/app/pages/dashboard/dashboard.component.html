@@ -1,31 +1,66 @@
 <div class="container-fluid py-2">
   <div class="menu-nav-container my-2">
+    <!-- Botón siempre visible para subir facturas libres -->
     <a
       class="menu-nav-btn"
-      [routerLink]="['archivosMensuales']"
+      [routerLink]="['facturasCFDI']"
       routerLinkActive="active"
     >
-      <i class="fas fa-folder-open"></i>
-      <span>Archivos Mensuales</span>
+      <i class="fas fa-file-invoice"></i>
+      <span>Carga de CFDIs</span>
     </a>
 
-    <a
-      class="menu-nav-btn"
-      [routerLink]="['pagosPendientes']"
-      routerLinkActive="active"
-    >
-      <i class="fas fa-file-invoice-dollar"></i>
-      <span>Pagos Pendientes (OC)</span>
-    </a>
+    <!-- Módulos de OC / Pagos / Expediente (visibles únicamente si tiene órdenes de compra) -->
+    <ng-container *ngIf="tieneOC">
+      <a
+        class="menu-nav-btn"
+        [routerLink]="['archivosMensuales']"
+        routerLinkActive="active"
+        [attr.title]="tooltipArchivos"
+      >
+        <i class="fas fa-folder-open"></i>
+        <span>Archivos Mensuales</span>
+        <span
+          *ngIf="resumenArchivos.numPendientes > 0"
+          class="badge-notification"
+          [ngClass]="{
+            'badge-vencido': resumenArchivos.tieneRechazados,
+            'badge-proximo': !resumenArchivos.tieneRechazados
+          }"
+        >
+          {{ resumenArchivos.numPendientes }}
+        </span>
+      </a>
 
-    <a
-      class="menu-nav-btn"
-      [routerLink]="['gastosPorComprobar']"
-      routerLinkActive="active"
-    >
-      <i class="fas fa-receipt"></i>
-      <span>Gastos por Comprobar (GXC)</span>
-    </a>
+      <a
+        class="menu-nav-btn"
+        [routerLink]="['pagosPendientes']"
+        routerLinkActive="active"
+        [attr.title]="tooltipPendientes"
+      >
+        <i class="fas fa-file-invoice-dollar"></i>
+        <span>Pagos Pendientes (OC)</span>
+        <span
+          *ngIf="resumenPagos.numPendientes > 0"
+          class="badge-notification"
+          [ngClass]="{
+            'badge-vencido': resumenPagos.tieneVencidos,
+            'badge-proximo': !resumenPagos.tieneVencidos && resumenPagos.tieneProximos
+          }"
+        >
+          {{ resumenPagos.numPendientes }}
+        </span>
+      </a>
+
+      <a
+        class="menu-nav-btn"
+        [routerLink]="['gastosPorComprobar']"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-receipt"></i>
+        <span>Gastos por Comprobar (GXC)</span>
+      </a>
+    </ng-container>
   </div>
 </div>
 

@@ -376,7 +376,8 @@ export class ImportadorComponent implements OnInit, OnDestroy {
     if (validacion) {
       this.saveFilesXML();
       this.saveFilesPDF();
-      const arrConcat = this.userDB.xml.concat(this.arrXML);
+      const baseXml = Array.isArray(this.userDB.xml) ? this.userDB.xml : [];
+      const arrConcat = baseXml.concat(this.arrXML);
       this.generalService
         .updateUser(this.idUser, this.sobre, arrConcat)
         .then((res) => {

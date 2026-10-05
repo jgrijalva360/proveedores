@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { BehaviorSubject, map, Observable, shareReplay } from 'rxjs';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { BehaviorSubject, map, Observable, of, shareReplay } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -8,9 +9,36 @@ import { BehaviorSubject, map, Observable, shareReplay } from 'rxjs';
 export class AuthService {
   idUser = '';
   user = {} as any;
+  public authState$: Observable<any>;
   private userCache: Map<string, Observable<any>> = new Map();
 
-  constructor(private afs: AngularFirestore) { }
+  constructor(
+    private afs: AngularFirestore,
+    private afAuth: AngularFireAuth
+  ) {
+    this.authState$ = this.afAuth.authState;
+  }
+
+  loginWithFirebaseAuth(email: string, pass: string) {
+    return this.afAuth.signInWithEmailAndPassword(email, pass);
+  }
+
+  sendVerificationEmail() {
+    return this.afAuth.currentUser.then(u => {
+      if (u) {
+        return u.sendEmailVerification();
+      }
+      return Promise.reject('No hay usuario activo');
+    });
+  }
+
+  sendPasswordReset(email: string) {
+    return this.afAuth.sendPasswordResetEmail(email);
+  }
+
+  signOut() {
+    return this.afAuth.signOut();
+  }
 
   getUser(email: string, pass: string): Observable<any> {
     const cacheKey = `${email}_${pass}`;
@@ -43,3 +71,4 @@ export class AuthService {
     return this.userCache.get(cacheKey)!;
   }
 }
+

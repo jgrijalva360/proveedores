@@ -27,18 +27,32 @@
         <li class="nav-item" routerLinkActive="active">
           <a
             (click)="toggle()"
-            class="nav-link"
+            class="nav-link d-flex align-items-center justify-content-between"
             [routerLink]="['archivosMensuales']"
-            >Archivos mensuales</a
-          >
+            ><span>Archivos mensuales</span>
+            <span
+              *ngIf="resumenArchivos.numPendientes > 0"
+              class="badge rounded-pill ms-2"
+              [ngClass]="resumenArchivos.tieneRechazados ? 'bg-danger text-white' : 'bg-warning text-dark'"
+            >
+              {{ resumenArchivos.numPendientes }}
+            </span>
+          </a>
         </li>
         <li class="nav-item" routerLinkActive="active">
           <a
             (click)="toggle()"
-            class="nav-link"
+            class="nav-link d-flex align-items-center justify-content-between"
             [routerLink]="['pagosPendientes']"
-            >Pagos pendientes</a
-          >
+            ><span>Pagos pendientes</span>
+            <span
+              *ngIf="resumenPagos.numPendientes > 0"
+              class="badge rounded-pill ms-2"
+              [ngClass]="resumenPagos.tieneVencidos ? 'bg-danger text-white' : 'bg-warning text-dark'"
+            >
+              {{ resumenPagos.numPendientes }}
+            </span>
+          </a>
         </li>
         <li class="nav-item" routerLinkActive="active">
           <a

@@ -5,6 +5,7 @@ import { OrdenComponent } from 'src/app/pages/orden/orden.component';
 import { ArchivosMesComponent } from 'src/app/pages/archivos-mes/archivos-mes.component';
 import { ProveedoresComponent } from 'src/app/pages/proveedores/proveedores.component';
 import { ComprobacionesComponent } from 'src/app/pages/comprobaciones/comprobaciones.component';
+import { CfdiLibreComponent } from 'src/app/pages/cfdi-libre/cfdi-libre.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,11 @@ const routes: Routes = [
         path: 'archivosMensuales',
         component: ArchivosMesComponent,
         data: { breadcrumb: 'Archivos mensuales' }
+      },
+      {
+        path: 'facturasCFDI',
+        component: CfdiLibreComponent,
+        data: { breadcrumb: 'Carga de CFDIs' }
       },
       {
         path: 'pagosPendientes',

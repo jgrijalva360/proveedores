@@ -54,17 +54,86 @@ export class LoginComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.subscriptionLogin = this.authService
-      .getUser(this.email.trim(), this.password.trim())
-      .subscribe((res: any) => {
-        console.log(res);
-        if (res && res.length > 0 && res[0]) {
-          this.authService.user = res[0];
-          window.sessionStorage.setItem('id', res[0].id);
-          this.router.navigate([`/Inicio/${res[0].id}`]);
-        } else {
-          Notiflix.Notify.failure('Usuario o contraseña incorrectos');
+    const emailLimpio = this.email.trim().toLowerCase();
+    const passLimpia = this.password.trim();
+
+    Notiflix.Loading.standard('Iniciando sesión...');
+
+    // 1. Intentar inicio de sesión con Firebase Authentication
+    this.authService
+      .loginWithFirebaseAuth(emailLimpio, passLimpia)
+      .then((cred) => {
+        const user = cred.user;
+        if (!user) {
+          throw new Error('No se pudo obtener información del usuario.');
         }
+
+        // Validar si el correo está verificado
+        if (!user.emailVerified) {
+          Notiflix.Loading.remove();
+          Notiflix.Confirm.show(
+            'Correo no verificado',
+            'Tu correo electrónico aún no ha sido confirmado. ¿Deseas que te reenviemos el enlace de verificación?',
+            'Sí, reenviar correo',
+            'Cerrar',
+            () => {
+              user.sendEmailVerification().then(() => {
+                Notiflix.Notify.success('Enlace de verificación enviado. Revisa tu bandeja de entrada o spam.');
+              }).catch(() => {
+                Notiflix.Notify.failure('No se pudo enviar el correo en este momento. Intenta más tarde.');
+              });
+              this.authService.signOut();
+            },
+            () => {
+              this.authService.signOut();
+            }
+          );
+          return;
+        }
+
+        // Usuario verificado: obtener datos de usersPublic por UID o por email
+        this.authService.getUser(emailLimpio, passLimpia).subscribe((res: any) => {
+          Notiflix.Loading.remove();
+          if (res && res.length > 0 && res[0]) {
+            const proveedorDoc = res[0];
+            this.authService.user = proveedorDoc;
+            window.sessionStorage.setItem('id', proveedorDoc.id);
+            this.router.navigate([`/Inicio/${proveedorDoc.id}`]);
+          } else {
+            // Documento con ID igual a user.uid
+            this.authService.user = { id: user.uid, email: user.email };
+            window.sessionStorage.setItem('id', user.uid);
+            this.router.navigate([`/Inicio/${user.uid}`]);
+          }
+        }, () => {
+          Notiflix.Loading.remove();
+          window.sessionStorage.setItem('id', user.uid);
+          this.router.navigate([`/Inicio/${user.uid}`]);
+        });
+      })
+      .catch((authErr) => {
+        // 2. Si falla en Firebase Auth (por ejemplo usuario antiguo de usersPublic antes de migrar a Auth)
+        this.subscriptionLogin = this.authService
+          .getUser(emailLimpio, passLimpia)
+          .subscribe((res: any) => {
+            Notiflix.Loading.remove();
+            if (res && res.length > 0 && res[0]) {
+              this.authService.user = res[0];
+              window.sessionStorage.setItem('id', res[0].id);
+              this.router.navigate([`/Inicio/${res[0].id}`]);
+            } else {
+              if (authErr.code === 'auth/wrong-password') {
+                Notiflix.Notify.failure('Contraseña incorrecta.');
+              } else if (authErr.code === 'auth/user-not-found') {
+                Notiflix.Notify.failure('No existe una cuenta registrada con este correo.');
+              } else {
+                Notiflix.Notify.failure('Usuario o contraseña incorrectos.');
+              }
+            }
+          }, () => {
+            Notiflix.Loading.remove();
+            Notiflix.Notify.failure('Usuario o contraseña incorrectos.');
+          });
       });
   }
 

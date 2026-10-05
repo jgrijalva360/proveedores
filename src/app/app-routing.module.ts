@@ -16,6 +16,10 @@ const routes: Routes = [
     component: RegisterComponent
   },
   {
+    path: 'registro-proveedor',
+    component: RegisterComponent
+  },
+  {
     path: 'Inicio/:id',
     component: HomeComponent,
     loadChildren: () =>

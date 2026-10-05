@@ -1,0 +1,180 @@
+<div class="container-fluid py-3">
+  <!-- Tarjeta de encabezado con estilo .box -->
+  <div class="row box align-items-center mb-3">
+    <div class="col-12 col-md-8">
+      <h2 class="colorEnconexion mb-0">
+        <i class="fas fa-file-invoice me-2"></i> Carga Libre de CFDIs (Facturas)
+      </h2>
+      <p class="text-secondary small mb-0 mt-1">
+        Carga tus archivos fiscales (XML y PDF) directamente para este proyecto sin necesidad de tener una Orden de Compra (OC) previa o pagos pendientes asociados.
+      </p>
+    </div>
+    <div class="col-12 col-md-4 text-md-end mt-2 mt-md-0">
+      <span class="badge bg-light text-secondary border p-2">
+        <i class="fas fa-receipt me-1"></i> Facturas registradas: <strong>{{ arrCFDIsDirectos.length }}</strong>
+      </span>
+    </div>
+  </div>
+
+  <!-- Formulario de Subida con estilo .box -->
+  <div class="row box mb-4">
+    <div class="col-12 mb-2">
+      <h4 class="fs-6 fw-bold text-secondary mb-1">
+        <i class="fas fa-cloud-upload-alt text-primary me-1"></i> Nueva Carga de Factura
+      </h4>
+      <p class="small text-muted mb-0">Selecciona el archivo XML del CFDI (se validará automáticamente su RFC y estructura) y adjunta su representación gráfica en PDF.</p>
+    </div>
+
+    <div class="col-12 p-3 bg-light rounded border mt-2">
+      <div class="row g-3 align-items-end">
+        <!-- Input XML -->
+        <div class="col-12 col-md-5">
+          <label class="form-label small fw-bold text-secondary mb-1">
+            <i class="fas fa-file-code me-1 text-primary"></i> 1. Archivo XML (CFDI) *
+          </label>
+          <div class="input-group input-group-sm">
+            <input
+              type="file"
+              class="form-control"
+              accept=".xml"
+              (change)="onFileChangeXMLDirecto($event)"
+              [disabled]="cargandoDirecto"
+            />
+          </div>
+          <small class="text-success d-block mt-1" *ngIf="cfdiDirectoNuevo.xmlData">
+            <i class="fas fa-check-circle"></i> UUID: {{ cfdiDirectoNuevo.xmlData.folioComprobante }} | Subtotal: {{ cfdiDirectoNuevo.xmlData.subtotal | currency:'MXN' }} | IVA: {{ cfdiDirectoNuevo.xmlData.iva | currency:'MXN' }} | Total: {{ cfdiDirectoNuevo.xmlData.total | currency:'MXN' }} {{ cfdiDirectoNuevo.xmlData.moneda }}
+          </small>
+        </div>
+
+        <!-- Input PDF -->
+        <div class="col-12 col-md-5">
+          <label class="form-label small fw-bold text-secondary mb-1">
+            <i class="fas fa-file-pdf me-1 text-danger"></i> 2. Archivo PDF correspondiente *
+          </label>
+          <div class="input-group input-group-sm">
+            <input
+              type="file"
+              class="form-control"
+              accept=".pdf"
+              (change)="onFileChangePDFDirecto($event)"
+              [disabled]="cargandoDirecto"
+            />
+          </div>
+          <small class="text-success d-block mt-1" *ngIf="cfdiDirectoNuevo.pdfNombre">
+            <i class="fas fa-check-circle"></i> {{ cfdiDirectoNuevo.pdfNombre }}
+          </small>
+        </div>
+
+        <!-- Botón Guardar -->
+        <div class="col-12 col-md-2">
+          <button
+            type="button"
+            class="btn-enconexion btn-sm w-100 py-2"
+            (click)="guardarCFDIDirecto()"
+            [disabled]="cargandoDirecto || !cfdiDirectoNuevo.xmlData || !cfdiDirectoNuevo.pdfFile"
+          >
+            <i class="fas fa-upload me-1"></i> Subir CFDI
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado de carga inicial -->
+  <div *ngIf="cargando" class="text-center py-5">
+    <div class="spinner-border text-secondary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-2 text-muted small">Consultando facturas cargadas...</p>
+  </div>
+
+  <!-- Tabla de Facturas Cargadas con estilo .box -->
+  <div class="row box" *ngIf="!cargando && arrCFDIsDirectos.length > 0">
+    <div class="col-12 mb-3">
+      <h4 class="fs-6 fw-bold text-secondary mb-0">
+        <i class="fas fa-list-ul me-1"></i> Historial de Facturas Cargadas
+      </h4>
+    </div>
+
+    <div class="col-12 table-responsive">
+      <table class="table table-bordered table-striped tablePagos mb-0">
+        <thead>
+          <tr class="text-center">
+            <th scope="col">Folio Fiscal (UUID)</th>
+            <th scope="col">Concepto</th>
+            <th scope="col">Fecha Factura</th>
+            <th scope="col">Total</th>
+            <th scope="col">Fecha Carga</th>
+            <th scope="col">Archivos</th>
+            <th scope="col">Estatus</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="text-center" *ngFor="let cfdi of arrCFDIsDirectos">
+            <td class="small fw-bold">{{ cfdi.uuid }}</td>
+            <td class="small text-start">{{ cfdi.concepto || 'Sin descripción' }}</td>
+            <td class="small">{{ cfdi.fechaFactura | date:'mediumDate' }}</td>
+            <td class="fw-bold">{{ cfdi.total | currency:'MXN':'symbol':'1.2-2' }} {{ cfdi.moneda }}</td>
+            <td class="small text-muted">{{ cfdi.cargado | fechaTimeStamp | date:'short' }}</td>
+            <td>
+              <div class="btn-group btn-group-sm">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary btn-sm"
+                  title="Descargar XML"
+                  (click)="downloadFile(cfdi.pathXML)"
+                >
+                  <i class="fas fa-file-code"></i> XML
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-danger btn-sm"
+                  title="Descargar PDF"
+                  (click)="downloadFile(cfdi.pathPDF)"
+                >
+                  <i class="fas fa-file-pdf"></i> PDF
+                </button>
+              </div>
+            </td>
+            <td>
+              <span
+                class="badge"
+                [ngClass]="{
+                  'bg-warning text-dark': cfdi.estatus === 'EN REVISION' || !cfdi.estatus,
+                  'bg-success': cfdi.estatus === 'APROBADO',
+                  'bg-danger': cfdi.estatus === 'RECHAZADO'
+                }"
+              >
+                {{ cfdi.estatus || 'EN REVISIÓN' }}
+              </span>
+              <div class="small text-danger mt-1" *ngIf="cfdi.motivoRechazo">
+                {{ cfdi.motivoRechazo }}
+              </div>
+            </td>
+            <td>
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-danger"
+                title="Eliminar factura"
+                *ngIf="cfdi.estatus === 'EN REVISION' || cfdi.estatus === 'RECHAZADO' || !cfdi.estatus"
+                (click)="eliminarCFDIDirecto(cfdi)"
+              >
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Estado vacío con estilo .box -->
+  <div class="row box text-center py-5" *ngIf="!cargando && arrCFDIsDirectos.length === 0">
+    <div class="col-12">
+      <i class="fas fa-inbox fa-3x mb-2 text-secondary"></i>
+      <h3 class="fs-5">No tienes facturas libres cargadas</h3>
+      <p class="text-muted small mb-0">Utiliza el formulario superior para subir tus facturas (XML y PDF) vinculadas a este proyecto.</p>
+    </div>
+  </div>
+</div>

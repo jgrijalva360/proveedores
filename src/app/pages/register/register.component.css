@@ -18,12 +18,14 @@
     z-index: 1;
   }
   .contenedor {
-    max-width: 325px;
+    max-width: 380px;
+    width: 100%;
     padding: 25px;
     background: #fff;
     border-radius: 10px;
-    margin: 10px;
+    margin: 15px;
     border: 1px solid #dfdfdf;
+    box-shadow: 2px 4px 12px #00000014;
     z-index: 2;
   }
   .logo {

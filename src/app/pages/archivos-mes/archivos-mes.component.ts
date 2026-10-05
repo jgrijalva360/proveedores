@@ -81,6 +81,7 @@ export class ArchivosMesComponent implements OnInit, OnDestroy {
       CSF: archivosUser?.CSF?.[this.mesActualNombre] || null,
       '32D': archivosUser?.['32D']?.[this.mesActualNombre] || null,
     };
+    this.generalService.calcularResumenArchivos(this.user, this.arrOrdersProveedor);
   }
 
   obtenerOrdenesParaSincronizar(): void {
@@ -167,6 +168,7 @@ export class ArchivosMesComponent implements OnInit, OnDestroy {
       .then(() => {
         Notiflix.Loading.remove();
         Notiflix.Notify.success('Documentación registrada con éxito para revisión');
+        this.generalService.calcularResumenArchivos(this.user, this.arrOrdersProveedor);
       })
       .catch((err) => {
         Notiflix.Loading.remove();
@@ -218,10 +220,11 @@ export class ArchivosMesComponent implements OnInit, OnDestroy {
         return Promise.resolve();
       });
 
-      Promise.all([p1, ...p2])
+        Promise.all([p1, ...p2])
         .then(() => {
           Notiflix.Loading.remove();
           Notiflix.Notify.success('Archivo eliminado correctamente');
+          this.generalService.calcularResumenArchivos(this.user, this.arrOrdersProveedor);
         })
         .catch((err) => {
           Notiflix.Loading.remove();

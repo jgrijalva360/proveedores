@@ -9,15 +9,106 @@
 
     <div>
       <p class="descript">
-        Registro de usuario <span class="span">ENCONEXIÓN</span>
+        Registro de Proveedor <span class="span">ENCONEXIÓN</span>
       </p>
-      <form id="formAddUser" (ngSubmit)="onSignIn()">
+
+      <!-- Modo Registro Manual por Enlace de Invitación -->
+      <form *ngIf="!modoEdicionExistente" id="formAddUser" (ngSubmit)="onSignIn()">
         <div class="form-group my-2">
           <input
             type="text"
             class="form-control"
             name="nombre"
             id="nombre"
+            placeholder="Nombre o Razón Social *"
+            [(ngModel)]="provider.nombre"
+            required
+            maxlength="100"
+          />
+        </div>
+
+        <div class="form-group my-2">
+          <input
+            type="text"
+            class="form-control"
+            name="rfc"
+            id="rfc"
+            placeholder="RFC *"
+            [(ngModel)]="provider.rfc"
+            maxlength="13"
+            style="text-transform: uppercase;"
+            required
+          />
+        </div>
+
+        <div class="form-group my-2">
+          <input
+            type="tel"
+            class="form-control"
+            name="telefono"
+            id="telefono"
+            placeholder="Teléfono de contacto"
+            [(ngModel)]="provider.telefono"
+            maxlength="15"
+          />
+        </div>
+
+        <div class="form-group my-2">
+          <input
+            type="email"
+            class="form-control"
+            name="email"
+            id="email"
+            placeholder="Correo Electrónico *"
+            [(ngModel)]="provider.email"
+            required
+          />
+        </div>
+
+        <div class="form-group my-2">
+          <input
+            type="password"
+            class="form-control"
+            name="pass"
+            id="pass"
+            placeholder="Contraseña (mínimo 6 caracteres) *"
+            [(ngModel)]="provider.password"
+            required
+            minlength="6"
+          />
+        </div>
+
+        <div class="form-group my-2">
+          <input
+            type="password"
+            class="form-control"
+            name="pass2"
+            id="pass2"
+            placeholder="Confirmar contraseña *"
+            [(ngModel)]="confirmPassword"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn-enconexion w-100 mt-2" [disabled]="isLoading">
+          <i class="fas fa-user-plus me-1"></i> Registrarme
+        </button>
+
+        <div class="mt-3 text-center">
+          <a [routerLink]="['/']" class="text-decoration-none small text-secondary">
+            ¿Ya tienes cuenta? <span class="span">Inicia Sesión</span>
+          </a>
+        </div>
+      </form>
+
+      <!-- Modo Edición Existente (Heredado de invitación con id) -->
+      <form *ngIf="modoEdicionExistente" id="formAddUserExistente" (ngSubmit)="onSignIn()">
+        <div class="form-group my-2">
+          <input
+            type="text"
+            class="form-control"
+            name="nombre"
+            id="nombreE"
             placeholder="Nombre o Razón Social"
             [(ngModel)]="provider.nombre"
             disabled
@@ -28,7 +119,7 @@
             type="text"
             class="form-control"
             name="rfc"
-            id="rfc"
+            id="rfcE"
             placeholder="RFC"
             [(ngModel)]="provider.rfc"
             maxlength="13"
@@ -40,7 +131,7 @@
             type="text"
             class="form-control"
             name="email"
-            id="email"
+            id="emailE"
             placeholder="Email"
             [(ngModel)]="provider.email"
             disabled
@@ -51,7 +142,7 @@
             type="password"
             class="form-control"
             name="pass"
-            id="pass"
+            id="passE"
             placeholder="Contraseña"
             [(ngModel)]="provider.password"
           />
@@ -61,12 +152,12 @@
             type="password"
             class="form-control"
             name="pass2"
-            id="pass2"
+            id="pass2E"
             placeholder="Confirmar contraseña"
             [(ngModel)]="confirmPassword"
           />
         </div>
-        <button type="submit" class="btn-enconexion">Registrarme</button>
+        <button type="submit" class="btn-enconexion w-100" [disabled]="isLoading">Registrarme</button>
       </form>
     </div>
   </div>
