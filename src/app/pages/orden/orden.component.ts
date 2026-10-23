@@ -143,6 +143,10 @@ export class OrdenComponent {
     });
   }
 
+  esOrdenDirectaOAnexoConCalendario(orden: any): boolean {
+    return this.generalService.esOrdenDirectaOAnexoConCalendario(orden);
+  }
+
   getOrdenes(tipo: string, propiedad: string) {
     this.generalService
       .getOrdenes(this.idCompany, this.idProject, tipo, propiedad)
@@ -150,42 +154,12 @@ export class OrdenComponent {
         console.log(orden);
         this.totales = [];
 
-        orden = orden.sort((a: any, b: any) => a.orderCounter - b.orderCounter);
+        const lista = Array.isArray(orden) ? orden : [];
 
-        this.totales = [];
-        this.arrOC = orden;
-        this.generalService.calcularResumenPagos(this.arrOC, this.today);
-        orden.forEach((element: any) => {
-          let objTotales = {
-            importe: 0,
-            iva: 0,
-            total: 0
-          };
-          element.comprometidos.forEach((comprometido: any, index: number) => {
-            comprometido.id = 'OC-' + element.orderCounter + '-' + (index + 1);
-            objTotales.importe += comprometido.importe;
-            objTotales.iva += comprometido.iva;
-            objTotales.total += comprometido.total;
-          });
-          this.totales.push(objTotales);
-        });
-        // filtrar las ordenes que su fecha de inicio no sea mayor a la fecha actual
-        // console.log('Ordenes', this.arrOC);
-      });
-  }
-
-  getOrdenesAdmin() {
-    this.generalService
-      .getOrdenesAdmin(this.idCompany, this.idProject)
-      .subscribe((ordenes: any) => {
-        // console.log(ordenes);
-        this.totales = [];
-
-        let ordenesFiltradas = ordenes.filter(
-          (orden: any) => orden.rfc === this.rfcSeleccionado
+        // Filtrar únicamente órdenes de tipo Directa y Anexo que cuenten con calendario de pagos
+        let ordenesFiltradas = lista.filter((o: any) =>
+          this.esOrdenDirectaOAnexoConCalendario(o)
         );
-
-        // console.log('OC Filtradas', ordenesFiltradas);
 
         ordenesFiltradas = ordenesFiltradas.sort(
           (a: any, b: any) => a.orderCounter - b.orderCounter
@@ -197,19 +171,62 @@ export class OrdenComponent {
             iva: 0,
             total: 0
           };
-          element.comprometidos.forEach((comprometido: any, index: number) => {
-            comprometido.id = 'OC-' + element.orderCounter + '-' + (index + 1);
-
-            objTotales.importe += comprometido.importe;
-            objTotales.iva += comprometido.iva;
-            objTotales.total += comprometido.total;
-          });
+          if (Array.isArray(element.comprometidos)) {
+            element.comprometidos.forEach((comprometido: any, index: number) => {
+              comprometido.id = 'OC-' + element.orderCounter + '-' + (index + 1);
+              objTotales.importe += comprometido.importe || 0;
+              objTotales.iva += comprometido.iva || 0;
+              objTotales.total += comprometido.total || 0;
+            });
+          }
           this.totales.push(objTotales);
         });
-        // filtrar las ordenes que su fecha de inicio no sea mayor a la fecha actual
+
         this.arrOC = ordenesFiltradas;
         this.generalService.calcularResumenPagos(this.arrOC, this.today);
-        // console.log('Ordenes', this.arrOC);
+      });
+  }
+
+  getOrdenesAdmin() {
+    this.generalService
+      .getOrdenesAdmin(this.idCompany, this.idProject)
+      .subscribe((ordenes: any) => {
+        // console.log(ordenes);
+        this.totales = [];
+
+        const lista = Array.isArray(ordenes) ? ordenes : [];
+
+        // Filtrar por RFC y únicamente órdenes de tipo Directa y Anexo con calendario de pagos
+        let ordenesFiltradas = lista.filter(
+          (orden: any) =>
+            orden.rfc === this.rfcSeleccionado &&
+            this.esOrdenDirectaOAnexoConCalendario(orden)
+        );
+
+        ordenesFiltradas = ordenesFiltradas.sort(
+          (a: any, b: any) => a.orderCounter - b.orderCounter
+        );
+
+        ordenesFiltradas.forEach((element: any) => {
+          let objTotales = {
+            importe: 0,
+            iva: 0,
+            total: 0
+          };
+          if (Array.isArray(element.comprometidos)) {
+            element.comprometidos.forEach((comprometido: any, index: number) => {
+              comprometido.id = 'OC-' + element.orderCounter + '-' + (index + 1);
+
+              objTotales.importe += comprometido.importe || 0;
+              objTotales.iva += comprometido.iva || 0;
+              objTotales.total += comprometido.total || 0;
+            });
+          }
+          this.totales.push(objTotales);
+        });
+
+        this.arrOC = ordenesFiltradas;
+        this.generalService.calcularResumenPagos(this.arrOC, this.today);
       });
   }
 

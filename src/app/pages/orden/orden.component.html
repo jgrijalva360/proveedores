@@ -7,6 +7,15 @@
       <p class="text-center">
         Orden de compra:
         <span class="fw-bold colorEnconexion">OC-{{ orden.orderCounter }}</span>
+        <span
+          class="badge ms-1"
+          [ngClass]="{
+            'bg-success': (orden.tipo || 'Directa').toUpperCase() === 'DIRECTA',
+            'bg-info text-dark': (orden.tipo || '').toUpperCase() === 'ANEXO'
+          }"
+        >
+          {{ (orden.tipo || 'Directa').toUpperCase() === 'ANEXO' ? 'Anexo' : 'Directa' }}
+        </span>
       </p>
     </div>
     <div class="col-12 col-md-6 col-lg-3">

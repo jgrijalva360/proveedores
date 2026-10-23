@@ -488,6 +488,53 @@ export class GeneralService {
     return '';
   }
 
+  /**
+   * Determina si una orden de compra es de tipo Directa o Anexo
+   * y cuenta con calendario de pagos activo.
+   */
+  esOrdenDirectaOAnexoConCalendario(orden: any): boolean {
+    if (!orden) return false;
+
+    // 1. Tipo: Directa o ANEXO (órdenes previas sin tipo se asumen Directa)
+    const tipo = (orden.tipo || 'Directa').toString().trim().toUpperCase();
+    const esTipoValido = tipo === 'DIRECTA' || tipo === 'ANEXO';
+    if (!esTipoValido) {
+      return false;
+    }
+
+    // 2. Calendario de pagos: si está explícitamente desactivado
+    if (
+      orden.calendario === false ||
+      orden.calendario === 'false' ||
+      orden.calendarioPagos === false ||
+      orden.tieneCalendario === false
+    ) {
+      return false;
+    }
+
+    const tieneComprometidos =
+      Array.isArray(orden.comprometidos) && orden.comprometidos.length > 0;
+    if (!tieneComprometidos) {
+      return false;
+    }
+
+    // Si tiene la bandera calendario explícitamente activa
+    if (
+      orden.calendario === true ||
+      orden.calendario === 'true' ||
+      orden.calendarioPagos === true ||
+      orden.tieneCalendario === true
+    ) {
+      return true;
+    }
+
+    // Para órdenes históricas donde no existía la bandera calendario,
+    // comprobar si sus comprometidos tienen fechas o periodos
+    return orden.comprometidos.some(
+      (c: any) => c.fechaFin || c.fechaInicio || c.periodo || c.tieneCalendario
+    );
+  }
+
   calcularResumenPagos(ordenes: any[], today: Date = new Date()): ResumenPagos {
     let vencidosCount = 0;
     let proximosCount = 0;
@@ -495,7 +542,12 @@ export class GeneralService {
 
     if (ordenes && Array.isArray(ordenes)) {
       ordenes.forEach((orden: any) => {
-        if (orden && orden.comprometidos && Array.isArray(orden.comprometidos)) {
+        if (
+          this.esOrdenDirectaOAnexoConCalendario(orden) &&
+          orden &&
+          orden.comprometidos &&
+          Array.isArray(orden.comprometidos)
+        ) {
           orden.comprometidos.forEach((pago: any) => {
             const st = this.estatusPago(pago, today);
             if (st === 'VENCIDO') {
